@@ -102,7 +102,20 @@ CREATE VIEW view_name AS
 #### 1.2.3 SQL Flavors
 
 
+Cuando te fuiste hace 22 horas, trabajabas en Querying, capítulo 2 del curso Introducción a SQL. Esto es lo que viste en tu clase más reciente:
 
+Aprendiste sobre los conceptos básicos de las consultas SQL, centrándote en cómo seleccionar datos relevantes de las tablas de la base de datos. SQL, una herramienta poderosa para interactuar con bases de datos relacionales, te permite responder preguntas complejas consultando datos a través de múltiples tablas. Aquí están los puntos clave que cubriste:
+
+Consultas SQL: Descubriste cómo usar SQL para encontrar información específica, como qué libros fueron prestados por un determinado usuario en un año dado o comparando salarios entre departamentos.
+Palabras clave SELECT y FROM: Aprendiste que la palabra clave SELECT se utiliza para especificar qué campos deseas recuperar, y la palabra clave FROM indica la tabla de la cual extraer estos datos. Por ejemplo, para seleccionar el campo de nombre de la tabla de usuarios, usarías:
+SELECT name
+FROM patrons;
+Conjuntos de Resultados: Viste cómo las consultas devuelven un conjunto de resultados, que es la lista de datos que solicitaste. Es importante destacar que ejecutar una consulta no altera la base de datos en sí.
+Seleccionar Múltiples Campos: Practicaste seleccionando múltiples campos de una tabla listando los nombres de los campos después de la palabra clave SELECT, separados por comas. También aprendiste que usar un asterisco (*) selecciona todos los campos de una tabla.
+Estilo SQL: Se enfatizó la importancia de formatear las consultas SQL para mejorar la legibilidad, incluyendo capitalizar las palabras clave y mantener los nombres de tablas y campos en minúsculas.
+Esta lección te equipó con las habilidades fundamentales para comenzar a explorar bases de datos y extraer información significativa usando SQL.
+
+El objetivo de la próxima lección es aprender a mejorar las consultas SQL para seleccionar datos relevantes de manera más eficiente utilizando alias, empleando la palabra clave DISTINCT y creando vistas.
 
 
 
