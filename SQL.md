@@ -1,11 +1,18 @@
-# Analista de Datos Asociado en SQL
+# Career Track: Associate Data Analyst in SQL
 
-## 1. Introducción a SQL 
+## 1. Introduction to SQL 
 
-### 1.1 Bases de Datos Relacionales
+### 1.1 Relational Databases
 
 #### 1.1.1 Databases
 
+- SQL. SQL, or Structured Query Language, is the most widely used programming language for communicating with data in databases.
+- It lets us quickly access, organize, and analyze large amounts of data with direct commands, known as **queries**.
+- A **table** is a component of a database. 
+- Tables organize data into rows and columns. Rows contain individual data, and each column describes a specific part of that data.
+- Several tables usually make up a database, and they work together through relationships.
+- **Relational databases** include tables that share information. This creates connections between them. 
+- When a database is queried, the data stored inside the database does not change; rather, the database information is accessed and presented according to instructions in the query.
 
 #### 1.1.2 Tables
 
@@ -96,49 +103,165 @@ CREATE VIEW view_name AS
 ```
 - Creating a `VIEW` does not produce a result set, it only saves the query for reuse.
 - Once a query is created we can query just as we would a *normal table* by selecting `FROM` the view.
-- 
-
 
 #### 1.2.3 SQL Flavors
-
-
-Cuando te fuiste hace 22 horas, trabajabas en Querying, capítulo 2 del curso Introducción a SQL. Esto es lo que viste en tu clase más reciente:
-
-Aprendiste sobre los conceptos básicos de las consultas SQL, centrándote en cómo seleccionar datos relevantes de las tablas de la base de datos. SQL, una herramienta poderosa para interactuar con bases de datos relacionales, te permite responder preguntas complejas consultando datos a través de múltiples tablas. Aquí están los puntos clave que cubriste:
-
-Consultas SQL: Descubriste cómo usar SQL para encontrar información específica, como qué libros fueron prestados por un determinado usuario en un año dado o comparando salarios entre departamentos.
-Palabras clave SELECT y FROM: Aprendiste que la palabra clave SELECT se utiliza para especificar qué campos deseas recuperar, y la palabra clave FROM indica la tabla de la cual extraer estos datos. Por ejemplo, para seleccionar el campo de nombre de la tabla de usuarios, usarías:
-SELECT name
-FROM patrons;
-Conjuntos de Resultados: Viste cómo las consultas devuelven un conjunto de resultados, que es la lista de datos que solicitaste. Es importante destacar que ejecutar una consulta no altera la base de datos en sí.
-Seleccionar Múltiples Campos: Practicaste seleccionando múltiples campos de una tabla listando los nombres de los campos después de la palabra clave SELECT, separados por comas. También aprendiste que usar un asterisco (*) selecciona todos los campos de una tabla.
-Estilo SQL: Se enfatizó la importancia de formatear las consultas SQL para mejorar la legibilidad, incluyendo capitalizar las palabras clave y mantener los nombres de tablas y campos en minúsculas.
-Esta lección te equipó con las habilidades fundamentales para comenzar a explorar bases de datos y extraer información significativa usando SQL.
-
-El objetivo de la próxima lección es aprender a mejorar las consultas SQL para seleccionar datos relevantes de manera más eficiente utilizando alias, empleando la palabra clave DISTINCT y creando vistas.
-
-
-
-
+- SQL has several different versions or flavors, ranging from free versions to those designed for major databases like Microsoft SQL Server or Oracle Database.
+- **PostgreSQL** is a free and open-source relational database system.
+- **SQL Server** is a relational database system available in both free and enterprise versions. It was created by Microsoft.
+- While there are many similarities between SQL Server and PostgreSQL, there are some small differences worth noting.
+- For example, if we want to limit the number of employee names and IDs selected to only the first two records, PostgreSQL uses the LIMIT keyword. In contrast, SQL Server achieves the same result using the TOP keyword.
+- If we want to use PostgreSQL to select the `genre` field from the `books` table and limit the number of results to 10, we do:
+```SQL
+SELECT genre
+FROM books
+LIMIT 10;
+```
+- If instead we would like to use SQL Server we do:
+```SQL
+SELECT genre TOP(10)
+FROM books;
+```
+---
 
 ## 2. SQL Intermedio Intermedio
 
+### 2.1 Selecting Data
 
-## 3. Unir Datos en SQL
 
-## 4. Manipulación de Datos en SQL
 
-## 5. Estadísticas de Resumen y Funciones de Ventana de PostgreSQL
+### 2.2 Filtering Records
 
-## 6. Funciones para Manipular Datos en PostgreSQL
 
-## 7. Introducción a la Estadística
 
-## 8. Análisis Exploratorio de Datos en SQL
 
-## 9. Toma de Decisiones basada en Datos con SQL
+### 2.3 Aggregate Functions
 
-## 10. Comprender la visualización de datos
 
-## 11. conceptos de comunicación de datos
- 
+
+### 2.4 Sorting and Grouping
+
+
+## PROJECT 1: Analyzing Students' Mental Health
+
+---
+## 3. Joining Data in SQL
+
+### 3.1 Introducing Inner Joins
+
+
+### 3.2 Outer Joins, Cross Joins and Self Joins
+
+
+### 3.3 Set Theory for SQL Joins
+
+
+### 3.4 Subqueries
+
+---
+## 4. Data Manipulation in SQL
+
+### 4.1 We'll take the CASE
+
+
+### 4.2 Short and Simple Queries
+
+
+### 4.3 Correlated Queries, Nested Queries, and Common Table Expressions
+
+
+### 4.4 Window Functions
+
+---
+## 5. PostgreSQL Summary Stats and Window Functions
+
+### 5.1 Introduction to window functions
+
+
+### 5.2 Fatching, Ranking, and Paging
+
+
+### 5.3 Aggregate window functions and frames
+
+
+### 5.4 Beyond window functions
+
+
+---
+## 6. Functions for Manipulting Data in PostgreSQL
+
+### 6.1 Overview of Common Data Types
+
+
+### 6.2 Working with DATE/TIME Functions and Operations
+
+
+### 6.3 Parsing and Manipulating Text
+
+
+### 6.4 Full-text Search and PostgresSQL Extensions
+
+
+---
+## 7. Introduction ton Statistics 
+
+### 7.1 Summary Statistics
+
+
+### 7.2 Probability and Distributions
+
+
+### 7.3 More Distributions and the Central Limit Theorem
+
+
+### 7.4 Correlation and Hypothesis Testing
+
+
+---
+## 8. Exploratory Data Analysis (EDA) in SQL
+
+### 8.1 What's in the Database?
+
+
+### 8.2 Summarizing and Aggregating Numeric Data
+
+
+### 8.3 Exploring Categorical DAta and Unstructured Text
+
+
+### 8.4 Working with Dates and Timestamps
+
+
+---
+## 9. Data-Driven Decision Making in SQL
+
+### 9.1 Introduction to Business Intelligence for a Online Movie Rental Database
+
+### 9.2 Decision Making with Simple SQL Queries
+
+### 9.3 Data Driven Decision Making with Advanced SQL Queries
+
+### 9.4 Data Driven Decision Making with OLAP SQL Queries
+
+---
+## 10. Understanding Data Visualization
+
+### 10.1 Visualizing Distributions
+
+### 10.2 Visualizing Two Variables
+
+### 10.3 The Color and The Shape
+
+### 10.4 99 Problems but a Plot ain't one of them
+
+---
+## 11. Data Communication Concepts 
+
+### 11.1 Storytelling with Data
+
+### 11.2 Preparing to Communicate the Data
+
+### 11.3 Structuring Written Reports
+
+### 11.4 Building Compelling Oral Presentations
+
+---
