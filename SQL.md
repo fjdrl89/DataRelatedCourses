@@ -225,6 +225,8 @@ FROM books;
 
 ### 2.1 Selecting Data
 
+#### 2.1.1 Querying a database
+
 - A query is a request for data from a database.
 - In this course, we worked with a films database containing four tables:
  * Films
@@ -262,6 +264,12 @@ SELECT COUNT(DISTINCT birthdate) AS count_distinct_birthdates
 FROM people;
 ```
 - `COUNT` would include all the duplicates while `DISTINCT`counts all of the unique dates, no matter how many times they come up. 
+
+#### 2.1.2 Query Execution
+
+
+#### 2.1.3 SQL Style
+
 
 ### 2.2 Filtering Records
 
