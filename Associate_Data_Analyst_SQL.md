@@ -265,6 +265,34 @@ FROM people;
 ```
 - `COUNT` would include all the duplicates while `DISTINCT`counts all of the unique dates, no matter how many times they come up. 
 
+-  If you want to count the number of non-missing values in a particular field, you can call `COUNT()` on just that field.
+- Other examples:
+  * Count the number of records in the people table:
+```SQL
+SELECT COUNT(*) AS count_records
+FROM people;
+```
+  * Count the number of birthdates in the people table:
+```SQL
+SELECT COUNT(birthdate) AS count_birthdate
+FROM people;
+```
+  * Count the records for languages and countries represented in the films table:
+```SQL
+SELECT COUNT(language) AS count_languages, COUNT(country) AS count_countries
+FROM films; 
+```
+  * Return the unique countries from the films table:
+```SQL
+SELECT DISTINCT country
+FROM films;
+```
+  * Count the distinct countries from the films table:
+```SQL
+SELECT COUNT(DISTINCT country) AS count_distinct_countries
+FROM films;
+```
+
 #### 2.1.2 Query Execution
 
 
