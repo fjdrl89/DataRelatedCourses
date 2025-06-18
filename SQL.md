@@ -1,5 +1,103 @@
 # Career Track: Associate Data Analyst in SQL
 
+---
+
+## Índice
+
+- [1. Introduction to SQL](#1-introduction-to-sql)
+  - [1.1 Relational Databases](#11-relational-databases)
+    - [1.1.1 Databases](#111-databases)
+    - [1.1.2 Tables](#112-tables)
+    - [1.1.3 Data Types](#113-data-types)
+  - [1.2 Consultas](#12-consultas)
+    - [1.2.1 introducing querie](#121-introducing-querie)
+    - [1.2.2 Writing Queries](#122-writing-queries)
+    - [1.2.3 SQL Flavors](#123-sql-flavors)
+
+---
+
+- [2. SQL Intermedio Intermedio](#2-sql-intermedio-intermedio)
+  - [2.1 Selecting Data](#21-selecting-data)
+  - [2.2 Filtering Records](#22-filtering-records)
+  - [2.3 Aggregate Functions](#23-aggregate-functions)
+  - [2.4 Sorting and Grouping](#24-sorting-and-grouping)
+  - [PROJECT 1: Analyzing Students' Mental Health](#project-1-analyzing-students-mental-health)
+
+---
+
+- [3. Joining Data in SQL](#3-joining-data-in-sql)
+  - [3.1 Introducing Inner Joins](#31-introducing-inner-joins)
+  - [3.2 Outer Joins, Cross Joins and Self Joins](#32-outer-joins-cross-joins-and-self-joins)
+  - [3.3 Set Theory for SQL Joins](#33-set-theory-for-sql-joins)
+  - [3.4 Subqueries](#34-subqueries)
+
+---
+
+- [4. Data Manipulation in SQL](#4-data-manipulation-in-sql)
+  - [4.1 We'll take the CASE](#41-well-take-the-case)
+  - [4.2 Short and Simple Queries](#42-short-and-simple-queries)
+  - [4.3 Correlated Queries, Nested Queries, and Common Table Expressions](#43-correlated-queries-nested-queries-and-common-table-expressions)
+  - [4.4 Window Functions](#44-window-functions)
+
+---
+
+- [5. PostgreSQL Summary Stats and Window Functions](#5-postgresql-summary-stats-and-window-functions)
+  - [5.1 Introduction to window functions](#51-introduction-to-window-functions)
+  - [5.2 Fatching, Ranking, and Paging](#52-fatching-ranking-and-paging)
+  - [5.3 Aggregate window functions and frames](#53-aggregate-window-functions-and-frames)
+  - [5.4 Beyond window functions](#54-beyond-window-functions)
+
+---
+
+- [6. Functions for Manipulting Data in PostgreSQL](#6-functions-for-manipulting-data-in-postgresql)
+  - [6.1 Overview of Common Data Types](#61-overview-of-common-data-types)
+  - [6.2 Working with DATE/TIME Functions and Operations](#62-working-with-datetime-functions-and-operations)
+  - [6.3 Parsing and Manipulating Text](#63-parsing-and-manipulating-text)
+  - [6.4 Full-text Search and PostgresSQL Extensions](#64-full-text-search-and-postgresql-extensions)
+
+---
+
+- [7. Introduction ton Statistics](#7-introduction-ton-statistics)
+  - [7.1 Summary Statistics](#71-summary-statistics)
+  - [7.2 Probability and Distributions](#72-probability-and-distributions)
+  - [7.3 More Distributions and the Central Limit Theorem](#73-more-distributions-and-the-central-limit-theorem)
+  - [7.4 Correlation and Hypothesis Testing](#74-correlation-and-hypothesis-testing)
+
+---
+
+- [8. Exploratory Data Analysis (EDA) in SQL](#8-exploratory-data-analysis-eda-in-sql)
+  - [8.1 What's in the Database?](#81-whats-in-the-database)
+  - [8.2 Summarizing and Aggregating Numeric Data](#82-summarizing-and-aggregating-numeric-data)
+  - [8.3 Exploring Categorical DAta and Unstructured Text](#83-exploring-categorical-data-and-unstructured-text)
+  - [8.4 Working with Dates and Timestamps](#84-working-with-dates-and-timestamps)
+
+---
+
+- [9. Data-Driven Decision Making in SQL](#9-data-driven-decision-making-in-sql)
+  - [9.1 Introduction to Business Intelligence for a Online Movie Rental Database](#91-introduction-to-business-intelligence-for-a-online-movie-rental-database)
+  - [9.2 Decision Making with Simple SQL Queries](#92-decision-making-with-simple-sql-queries)
+  - [9.3 Data Driven Decision Making with Advanced SQL Queries](#93-data-driven-decision-making-with-advanced-sql-queries)
+  - [9.4 Data Driven Decision Making with OLAP SQL Queries](#94-data-driven-decision-making-with-olap-sql-queries)
+
+---
+
+- [10. Understanding Data Visualization](#10-understanding-data-visualization)
+  - [10.1 Visualizing Distributions](#101-visualizing-distributions)
+  - [10.2 Visualizing Two Variables](#102-visualizing-two-variables)
+  - [10.3 The Color and The Shape](#103-the-color-and-the-shape)
+  - [10.4 99 Problems but a Plot ain't one of them](#104-99-problems-but-a-plot-aint-one-of-them)
+
+---
+
+- [11. Data Communication Concepts](#11-data-communication-concepts)
+  - [11.1 Storytelling with Data](#111-storytelling-with-data)
+  - [11.2 Preparing to Communicate the Data](#112-preparing-to-communicate-the-data)
+  - [11.3 Structuring Written Reports](#113-structuring-written-reports)
+  - [11.4 Building Compelling Oral Presentations](#114-building-compelling-oral-presentations)
+
+---
+---
+
 ## 1. Introduction to SQL 
 
 ### 1.1 Relational Databases
@@ -127,7 +225,43 @@ FROM books;
 
 ### 2.1 Selecting Data
 
+- A query is a request for data from a database.
+- In this course, we worked with a films database containing four tables:
+ * Films
+ * Reviews
+ * People
+ * Roles
 
+- `COUNT` -> function that lets us count... returning the number of records with a value in a field. For example:
+```SQL
+SELECT COUNT(birthdate) AS count_birthdates
+FROM people;
+```
+
+- If we want to count more than one field, we need to use `COUNT` multiple times. For example:
+```SQL
+SELECT COUNT(name) AS count_names, COUNT(birthdate) AS count_birthdates
+FROM people;
+```
+
+- If we want to count the number of records in a table, we can call `COUNT` with an asterisk. Then, passing the asterisk to `COUNT` is a shortcut for counting the total nubmber of records.
+```SQL
+SELECT COUNT(*) AS total_records
+FROM people;
+```
+
+- Often, our results will include duplicates. Then, we can use the `DISTINCT` keyword to select all the unique values from a field. Adding `DISTINCT` to our query will remove all duplicates.
+```SQL
+SELECT DISTINCT language
+FROM films;
+```
+
+- Combine `COUNT()` with `DISTINCT` is also common to count the number of unique values in a field. For example:
+```SQL
+SELECT COUNT(DISTINCT birthdate) AS count_distinct_birthdates
+FROM people;
+```
+- `COUNT` would include all the duplicates while `DISTINCT`counts all of the unique dates, no matter how many times they come up. 
 
 ### 2.2 Filtering Records
 
