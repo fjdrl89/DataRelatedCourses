@@ -295,6 +295,24 @@ FROM films;
 
 #### 2.1.2 Query Execution
 
+- Unlike many programming languages, SQL code is not processed in the order it is written.
+- Knowing processing order is especially useful when debugging and aliasing fields and tables.
+- Some error messages are extremely helpful, pinpointing and even suggesting a solution for the error.
+- Other error messages are less helpful and require us to review our code more closely.
+- For example: forgetting a comma is a very common error. In this case, the error message will alert us to the general location of the error using a caret below the line of code, which in this case points to the "country" field name. We must examine the code a little further, though, to discover the missing comma.
+<img width="803" alt="Screenshot 2025-06-18 at 21 05 12" src="https://github.com/user-attachments/assets/0c70e2a6-8cb5-4b1a-89e0-1161b506bff4" />
+- SQL displays a similar error message when a keyword is misspelled, but this time, the caret indicator below the offending line is spot on.
+
+```SQL
+SELECT title, country, duration
+FROM films;
+```
+
+```
+syntax error at or near "SELECT"
+LINE 1: SELECT title, country, duration
+            ^
+```
 
 #### 2.1.3 SQL Style
 
@@ -305,6 +323,7 @@ FROM films;
 
 
 ### 2.3 Aggregate Functions
+
 
 
 
