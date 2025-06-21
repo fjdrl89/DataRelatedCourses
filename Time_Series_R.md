@@ -7,6 +7,12 @@
 
 #### 1.1.1 Time Series Data
 
+- A time series is a sequence of data points collected or recorded successive points in time, often at uniform intervals. 
+- In R, time series data can be represented using specialized objects such as 
+`ts` in base R or 'zoo' from the zoo package. These objects help maintain the integrity of the time and value relationship in the data.
+# Load the AirPassengers dataset lata("AirPassengers")
+# rint the AirPassengers time series print(AirPassengers)
+
 Temporal data classes in R
 
 Data Classes in R
