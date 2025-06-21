@@ -18,6 +18,9 @@
 
 - [2. SQL Intermedio Intermedio](#2-sql-intermedio-intermedio)
   - [2.1 Selecting Data](#21-selecting-data)
+    - [2.1.1 Querying a database](#211-querying-a-database)
+    - [2.1.2 Query Execution](#212-query-execution)
+    - [2.1.3 SQL Style](#213-sql-style)
   - [2.2 Filtering Records](#22-filtering-records)
   - [2.3 Aggregate Functions](#23-aggregate-functions)
   - [2.4 Sorting and Grouping](#24-sorting-and-grouping)
@@ -300,7 +303,19 @@ FROM films;
 - Some error messages are extremely helpful, pinpointing and even suggesting a solution for the error.
 - Other error messages are less helpful and require us to review our code more closely.
 - For example: forgetting a comma is a very common error. In this case, the error message will alert us to the general location of the error using a caret below the line of code, which in this case points to the "country" field name. We must examine the code a little further, though, to discover the missing comma.
-<img width="803" alt="Screenshot 2025-06-18 at 21 05 12" src="https://github.com/user-attachments/assets/0c70e2a6-8cb5-4b1a-89e0-1161b506bff4" />
+
+```SQL
+SELECT nme
+FROM people;
+```
+
+```
+field "nme" does not exist
+LINE 1: SELECT nme
+               ^
+HINT: Perhaps you meant to reference the field "people.name".
+```
+
 - SQL displays a similar error message when a keyword is misspelled, but this time, the caret indicator below the offending line is spot on.
 
 ```SQL
@@ -311,10 +326,87 @@ FROM films;
 ```
 syntax error at or near "SELECT"
 LINE 1: SELECT title, country, duration
-            ^
+        ^
+```
+
+- Some examples:
+  * Debug the following code:
+```SQL
+SELECT certfication
+FROM films
+LIMIT 5;
+```
+
+If you run the previous code, you get the following error message: 
+```
+column "certfication" does not exist
+LINE 2: SELECT certfication
+               ^
+HINT:  Perhaps you meant to reference the column "films.certification".
+```
+
+Then, after correcting the error the final code is:
+```SQL
+SELECT certification
+FROM films
+LIMIT 5;
+```
+
+  * Debug the following code:
+```SQL
+SELECT film_id imdb_score num_votes
+FROM reviews;
+```
+
+If you run the previous code, you get the following error message: 
+```
+syntax error at or near "num_votes"
+LINE 1: SELECT film_id imdb_score num_votes
+                                  ^
+```
+
+Then,  after correcting the error the final code is:
+```SQL
+SELECT film_id, imdb_score, num_votes
+FROM reviews;
+```
+
+  * Debug the following code:
+```SQL
+SELECT COUNNT(birthdate) AS count_birthdays
+FROM peeple;
+```
+
+If you run the previous code, you get the following error message: 
+```
+relation "peeple" does not exist
+LINE 2: FROM peeple;
+             ^
+```
+
+What is the first issue?
+
+The error is due to a typo in the table name. The query is trying to select data from a table named "peeple," but there is no such table in the database. The correct table name is "people". 
+
+Then, if you run again this corrected version of the code, you get a new error message: 
+```
+function counnt(date) does not exist
+LINE 2: SELECT COUNNT(birthdate) AS count_birthdays
+               ^
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+```
+
+What is the second issue?
+The issue here is a typo in the function name. The SQL function to count the number of non-null values is COUNT, but in your code, it is mistakenly written as COUNNT. SQL is case-insensitive for keywords and function names, but the spelling must be correct.
+
+Finally, the corrected version of the code is:
+```SQL
+SELECT COUNT(birthdate) AS count_birthdays
+FROM people;
 ```
 
 #### 2.1.3 SQL Style
+
 
 
 ### 2.2 Filtering Records
