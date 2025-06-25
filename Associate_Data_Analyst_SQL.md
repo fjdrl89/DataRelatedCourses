@@ -1,4 +1,4 @@
-# Career Track: Associate Data Analyst in SQL
+# Career Track: Associate Data Analyst in SQL 
 
 ---
 
@@ -97,6 +97,12 @@
   - [11.2 Preparing to Communicate the Data](#112-preparing-to-communicate-the-data)
   - [11.3 Structuring Written Reports](#113-structuring-written-reports)
   - [11.4 Building Compelling Oral Presentations](#114-building-compelling-oral-presentations)
+
+---
+---
+
+## Disclaimer
+This document contains only my personal notes from the courses I have taken on DataCamp. Most of the examples included are based primarily on those presented in the respective courses, and therefore, full credit is given to DataCamp and its instructors for the original content and instructional materials. These notes have been compiled strictly for my own personal reference and learning purposes. They are not intended for any commercial use or to generate any form of income. The sole purpose of this document is to serve as a study aid and quick reference for my own educational development.
 
 ---
 ---
@@ -558,13 +564,93 @@ WHERE release_year >= 1994
     AND release_year <= 2000; 
 ```
 
+  * Like the `WHERE` clause, the `BETWEEN` clause can be used with multiple `AND` and `OR` operators, so we can build up our queries and make them even more powerful. For example:
+```SQL
+SELECT title
+FROM films
+WHERE release_year
+BETWEEN 1994 AND 2000 AND country='UK';
+```
+
+  * In SQL, the `WHERE` clause is used to filter records, but it must be part of a `SELECT` statement to specify which columns to retrieve from the database.
+
 #### 2.2.3 Filtering Text
 
+- We can use `WHERE` clause to filter text data.
+- We'll often want to search for a pattern rather than a specific text string in the real world.
+- We'll be introducing three more SQL keywords into our vocabulary to help us achieve this:
+  * `LIKE` -> we can use this operator with a `WHERE` clause to search for a pattern in a field.
+    * We use a wildcard as a placeholder for some other values to accomplish this.
+    * There are two wildcards with `LIKE`, the percent `%`, and the underscore `_`.
+    * The percent `%` wildcard will match zero, one, or many characters in the text.
+    * For example, the following query on the left matches people like Adel, Adelaide, and Aden:
+    ```SQL
+    SELECT name
+    FROM people
+    WNHERE name LIKE 'Ade%';
+    ```
+    * The underscore `_` wildcard will match a single character.
+    * For example, the following query matches only three-letter names like Eve. We'd also see names like Eva if it were in our dataset. Eva Mendes, however, would not be visible unless the search criteria looked like this.
+    ```SQL
+    SELECT name
+    FROM people
+    WNHERE name LIKE 'Ev_';
+    ```
 
+  * `NOT LIKE` -> We can use this operator to find records that don't match the specified pattern. It's important to note that this operation is case-sensitive, so we must be mindful of what we are querying. For example, if we want to find records for people who do not have A-dot as part of their first name:
+    ```SQL
+    SELECT name
+    FROM people
+    WHERE name NOT LIKE 'A.%';
+    ```
+  * We've reviewed one example of where to position each wildcard, but we can actually put them anywhere and combine them.
+  * We can find values that start, end, or contain characters in any position, as well as find records of a certain length. F
+  * For example, the following code will find all people whose name ends in r:
+  ```SQL
+  SELECT name
+  FROM people
+  WHERE name LIKE '%r';
+  ```
+  
+  * Another example, will find records where the third character is t:
+  ```SQL
+  SELECT name
+  FROM people
+  WHERE name LIKE '__t%';
+  ```
+
+  * `IN` -> allows us to specify multiple values in a `WHERE` clause, making it easier and quicker to set numerous `OR` conditions. For example:
+  ```SQL
+  SELECT title
+  FROM films
+  WHERE release_year IN(1920, 1930, 1940);
+  ```
+
+  ```SQL
+  SELECT title
+  FROM films
+  WHERE country IN ('Germany', 'France');
+  ```
+
+- So far, our SQL vocabulary includes `COUNT()`, `DISTINCT`, `LIMIT`, `WHERE`, `OR`, `AND`, `BETWEEN`, `LIKE`, `NOT LIKE`, and `IN`.
+
+- We have to create a code that:
+  * Count the unique `titles` from the films database and use the alias provided.
+  * Filter to include only movies with a `release_year` from 1990 to 1999, inclusive.
+  * Filter to include only English-language films.
+  * Filter to select only films with 'G', 'PG', 'PG-13' certifications.
+```SQL
+SELECT COUNT(DISTINCT title) AS nineties_english_films_for_teens
+FROM films
+WHERE release_year BETWEEN 1990 AND 1999
+  AND language = 'English'
+  AND certification IN ('G', 'PG', 'PG-13');
+```
 
 #### 2.2.4 Null Values
 
-
+- In SQL, `NULL` represents a missing or unknown value.
+- 
 
 ### 2.3 Aggregate Functions
 
