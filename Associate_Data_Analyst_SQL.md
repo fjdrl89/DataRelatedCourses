@@ -407,19 +407,190 @@ FROM people;
 
 #### 2.1.3 SQL Style
 
+- SQL is a generous language when it comes to formatting.
+- New lines, capitalization, and indentation are not required in SQL as they sometimes are in other programming languages.
+- While keyword capitalization and new lines are standard practice, many of the finer details of SQL style are not.
+- For instance, some SQL users prefer to create a new line and indent each selected field when a query selects multiple fields, as the query on this slide does. For example:
+```SQL
+SELECT
+    title,
+    release_year,
+    country
+FROM films
+LIMIT 3;
+```
 
+- Because of the different formatting styles, it's helpful to follow a SQL style guide, such as Holywell's, which outlines a standard of best practices for indentation, capitalization, and naming conventions for tables, fields, and aliases. (SQL Style Guide)[https://www.sqlstyle.guide/]
+- Like capitalization and new lines, **semicolon** is unnecessary in PostgreSQL; we could leave it out of the query and still expect the same results with no errors.
+- However, including a semicolon at the end of the query is considered best practice for several reasons:
+  * First, some SQL flavors require it, so it's a good habit to have.
+  * Including a semicolon in a PostgreSQL query means that the query is more easily translated to another flavor if necessary.
+  * Additionally, like a period at the end of a sentence, a semicolon at the end of a query indicates its end, which is helpful in a file containing several queries.
+
+- When creating a table, a SQL mistake is including spaces in a field name. For example:
+```SQL
+SELECT title, release year, country
+FROM films
+LIMIT 3;
+```
+
+- To query that table, we'll need to enclose the field name in double-quotes to indicate that, despite being two words, the name refers to just one field.
+```SQL
+SELECT title, "release year", country
+FROM films
+LIMIT 3;
+```
 
 ### 2.2 Filtering Records
 
+#### 2.2.1 Filtering Numbers
+
+- To filter, we need to use a new clause called `WHERE`, which allows us to focus on only the data relevant to our business questions.
+- In this lesson, we focus on filtering numbers. To do this, we use comparison operators such as greater than. For example:
+```SQL
+SELECT title
+FROM films
+WHERE release_year > 1960;
+```
+
+Or
+```SQL
+SELECT title
+FROM films
+WHERE release_year < 1960;
+```
+
+Or
+```SQL
+SELECT title
+FROM films
+WHERE release_year <= 1960;
+```
+
+Or
+```SQL
+SELECT title
+FROM films
+WHERE release_year = 1960;
+```
+
+Or
+```SQL
+SELECT title
+FROM films
+WHERE release_year <> 1960;
+```
+With this last example, we can filter so that we leave out just the observations that match the value we set. Basically, it helps us pick out everything except the ones that have that particular value.
+
+- WHERE and the comparison operator, equals, can also be used with strings. In these cases, we will have to use single quotation marks around the strings we want to filter.
+- Similar to `LIMIT`, this clause comes after the `FROM` statement when writing a query.
+- If we use both `WHERE` and `LIMIT`, the written order will be `SELECT`, `FROM`, `WHERE`, `LIMIT`; however, the order of execution will now be `FROM`, `WHERE`, `SELECT`, `LIMIT`.
+- Some other examples:
+  * If we want to count the records with at least 100,000 votes, we use the following code: 
+```SQL
+SELECT COUNT(film_id) AS films_over_100K_votes
+FROM reviews
+WHERE num_votes >= 100000;
+```
+  * If we want to select `film_id` and `imdb_score` with an `imdb_score` over 7.0, we use the following code:
+```SQL
+SELECT film_id, imdb_score
+FROM reviews
+WHERE imdb_score > 7.0; 
+```
+  * If we want to select `film_id` and `facebook_likes` for ten records with less than 1000 likes, we use the following code:
+```SQL
+SELECT film_id, facebook_likes
+FROM reviews
+WHERE facebook_likes < 1000
+LIMIT 10;
+```
+
+- Examples using `WHERE` with text:
+  * If we want to select and count the `language` field using the alias `count_spanish` and then, apply a filter to select only `Spanish` from the `language` field. To do this, we use the following code:
+```SQL
+SELECT COUNT(language) AS count_spanish
+FROM films
+WHERE language = 'Spanish';
+```
+Note: It’s important to remember that when mentioning strings, you should use single quotes 'word' instead of double quotes "word". This is because SQL interprets double quotes "word" as a variable name, not the variable’s value.
+
+#### 2.2.2 Multiple Criteria
+
+- Three additional keywords that will allow us to enhance our filters when using `WHERE` by adding multiple criteria. These are:
+  * `OR` -> is used when we want to filter **multiple criteria** and only need to satisfy at least one condition. For example:
+```SQL
+SELECT title
+FROM films
+WHERE release_year = 1994
+    OR release_year = 2000;
+```
+
+  * `AND` -> is used when we want to satisfy all criteria in our filter.
+```SQL
+SELECT title
+FROM films
+WHERE release_year > 1994
+    AND release_year < 2000;
+```
+
+  * `OR` + `AND` -> we can combine `AND` and `OR` if a query has multiple filtering conditions. **Important:** we will need to enclose the individual clauses in parentheses to ensure the correct execution order; otherwise, we may not get the expected results. For example:
+```SQL
+SELECT title
+FROM films
+WHERE (release_year = 1994 OR release_year = 1995)
+    AND (certification = 'PG' OR certification = 'R');
+```
+
+  * `BETWEEN` -> provides a valuable shorthand for filtering values within a specified range. It's important to remember that BETWEEN is inclusive, meaning the results contain the beginning and end values. For example:
+```SQL
+SELECT title
+FROM films
+WHERE release_year
+    BETWEEN 1994 AND 2000;
+```
+
+Notice that the previous code (query) is equivalent to the next one: 
+```SQL
+SELECT title
+FROM films
+WHERE release_year >= 1994
+    AND release_year <= 2000; 
+```
+
+#### 2.2.3 Filtering Text
+
+
+
+#### 2.2.4 Null Values
 
 
 
 ### 2.3 Aggregate Functions
 
+#### 2.3.1 Summarizing Data
+
+
+#### 2.3.2 Summarizing Subsets
+
+
+
+#### 2.3.3 Aliasing and Arithmetic
 
 
 
 ### 2.4 Sorting and Grouping
+
+#### 2.4.1 Sorting Results
+
+
+
+#### 2.4.2 Grouping Data
+
+
+
+#### 2.4.3 Filtering Grouped Data
+
 
 
 ## PROJECT 1: Analyzing Students' Mental Health
