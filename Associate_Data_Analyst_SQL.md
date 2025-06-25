@@ -650,7 +650,15 @@ WHERE release_year BETWEEN 1990 AND 1999
 #### 2.2.4 Null Values
 
 - In SQL, `NULL` represents a missing or unknown value.
+- One quick way to see how much of our data is missing is by using `IS NULL` with the `WHERE` clause. For example:
+```SQL
+SELECT name
+FROM people
+WHERE birthdata IS NULL;
+```
+
 - 
+
 
 ### 2.3 Aggregate Functions
 
