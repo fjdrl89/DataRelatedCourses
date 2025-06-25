@@ -1,5 +1,12 @@
 # Time Series in R
 ---
+---
+
+## Disclaimer
+This document contains only my personal notes from the courses I have taken on DataCamp. Most of the examples included are based primarily on those presented in the respective courses, and therefore, full credit is given to DataCamp and its instructors for the original content and instructional materials. These notes have been compiled strictly for my own personal reference and learning purposes. They are not intended for any commercial use or to generate any form of income. The sole purpose of this document is to serve as a study aid and quick reference for my own educational development.
+
+---
+---
 
 ## 1. Manipulating Time Series Data in R
 
