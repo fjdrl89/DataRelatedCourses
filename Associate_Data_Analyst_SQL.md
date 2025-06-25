@@ -657,12 +657,28 @@ FROM people
 WHERE birthdata IS NULL;
 ```
 
-- 
+- If we want to count the missing birthdates in the people table, we use the code:
+```SQL
+SELECT COUNT(*) AS no_birthdates
+FROM people
+WHERE birthdate IS NULL;
+```
 
+- On the other hand, if we want to count results that are not `NULL`, we use the code:
+```SQL
+SELECT COUNT(*) AS no_birthdates
+FROM people
+WHERE birthdate IS NOT NULL;
+```
 
 ### 2.3 Aggregate Functions
 
 #### 2.3.1 Summarizing Data
+
+- An **aggregate function** performs a calculation on several values and returns a single value.
+- Four new aggregate functions:
+  * `AVG()` -> d
+
 
 
 #### 2.3.2 Summarizing Subsets
