@@ -675,9 +675,18 @@ WHERE birthdate IS NOT NULL;
 
 #### 2.3.1 Summarizing Data
 
-- An **aggregate function** performs a calculation on several values and returns a single value.
+- An **aggregate function** performs a calculation on several values and returns a single value. Normally, **aggregate functions** come after `SELECT`.
 - Four new aggregate functions:
-  * `AVG()` -> d
+  * `AVG()` -> gives us the average value
+  * `SUM()` -> gives us the total sum value
+  * `MIN()` -> gives us the lowest value
+  * `MAX()` -> gives us the greatest value
+ 
+- Note that we operate ion the field (or column) with all of these aggregate functions, not the records (or rows).
+- *Average* `AVG()` and *sum* `SUM()` are the two aggregate functions we can only use on numerical fields, since they requiere arithmetic.
+- 
+
+
 
 
 
