@@ -1,0 +1,417 @@
+# Data Science Foundations
+
+After this, we will be able to:
+  - articulate what can go right and what can go wrong when working with data.
+  - query, manipulate, and analyze data in databases using SQL.
+  - write basic programs to create custom analyses with Python.
+  - clean data to prepare it for analysis.
+  - ask and answer questions using appropriate statistical measures.
+
+### Why Data Science? 
+
+### Exploring Data with SQL
+
+A database is a set of data stored in a computer. This data is usually structured into tables. Tables can grow large and have a multitude of columns and records.
+
+SQL (pronounced “S-Q-L” or “sequel”) allows you to write queries which define the subset of data you are seeking. It is a great way to access data and a great entry point to programming because its syntax (the specific vocabulary that gives instructions to the computer) is very human-readable. Without knowing any SQL, you might still be able to guess what each command will do.
+
+Imagine that we want to take a look at the churn rate. The *churn rate* is, for example, the percent of subscribers to a monthly service who have canceled. For example, in January, one service had 1,000 learners. In February, 200 learners sign up, and 250 cancel. The churn rate for February would be:
+
+$$\frac{cancellations}{total\ subscribers} = \frac{250}{1000 + 200} = 20.8\%$$
+
+If we want to do this using SQL we can use the following SQL query: 
+```SQL
+SELECT COUNT(DISTINCT user_id) AS 'enrollments',
+  COUNT(CASE
+       	WHEN strftime("%m", cancel_date) = '03'
+        THEN user_id
+  END) AS 'march_cancellations',
+ 	ROUND(100.0 * COUNT(CASE
+       	WHEN strftime("%m", cancel_date) = '03'
+        THEN user_id
+  END) / COUNT(DISTINCT user_id)) AS 'churn_rate'
+FROM pro_users
+WHERE signup_date < '2017-04-01'
+	AND (
+    (cancel_date IS NULL) OR
+    (cancel_date > '2017-03-01')
+  );
+```
+
+### Programming and Analyzing Data with Python
+
+After interacting with the database, it is time to analyze the data further and eventually visualize the data. And SQL cannot get us there.
+
+Python is a general-purpose programming language. It can do almost all of what other languages can do with comparable, or faster, speed. It is often chosen by Data Analysts and Data Scientists for prototyping, visualization, and execution of data analyses on datasets.
+
+There’s an important question here. Plenty of other programming languages, like R, can be useful in the field of data science. Why are so many people choosing Python?
+
+One major factor is Python’s versatility. There are over 125,000 third-party Python libraries. These libraries make Python more useful for specific purposes, from the traditional (e.g. web development, text processing) to the cutting edge (e.g. AI and machine learning). 
+
+Additionally, Python has become a go-to language for data analysis. With data-focused libraries like pandas, NumPy, and Matplotlib, anyone familiar with Python’s syntax and rules can use it as a powerful tool to process, manipulate, and visualize data.
+
+Python is a programming language, and pandas is a special set of commands in Python that lets us analyze spreadsheet data. Pandas can do a lot of the things that SQL can do, but it’s also backed by the power of Python, so we can easily transition from analyzing our data with pandas to visualizing it using other Python tools.
+
+Matplotlib lets us create line charts, bar charts, pie charts, and more. It gives us precise control over colors and labels so that we can create the perfect chart to communicate our findings.
+
+For example: 
+```python
+import codecademylib3_seaborn
+from matplotlib import pyplot as plt
+import numpy as np
+import pandas as pd
+
+hour = range(24)
+
+viewers_hour = [30, 17, 34, 29, 19, 14, 3, 2, 4, 9, 5, 48, 62, 58, 40, 51, 69, 55, 76, 81, 102, 120, 71, 63]
+
+plt.title("Codecademy Learners Time Series")
+
+plt.xlabel("Hour")
+plt.ylabel("Viewers")
+
+plt.plot(hour, viewers_hour)
+
+plt.legend(['2015-01-01'])
+
+ax = plt.subplot()
+
+ax.set_facecolor('seashell')
+
+ax.set_xticks(hour)
+ax.set_yticks([0, 20, 40, 60, 80, 100, 120])
+
+y_upper = [i + (i*0.15) for i in viewers_hour]
+y_lower = [i - (i*0.15) for i in viewers_hour]
+
+plt.fill_between(hour, y_lower, y_upper, alpha=0.2)
+
+# Add the code here:
+plt.show()
+```
+
+And we will get something like
+<img width="1165" alt="Screenshot 2025-06-26 at 13 27 03" src="https://github.com/user-attachments/assets/e3326f4e-6668-47e6-8028-30ca32cd7d2d" />
+
+### Probability
+
+In data science, probability is often used to simulate scenarios.
+
+The following code simulates the birthday problem (“What is the probability that two people in a room have the same birthday?”). Right now the code simulates a room with only 2 people that get random birthdays, and the probability that those 2 people have the same birthday is really low.
+
+We can note that if we make our number too big, the program will throw an error due to the way we have implemented some of the math. This is a great example of needing to be mindful of possible inputs to our programme.
+
+## 1. Principles of Data Literacy
+
+### 1.1 Introduction to Data
+
+Garbage in, garbage out is a data-world phrase that means “our data-driven conclusions are only as strong, robust, and well-supported as the data behind them.”
+
+### 1.2 Thinking About Data
+
+#### 1.2.1 Statistical Thinking
+
+**Summary statistics** are essential tools in data analysis, providing a quick and insightful overview of datasets. They help in understanding the central tendency, dispersion, and shape of data distributions. 
+
+##### 1.2.1.1 Mean (Arithmetic Mean)
+- **Definition:** The mean is the sum of all data points divided by the number of data points. It represents the average value of the dataset.
+
+- **Formula:** $$\bar{x} = \frac{1}{n} \sum_{i=1}^{n} x_i$$
+
+  where $n$ is the number of observations, and $x_i$ are the individual data points.
+
+- **Interpretation:** The mean provides a measure of the central tendency of the data. It is the balancing point of the dataset.
+- **Potential Issues:**
+  * *Sensitivity to Outliers:* The mean can be heavily influenced by extreme values, which may not accurately represent the dataset.
+  * *Not Suitable for Skewed Data:* In skewed distributions, the mean may not reflect the central location effectively.
+
+- **Comparison:**
+  * Unlike the median, the mean considers all data points, making it more sensitive to outliers.
+  * It is often used when the data is symmetric and without extreme values.
+
+- **Computation:**
+  * Python: numpy.mean(data)  
+  * R: mean(data)
+
+##### 1.2.1.2 Median
+
+Definition:The median is the middle value in a dataset when the data points are arranged in ascending order. It divides the dataset into two equal halves.
+Formula:  
+
+For an odd number of observations:[\text{Median} = x_{\frac{n+1}{2}}]
+For an even number of observations:[\text{Median} = \frac{x_{\frac{n}{2}} + x_{\frac{n}{2} + 1}}{2}]
+
+Interpretation:The median represents the central value of the dataset, making it a robust measure of central tendency.
+Potential Issues:  
+
+Less Information: It does not consider all data points, which may overlook important information.
+Computationally Intensive: For large datasets, calculating the median requires sorting, which can be computationally expensive.
+
+Comparison:  
+
+More robust to outliers compared to the mean.
+Preferred for skewed distributions or when outliers are present.
+
+Computation:  
+
+Python: numpy.median(data)  
+R: median(data)
+
+
+3. Mode
+Definition:The mode is the value that appears most frequently in a dataset.
+Formula:There is no standard formula; it is determined by identifying the most frequent value(s).
+Interpretation:The mode indicates the most common value(s) in the dataset, useful for categorical data or to identify peaks in distributions.
+Potential Issues:  
+
+Multiple Modes: Datasets can have multiple modes (bimodal, multimodal), which may complicate interpretation.
+Not Always Representative: In continuous data, the mode may not be a good measure of central tendency.
+
+Comparison:  
+
+Unlike the mean and median, the mode can be used for nominal data.
+It is less affected by outliers but may not provide a complete picture of the data distribution.
+
+Computation:  
+
+Python: scipy.stats.mode(data)  
+R: names(sort(table(data), decreasing = TRUE)[1])
+
+
+4. Variance
+Definition:Variance measures the average squared deviation of each data point from the mean, indicating the spread of the data.
+Formula:[\sigma^2 = \frac{1}{n} \sum_{i=1}^{n} (x_i - \bar{x})^2]For sample variance:[s^2 = \frac{1}{n-1} \sum_{i=1}^{n} (x_i - \bar{x})^2]
+Interpretation:A higher variance indicates greater dispersion in the data, while a lower variance suggests data points are closer to the mean.
+Potential Issues:  
+
+Units: Variance is in squared units, which can be difficult to interpret.
+Sensitivity to Outliers: Like the mean, variance is sensitive to extreme values.
+
+Comparison:  
+
+Provides a measure of dispersion, unlike the mean, median, or mode.
+Often used in conjunction with the standard deviation for better interpretability.
+
+Computation:  
+
+Python: numpy.var(data, ddof=0) for population, numpy.var(data, ddof=1) for sample  
+R: var(data) (sample variance by default)
+
+
+5. Standard Deviation
+Definition:The standard deviation is the square root of the variance, providing a measure of dispersion in the same units as the data.
+Formula:[\sigma = \sqrt{\frac{1}{n} \sum_{i=1}^{n} (x_i - \bar{x})^2}]For sample standard deviation:[s = \sqrt{\frac{1}{n-1} \sum_{i=1}^{n} (x_i - \bar{x})^2}]
+Interpretation:It indicates how much the data points deviate from the mean on average.
+Potential Issues:  
+
+Sensitivity to Outliers: Like variance, it is affected by extreme values.
+Assumes Normality: Often used under the assumption of a normal distribution, which may not always hold.
+
+Comparison:  
+
+More interpretable than variance due to being in the same units as the data.
+Commonly used in conjunction with the mean to describe data distributions.
+
+Computation:  
+
+Python: numpy.std(data, ddof=0) for population, numpy.std(data, ddof=1) for sample  
+R: sd(data) (sample standard deviation by default)
+
+
+6. Range
+Definition:The range is the difference between the maximum and minimum values in a dataset.
+Formula:[\text{Range} = \max(x) - \min(x)]
+Interpretation:It provides a simple measure of the spread of the data.
+Potential Issues:  
+
+Sensitivity to Outliers: Extreme values can greatly affect the range.
+Ignores Data Distribution: Does not provide information about the distribution between the extremes.
+
+Comparison:  
+
+Simplest measure of dispersion but less informative than variance or standard deviation.
+Useful for a quick assessment of data spread.
+
+Computation:  
+
+Python: numpy.ptp(data) or max(data) - min(data)  
+R: diff(range(data)) or max(data) - min(data)
+
+
+7. Interquartile Range (IQR)
+Definition:The IQR is the difference between the third quartile (Q3) and the first quartile (Q1), representing the middle 50% of the data.
+Formula:[\text{IQR} = Q3 - Q1]
+Interpretation:It measures the spread of the central portion of the data, making it robust to outliers.
+Potential Issues:  
+
+Less Sensitive: May not capture the full variability of the data.
+Computationally Intensive: Requires sorting the data to find quartiles.
+
+Comparison:  
+
+More robust to outliers compared to the range or standard deviation.
+Useful for skewed distributions or when outliers are present.
+
+Computation:  
+
+Python: numpy.percentile(data, 75) - numpy.percentile(data, 25)  
+R: IQR(data)
+
+
+8. Skewness
+Definition:Skewness measures the asymmetry of the data distribution around the mean.
+Formula:[\text{Skewness} = \frac{n}{(n-1)(n-2)} \sum_{i=1}^{n} \left( \frac{x_i - \bar{x}}{s} \right)^3]where ( s ) is the sample standard deviation.
+Interpretation:  
+
+Positive Skewness: Data is skewed to the right (long tail on the right).  
+Negative Skewness: Data is skewed to the left (long tail on the left).  
+Zero Skewness: Symmetric distribution.
+
+Potential Issues:  
+
+Sensitivity to Sample Size: Can be unreliable for small sample sizes.
+Interpretation: Requires understanding of the data context.
+
+Comparison:  
+
+Unlike measures of central tendency or dispersion, skewness provides information about the shape of the distribution.
+Useful for identifying deviations from normality.
+
+Computation:  
+
+Python: scipy.stats.skew(data)  
+R: skewness(data) from the e1071 package
+
+
+9. Kurtosis
+Definition:Kurtosis measures the "tailedness" of the data distribution, indicating the presence of outliers.
+Formula:[\text{Kurtosis} = \frac{n(n+1)}{(n-1)(n-2)(n-3)} \sum_{i=1}^{n} \left( \frac{x_i - \bar{x}}{s} \right)^4 - \frac{3(n-1)^2}{(n-2)(n-3)}]This formula is for excess kurtosis, where a normal distribution has kurtosis of 0.
+Interpretation:  
+
+Positive Kurtosis: Heavy tails, more outliers.  
+Negative Kurtosis: Light tails, fewer outliers.  
+Zero Kurtosis: Similar to a normal distribution.
+
+Potential Issues:  
+
+Sensitivity to Outliers: Can be greatly influenced by extreme values.
+Interpretation: Often misunderstood; does not measure peakedness directly.
+
+Comparison:  
+
+Complements skewness by providing additional information about the distribution's shape.
+Useful in risk management and financial analysis to assess tail risk.
+
+Computation:  
+
+Python: scipy.stats.kurtosis(data)  
+R: kurtosis(data) from the e1071 package
+
+
+Summary and Comparison
+
+Central Tendency: Mean, Median, Mode  
+
+Mean: Sensitive to outliers, used for symmetric data.  
+Median: Robust to outliers, used for skewed data.  
+Mode: Useful for categorical data or identifying peaks.
+
+
+Dispersion: Variance, Standard Deviation, Range, IQR  
+
+Variance/Standard Deviation: Measure average deviation from the mean, sensitive to outliers.  
+Range: Simple but sensitive to outliers.  
+IQR: Robust measure of spread, focuses on the central 50%.
+
+
+Shape: Skewness, Kurtosis  
+
+Skewness: Measures asymmetry.  
+Kurtosis: Measures tailedness and outlier presence.
+
+
+
+Each statistic provides unique insights, and the choice depends on the data characteristics and analysis goals. For a comprehensive understanding, it is often beneficial to use multiple summary statistics together.
+
+---
+the correlation coefficient. This number ranges from -1 to +1 and tells us two things about a linear relationship:
+
+Direction: A positive coefficient means that higher values in one variable are associated with higher values in the other. A negative coefficient means higher values in one variable are associated with lower values of the other.
+Strength: The farther the coefficient is from 0, the stronger the relationship and the more the points in a scatter plot look like a line.
+
+#### 1.2.2 Movie Statistics Project
+
+### 1.3 Visualizing Data
+
+#### 1.3.1 Data Visualization Basics
+
+- Data visualizations are how we communicate data.
+- One big consideration when choosing a chart type is how many variables we’re comparing.
+- **Univariate charts** help us visualize a change in one variable. Often that means measuring “how much,” which can either be a count or a distribution.
+  * A common chart for counts is the bar graph.
+  * Another common univariate chart is the histogram. **Histograms** measure the distribution or spread, of a variable. Histograms are a great way to show the concept of a normal (or skewed) distribution. 
+  * A density curve also visualizes a distribution, without putting data in bins like a histogram does.
+  * A more “math-forward” way to visualize distributions is a box plot or violin plot. These visualizations make percentile and quartile values obvious.
+
+- **Bivariate** and **Multivariate Charts* show the relationships between two or more variables.
+  * The classic bivariate example is the scatter plot — one variable on the x-axis, another on the y-axis, and each point helps us compare the two variables by its position on the graph. Scatterplots translate the relationship between two variables in the data into an easy-to-see spatial relationship. Because we’re relying on the idea that each variable increases as we move up the X or Y axis, the scatterplot only makes sense for numeric variables, not categorical.
+  * A line chart is another common bivariate chart, often measuring a variable changing over time. A line chart with multiple lines for different variables is a multivariate chart.
+  
+- We can use aesthetic properties to further clarify and visualize the “details” of the data. Aesthetic properties are the attributes we use to communicate data visually:
+  * Position
+  * Size
+  * Shape
+  * Color / Pattern
+
+- **Viewers need context to understand what a data visualization means and why it matters.**
+- The big takeaway when designing for **color accessibility** is to think not only about the hue of a color (e.g. red, green, or purple), but the value as well (e.g. bright red, light green, dark purple). Good color comparisons use high contrast values, not just different hues.
+- For online data visualizations, make sure to include alt text as we would for any other web image. Alt text ensures that users experiencing a visualization through a screen reader won’t miss out on whatever information it contains.
+- The same accessibility goal – making our work available and easier to access for more people – is a great principle to keep in mind no matter what. (This is actually called “universal design.”). We can apply it when it comes to…
+  * **Readability:** keep the reading level to a high school level whenever possible.
+  * **Prior knowledge:** define unfamiliar terms and avoid unnecessary jargon.
+  * **Information overload:** introduce new information with intentional pacing and organization.
+
+---
+
+### 1.4 Analyzing Data
+
+#### 1.4.1 Data Analyses and Conclusions
+
+- Descriptive analysis lets us describe, summarize, and visualize data so that patterns can emerge.
+- Descriptive analyses, which are referred to as descriptives or summary statistics, include:
+  * **measures of central tendency** (e.g., mean, median, mode) and
+  * **spread** (e.g., range, quartiles, variance, standard deviation, distribution).
+
+- **Exploratory analysis** is the next step after descriptive analysis. With exploratory analysis, we look for relationships between variables in our dataset.
+- While our exploratory analyses might uncover some fascinating patterns, we should keep in mind that exploratory analyses cannot tell us why something happened: *correlation is not the same as causation*.
+
+- **Unsupervised machine learning techniques**, such as ***clustering algorithms***, are useful tools for exploratory analysis. These techniques “learn” patterns from untagged data, or data that do not have classifications already attached to them, and they help us see relationships between many variables at once.
+
+- A **Principal Component Analysis** or **PCA**, which compresses the variables into principal components that can be plotted against each other.
+- After **PCA**, we can use **k-means clustering** to look for trends in the data.
+
+- **A/B tests** are a popular business tool that data scientists use to optimize websites and other online platforms. A/B tests are a type of inferential analysis.
+- **Inferential analysis** lets us test a hypothesis on a sample of a population and then extend our conclusions to the whole population.
+- Some basic rules:
+  * Sample size must be big enough compared to the total population size (10% is a good rule-of-thumb).
+  * Our sample must be randomly selected and representative of the total population.
+  * We can only test one hypothesis at a time.
+
+- **Causal analysis** generally relies on carefully designed experiments, but we can sometimes also do causal analysis with observational data.
+- Experiments that support causal analysis:
+  * Only change one variable at a time
+  * Carefully control all other variables
+  * Are repeated multiple times with the same results
+
+- **Causal inference** with observational data requires:
+  * Advanced techniques to identify a causal effect
+  * Meeting very strict conditions
+  * Appropriate statistical tests
+
+- **Predictive analysis** uses data and supervised machine learning techniques to identify the likelihood of future outcomes.
+- Some popular supervised machine learning techniques include regression models, support vector machines, and deep learning convolutional neural networks. The actual algorithm used with each of these techniques is different, but each requires training data.
+
+
+
+
+
