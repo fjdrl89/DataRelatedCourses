@@ -599,9 +599,94 @@ CREATE TABLE celebs (
 3. `NOT NULL` columns must have a value. Attempts to insert a row without a value for a `NOT NULL` column will result in a constraint violation and the new row will not be inserted.
 4. `DEFAULT` columns take an additional argument that will be the assumed value for an inserted row if the new row does not specify a value for that column.
 
+- **SQLite** is a database engine. It is software that allows users to interact with a relational database.
+- In SQLite, a database is stored in a single file — a trait that distinguishes it from other database engines. This fact allows for a great deal of accessibility: copying a database is no more complicated than copying the file that stores the data, sharing a database can mean sending an email attachment.
 
+#### 2.2.1 SQLite
+
+- SQLite is a database engine. It is software that allows users to interact with a relational database.
+- In SQLite, a database is stored in a single file — a trait that distinguishes it from other database engines.
+- This fact allows for a great deal of accessibility: copying a database is no more complicated than copying the file that stores the data, sharing a database can mean sending an email attachment.
+
+- SQLite creates schemas, which constrain the type of data in each column, but it does not enforce them.
+- However, SQLite will not reject values of the wrong type. We could accidentally insert the wrong data types in the columns.
+- SQLite is used worldwide for testing, development, and in any other scenario where it makes sense for the database to be on the same disk as the application code.
 
 ### 2.3 Queries
+
+- One of the core purposes of the SQL language is to retrieve information stored in a database. This is commonly referred to as **querying**.
+- Queries allow us to communicate with the database by asking questions and returning a result set with data relevant to the question.
+
+- We can select individual columns by their names (separated by a comma):
+```SQL
+SELECT column1, column2 
+FROM table_name;
+```
+
+- `AS` is a keyword in SQL that allows you to rename a column or table using an alias. The new name can be anything you want as long as you put it inside of single quotes.
+- When using `AS`, the columns are not being renamed in the table. The aliases only appear in the result.
+
+- `DISTINCT` is used to return unique values in the output. It filters out all duplicate values in the specified column(s).
+```SQL
+SELECT DISTINCT column_name
+FROM table_name
+```
+
+- We can restrict our query results using the `WHERE` clause in order to obtain only the information we want.
+- The `WHERE` clause filters the result set to only include rows where the following condition is *true*.
+- The `>` is an operator. Operators create a condition that can be evaluated as either *true* or *false*.
+- Comparison operators used with the WHERE clause are:
+	* `=` equal to
+	* `!=` not equal to
+	* `>` greater than
+	* `<` less than
+	* `>=` greater than or equal to
+	* `<=` less than or equal to
+
+- `LIKE` can be a useful operator when you want to compare similar values.
+- `LIKE` is a special operator used with the `WHERE` clause to search for a specific pattern in a column. Is not case sensitive.
+- The percentage sign `%` is another wildcard character that can be used with `LIKE`. Matches zero or more missing characters in the pattern. For example:
+	* `A%` matches all movies with names that begin with letter ‘A’
+	* `%a` matches all movies that end with ‘a’
+- We can also use `%` both before and after a pattern.
+
+- Unknown values are indicated by `NULL`.
+- It is not possible to test for `NULL` values with comparison operators, such as `=` and `!=`. Instead, we will have to use these operators -> `IS NULL` or `IS NOT NULL`.
+
+- The `BETWEEN` operator is used in a `WHERE` clause to filter the result set within a certain range. It accepts two values that are either numbers, text or dates. For example:
+```SQL
+SELECT *
+FROM movies
+WHERE year BETWEEN 1990 AND 1999;
+```
+- When the values are text, `BETWEEN` filters the result set for within the alphabetical range. `BETWEEN` is case-sensitive. 
+- For example, in the following statement, `BETWEEN` filters the result set to only include movies with names that begin with the letter ‘A’ up to, but not including ones that begin with ‘J’.
+```SQL
+SELECT *
+FROM movies
+WHERE name BETWEEN 'A' AND 'J';
+```
+
+- Sometimes we want to combine multiple conditions in a `WHERE` clause to make the result set more specific and useful. One way of doing this is to use the `AND` operator. For example:
+```SQL
+SELECT * 
+FROM movies
+WHERE year BETWEEN 1990 AND 1999
+   AND genre = 'romance';
+```
+- With `AND`, both conditions must be true for the row to be included in the result.
+
+- Similar to `AND`, the `OR` operator can also be used to combine multiple conditions in `WHERE`, but there is a fundamental difference:
+	* `AND` operator displays a row if all the conditions are true.
+	* `OR` operator displays a row if any condition is true.
+- With `OR`, if any of the conditions are true, then the row is added to the result.
+
+- We can sort the results using `ORDER BY`, either alphabetically or numerically. Sorting the results often makes the data more useful and easier to analyze.
+	* `DESC` is a keyword used in `ORDER BY` to sort the results in descending order (high to low or Z-A).
+	* `ASC` is a keyword used in `ORDER BY` to sort the results in ascending order (low to high or A-Z).
+- The column that we `ORDER BY` doesn’t even have to be one of the columns that we’re displaying.
+- Note: `ORDER BY` always goes after `WHERE` (if WHERE is present).
+
 
 
 ### 2.4 Aggregate Functions
