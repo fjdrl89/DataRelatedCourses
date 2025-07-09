@@ -687,7 +687,227 @@ WHERE year BETWEEN 1990 AND 1999
 - The column that we `ORDER BY` doesn’t even have to be one of the columns that we’re displaying.
 - Note: `ORDER BY` always goes after `WHERE` (if WHERE is present).
 
+- `LIMIT` is a clause that lets you specify the maximum number of rows the result set will have. This saves space on our screen and makes our queries run faster.
+- `LIMIT` always goes at the very end of the query. Also, it is not supported in all SQL databases.
 
+- A `CASE` statement allows us to create different outputs (usually in the `SELECT` statement). It is SQL’s way of handling if-then logic.
+ * Each WHEN tests a condition and the following THEN gives us the string if the condition is true.
+ * The ELSE gives us the string if all the above conditions are false.
+ * The CASE statement must end with END.
+ * Don’t forget the comma after `col_name`.
+
+- For example:
+```SQL
+SELECT name,
+ CASE
+  WHEN imdb_rating > 8 THEN 'Fantastic'
+  WHEN imdb_rating > 6 THEN 'Poorly Received'
+  ELSE 'Avoid at All Costs'
+ END AS 'Review'
+FROM movies;
+```
+
+#### 2.3.1 Project...
+
+**New York Restaurants**
+
+We have put together a table of restaurants called `nomnom` and we need your help to answer some questions. Use the SQL commands you just learned and find the best dinner spots in the city.
+
+The schema of this table is
+![image](https://github.com/user-attachments/assets/aa910ac1-2976-4f43-84fa-fee9cf1a3480)
+
+**Tasks**
+1. Start by getting a feel for the nomnom table:
+```SQL
+SELECT *
+FROM nomnom;
+```
+
+What are the column names?
+
+The column names are:
+* `name`
+* `neighborhood`
+* `cuisine`
+* `review`
+* `price`
+* `health`
+
+2. What are the distinct neighborhoods?
+
+SELECT DISTINCT neighborhood
+FROM nomnom;
+
+Copy to Clipboard
+
+The neighborhoods are:
+
+Brooklyn
+Midtown
+Chinatown
+Uptown
+Queens
+Downtown
+3.
+What are the distinct cuisine types?
+
+SELECT DISTINCT cuisine
+FROM nomnom;
+
+Copy to Clipboard
+
+The cuisine types are:
+
+Steak
+Korean
+Chinese
+Pizza
+Ethiopian
+Vegetarian
+Italian
+Japanese
+American
+Mediterranean
+Indian
+Soul Food
+Mexican
+4.
+Suppose we would like some Chinese takeout.
+
+What are our options?
+
+SELECT *
+FROM nomnom
+WHERE cuisine = 'Chinese';
+
+Copy to Clipboard
+
+Yum!
+
+5.
+Return all the restaurants with reviews of 4 and above.
+
+SELECT *
+FROM nomnom
+WHERE review >= 4;
+
+Copy to Clipboard
+
+6.
+Suppose Abbi and Ilana want to have a fancy dinner date.
+
+Return all the restaurants that are Italian and $$$.
+
+If you want to find Italian restaurants with exactly three dollar signs:
+
+SELECT *
+FROM nomnom
+WHERE cuisine = 'Italian'
+   AND price = '$$$';
+
+Copy to Clipboard
+
+If you want to find Italian restaurants with at least three dollar signs:
+
+SELECT *
+FROM nomnom
+WHERE cuisine = 'Italian'
+   AND price LIKE '%$$$%';
+
+Copy to Clipboard
+
+7.
+Your coworker Trey can’t remember the exact name of a restaurant he went to but he knows it contains the word ‘meatball’ in it.
+
+Can you find it for him using a query?
+
+% is a wildcard character that matches zero or more missing letters in the pattern.
+
+To find the restaurant names that contain the word ‘meatball’:
+
+SELECT *
+FROM nomnom
+WHERE name LIKE '%meatball%';
+
+Copy to Clipboard
+
+8.
+Let’s order delivery to the house!
+
+Find all the close by spots in Midtown, Downtown or Chinatown.
+
+(OR can be used more than once)
+
+We can use the OR operators to combine these conditions:
+
+SELECT *
+FROM nomnom
+WHERE neighborhood = 'Midtown'
+   OR neighborhood = 'Downtown'
+   OR neighborhood = 'Chinatown'; 
+
+Copy to Clipboard
+
+Here, we have three conditions:
+
+neighborhood = 'Midtown'
+neighborhood = 'Downtown'
+neighborhood = 'Chinatown'
+OR Venn Diagram
+9.
+Find all the health grade pending restaurants (empty values).
+
+Empty values are indicated by NULL.
+
+SELECT *
+FROM nomnom
+WHERE health IS NULL;
+
+Copy to Clipboard
+
+10.
+Create a Top 10 Restaurants Ranking based on reviews.
+
+Using ORDER BY and the DESC keyword, we can sort the restaurants by ratings from highest to lowest:
+
+SELECT *
+FROM nomnom
+ORDER BY review DESC;
+
+Copy to Clipboard
+
+Then, include a LIMIT to cap it at 10:
+
+SELECT *
+FROM nomnom
+ORDER BY review DESC
+LIMIT 10;
+
+Copy to Clipboard
+
+11.
+Use a CASE statement to change the rating system to:
+
+review > 4.5 is Extraordinary
+review > 4 is Excellent
+review > 3 is Good
+review > 2 is Fair
+Everything else is Poor
+Don’t forget to rename the new column!
+
+SELECT name,
+ CASE
+  WHEN review > 4.5 THEN 'Extraordinary'
+  WHEN review > 4 THEN 'Excellent'
+  WHEN review > 3 THEN 'Good'
+  WHEN review > 2 THEN 'Fair'
+  ELSE 'Poor'
+ END AS 'Review'
+FROM nomnom;
+
+Copy to Clipboard
+
+Here, the column is renamed to ‘Review’ using AS.
 
 ### 2.4 Aggregate Functions
 
