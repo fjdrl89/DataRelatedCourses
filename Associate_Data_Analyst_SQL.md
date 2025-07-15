@@ -683,29 +683,133 @@ WHERE birthdate IS NOT NULL;
   * `MAX()` -> gives us the greatest value
  
 - Note that we operate ion the field (or column) with all of these aggregate functions, not the records (or rows).
-- *Average* `AVG()` and *sum* `SUM()` are the two aggregate functions we can only use on numerical fields, since they requiere arithmetic.
-- 
+- *Average* `AVG()` and *sum* `SUM()` are the two aggregate functions we can only use on numerical fields, since they requiere arithmetic. For example:
+```SQL
+SELECT AVG(budget)
+FROM films;
+```
 
+Or
+```SQL
+SELECT SUM(BUDGET)
+FROM films;
+```
 
-
-
+- We could also pass a negative number as the second parameter and still get a result. Here, the function is rounding to the left of the decimal point instead of the right.
 
 #### 2.3.2 Summarizing Subsets
 
+- We can combine aggregate functions with the WHERE clause to gain further insights from our data. That's because the WHERE clause executes before the SELECT statement. For example:
+```SQL
+SELECT AVG(budget) AS avg_budget
+FROM films
+WHERE release_year >= 2010;
+```
 
+- In SQL, we can use `ROUND()` to round our number to a specified decimal.
+- There are two parameters for `ROUND(number_to_round, decimal_places)`: the number we want to round and the decimal place we want to round to.
+- The second parameter in our ROUND() function is optional, so we can leave it out if we want to round to a whole number. 
+- For example:
+```SQL
+SELECT ROUND(AVG(budget),2) AS avg_budget
+FROM films
+WHERE release_year >= 2010;
+```
 
 #### 2.3.3 Aliasing and Arithmetic
 
+- We can perform basic arithmetic with symbols like plus `+`, minus `-`, multiply `*`, and divide `/`.
+- Using parentheses with arithmetic indicates to the processor when the calculation needs to execute.
+- For example:
+```SQL
+SELECT (4 + 3)
+```
 
+- When dividing, we can add decimal places to our numbers if we want more precision.
+```SQL
+SELECT (4.0 / 3.0)
+```
+
+- What's the difference between using aggregate functions and arithmetic? The key difference is that aggregate functions, like SUM, perform their operations on the fields vertically while arithmetic adds up the records horizontally.
+- We will always need to use an alias when summarizing data with aggregate functions and arithmetic.
+- A reminder of the order of execution we know so far: SQL will process the FROM statement first, followed by the WHERE clause, then the SELECT statement, and finally, LIMIT.
+- When adding an alias for a field name in the SELECT clause, we might assume we could use it later in our query with the WHERE clause. Unfortunately, that is not possible; as we can see by the order of execution, the query would not have created the alias yet, and our code would generate an error.
 
 ### 2.4 Sorting and Grouping
 
 #### 2.4.1 Sorting Results
 
+- In SQL, the `ORDER BY` keyword is used to sort results of one or more fields. When used on its own, it is written after the `FROM` statement.
+- `ORDER BY` will sort in ascending order by default. This can mean from smallest to biggest or from A to Z. For example:
+```SQL
+SELECT title, budget
+FROM films
+ORDER BY budget;
+```
 
+- We could also add the `ASC` keyword to our query to clarify that we are sorting in ascending order.
+- We can use the `DESC` keyword to sort the results in descending order.
+- Notice that we don't have to select the field we are sorting on.
+- `ORDER BY` can also be used to sort on multiple fields.
+  * It will sort by the first field specified, then sort by the next, etc.
+  * To specify multiple fields, we separate the field names with a comma.
+  * The second field we sort by can be thought of as a tie-breaker when the first field is not decisive in telling the order.
+
+```SQL
+SELECT title, wins
+FROM best_movies
+ORDER BY wins DESC;
+```
+
+```SQL
+SELECT title, wins, imdb_score
+FROM best_movies
+ORDER BY wins DESC, imdb_score DESC;
+```
+
+- `ORDER BY` falls towards the end of the order of execution we already know, coming in just before limit. The `FROM` statement will execute first, then `WHERE`, followed by `SELECT`, `ORDER BY`, and finally, `LIMIT`.
 
 #### 2.4.2 Grouping Data
 
+- SQL allows us to group with the GROUP BY clause.
+- GROUP BY is commonly used with aggregate functions to provide summary statistics.
+- Example:
+```SQL
+SELECT certification, COUNT(title) AS title_count
+FROM films
+GROUP BY certification
+```
+
+- SQL will return an error if we try to SELECT a field that is not in our GROUP BY clause. We'll need to correct this by adding an aggregate function around title. For example:
+- Wrong code:
+```SQL
+SELECT certification, title
+FROM films
+GROUP BY certification
+```
+- Corrected code:
+```SQL
+SELECT certification, COUNT(title) AS count_title
+FROM films
+GROUP BY certification;
+```
+
+- We can use GROUP BY on multiple fields similar to ORDER BY. The order in which we write the fields affects how the data is grouped.
+```SQL
+SELECT certification, language, COUNT(title) AS title_count
+FROM films
+GROUP BY certification, language;
+```
+
+- We can combine GROUP BY with ORDER BY to group our results, make a calculation, and then order our results. For example:
+```SQL
+SELECT certification, COUNT(title) AS title_count
+FROM films
+GROUP BY certification, language
+ORDER BY title_count DESC;
+```
+
+- `ORDER BY` is always written after `GROUP BY`, and notice that we can refer back to the alias within the query. That is because of the order of execution.
 
 
 #### 2.4.3 Filtering Grouped Data
