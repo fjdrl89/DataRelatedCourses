@@ -811,6 +811,13 @@ ORDER BY title_count DESC;
 
 - `ORDER BY` is always written after `GROUP BY`, and notice that we can refer back to the alias within the query. That is because of the order of execution.
 
+- Other example: Select the `release_year`, `country`, and the maximum `budget` aliased as `max_budget` for each year and each country; sort your results by `release_year` and `country`.
+```SQL
+SELECT release_year, country, MAX(budget) AS max_budget
+FROM films
+GROUP BY release_year, country
+ORDER BY release_year, country;
+```
 
 #### 2.4.3 Filtering Grouped Data
 
