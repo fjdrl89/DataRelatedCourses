@@ -846,7 +846,16 @@ HAVING COUNT(title) > 10;
 ```
 
 - The reason why groups have their own keyword for filtering comes down to the order of execution.
-- 
+- Example: Select country from the films table, and get the distinct count of certification aliased as certification_count. Group the results by country. Filter the unique count of certifications to only results greater than 10.
+```SQL
+-- Select the country and distinct count of certification as certification_count
+SELECT country, COUNT(DISTINCT certification) AS certification_count
+FROM films
+-- Group by country
+GROUP BY country
+-- Filter results to countries with more than 10 different certifications
+HAVING COUNT(DISTINCT certification) > 10
+```
 
 ## PROJECT 1: Analyzing Students' Mental Health
 
