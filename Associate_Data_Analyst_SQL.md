@@ -821,7 +821,32 @@ ORDER BY release_year, country;
 
 #### 2.4.3 Filtering Grouped Data
 
+- In SQL, we can't filter aggregate functions with `WHERE` clauses.
+- For example, this query attempting to filter the title count is invalid.
+```SQL
+SELECT release_year, COUNT(title) AS title_count
+FROM films
+GROUP BY release_year
+WHERE COUNT(title) > 10;
+```
+```
+syntax error at or near "WHERE"
+LINE 4: WHERE COUNT(title) > 10;
+        ^
+```
 
+- That means that if we want to filter based on the result of an aggregate function, we need another way.
+- Groups have their own special filtering word: `HAVING`.
+- For example, this query shows only those years in which more than ten films were released:
+```SQL
+SELECT release_year, COUNT(title) AS title_count
+FROM films
+GROUP BY release_year
+HAVING COUNT(title) > 10;
+```
+
+- The reason why groups have their own keyword for filtering comes down to the order of execution.
+- 
 
 ## PROJECT 1: Analyzing Students' Mental Health
 
