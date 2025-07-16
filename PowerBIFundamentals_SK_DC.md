@@ -1,0 +1,28 @@
+# Power BI Fundamentals
+
+## 1. Introduction to Power BI
+
+### 1.1 Getting Started with Power BI
+
+- Microsoft Power BI is a tool that helps organize and visualize data from different sources. It lets you connect to data, clean and structure it, create visualizations, and easily share your findings with others.
+- Once a new Power BI Desktop window is opened, we will see the left-side icons for the four views: Report, Table, Model, and DAX Query. You can change views by selecting any of the icons.
+- The canvas area in the middle of the report view is where visualizations are created and arranged.
+- In the **Filters pane** you can filter data visualizations.
+- In the **Visualizations pane** you can add, change, or customize visualizations.
+- The **Data pane** shows the available fields. You can drag these fields onto the canvas, the Filters pane, or the Visualizations pane to create or modify visualizations.
+- Once the data is loaded, you’ll notice the fields listed in the Data pane.
+- Let's switch to the Table view to see the raw data more clearly.
+- The FactSales table's values are displayed, and the Table Tools ribbon offers options for interacting with the data. One of Power BI Desktop’s strengths is its ability to combine data from multiple sources. Let’s add another table from within the Table view. We’ll use the Get Data button again, but select an Excel file this time. We’ll load the DimProducts table, which contains details about the product involved in each transaction. In the preview window, choose the correct sheet from the Excel file and click Load. The new table appears in the Data pane. Now, let’s explore the Model view. Here, we can see all the loaded tables. Power BI automatically creates relationships between tables when it detects common fields, such as the ProductKey in both tables. If needed, relationships can be deleted by right-clicking on them. To manually create one, simply drag a field from one table to a matching field in the other table. Let’s move to the Report view to create some visuals. First, select the Sales Amount field from the Data pane. Power BI automatically generates a bar chart because it recognizes this as a numerical value, adding it to the Y-axis in the Visualizations pane. You can easily resize and move the chart by dragging it around. Let's enhance this visual by adding more data. With the chart selected, expand the DimProducts table in the Data pane. Drag the Category field to the X-axis. Now, the bar chart reflects the sales amount for each category. You can hover over each bar to see the sales figures. Let’s add another visual — a card visualization showing the total sales amount. Click a blank spot on the canvas, choose the card option in the Visualizations pane, and select the Sales Amount field. The card now displays the total sales amount. The visuals are interactive. If you click the Components bar, the card updates to show the category total. Click on the bar again to reset the view. You can easily switch visualization types. Select the bar chart, then choose another visual type from the pane, such as a treemap, and the chart will change instantly. Finally, you can add new pages using the plus sign at the bottom or delete them by clicking the x on any page tab. You can also load pre-existing reports by clicking File, then Open, and selecting Browse this device. Time to practice!
+
+- Let's continue from where we left off. We want to add some more fields to our treemap visual, but let's first change it to a clustered column chart. In this chart, we can add the total product cost to compare it with the total sales amount field. There are now two bars for each category and a legend above that indicates what each color means. Note that the numerical field has automatically been added under the Y-axis section in the Visualizations pane. It would be useful to analyze this plot based on sales territory. In the table view, we can see the FactSales table has a field called SalesTerritoryKey. We have a dimension table available to us called DimsSalesTerritory that holds more information on this key. Let's access this CSV file and load it. In the table view, we see that it's what we're looking for because it contains information about the territories that AdventureWorks serves, allowing us to identify where each sale originated. In the model view, we see that Power BI has already recognized a relationship between the FactSales table and DimsSalesTerritory table based on the column SalesTerritoryKey, so there's nothing to do here! Back in the report view, we will add a slicer to the canvas by selecting the slicer icon. A slicer allows viewers to filter the visuals based on a field of their choice. We will filter our visuals by the Country field, and from the list, we will choose Canada. By clicking on the columns in the column chart, we can filter further on category! Now, let's try out a new visualization - the table. We have to select a blank spot so as not to modify an existing visualizations. Click on the table icon in the visualization pane and let's select a number of fields to go into it, such as group, product, color, list price, and standard cost. Let's rearrange things to look a bit neater. Our selections in the chart and slicer affect the table as well. We can add a title using a text box. We can customize the text and increase the font size so it's clear. Finally, we should rename the page tab so that it matches the title. And now, it's time for you to add to your report!
+
+- 
+
+## 2. Introduction to DAX in Power BI
+
+## 3. Data Visualization in Power BI
+
+## 4. Data Preparation in Power BI
+
+## 5. Data Modelling in Power BI
+
