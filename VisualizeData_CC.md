@@ -192,23 +192,50 @@ data = pd.read_csv("2020 monthly avg precipitation around the world - imperial.c
 
 3. Write the code to make a line chart with months on the x-axis and Alice Springs precipitation data on the y-axis, then print the plot.
 ```python
-
-
+plt.plot(data.month_name, data.alice_springs)
+plt.show()
 ```
 
+4. Write the code to add lines to the graph for the other five cities: Windhoek, Quito, Kodiak, Samarqand, and London.
 ```python
-
-
+plt.plot(data.month_name, data.alice_springs)
+plt.plot(data.month_name, data.windhoek)
+plt.plot(data.month_name, data.quito)
+plt.plot(data.month_name, data.kodiak)
+plt.plot(data.month_name, data.samarqand)
+plt.plot(data.month_name, data.london)
+plt.show()
 ```
 
+5. Color the lines in the following groups based on hemisphere:
+- Alice Springs (green) and Windhoek (yellowgreen)
+- Quito (steelblue)
+- Kodiak (chocolate), Samarqand (darkorange) and London (also darkorange)
+
+(Samarqand and London have the same color because one will have a solid line and the other won’t.)
 ```python
-
-
+plt.plot(data.month_name, data.alice_springs, color='green')
+plt.plot(data.month_name, data.windhoek, color='yellowgreen')
+plt.plot(data.month_name, data.quito, color='steelblue')
+plt.plot(data.month_name, data.kodiak, color='chocolate')
+plt.plot(data.month_name, data.samarqand, color='darkorange')
+plt.plot(data.month_name, data.london, color='darkorange')
+plt.show()
 ```
 
+6. Assign line style to each location based on precipitation type:
+- Alice Springs, Windhoek, Quito, and London have rain (solid line)
+- Kodiak and Samarqand have rain and snow (dashed or dotted line)
+
+Choose whichever line style you prefer for Kodiak and Samarqand – just keep it the same for both.
 ```python
-
-
+plt.plot(data.month_name, data.alice_springs, color='green')
+plt.plot(data.month_name, data.windhoek, color='yellowgreen')
+plt.plot(data.month_name, data.quito, color='steelblue')
+plt.plot(data.month_name, data.kodiak, color='chocolate', linestyle='dashed')
+plt.plot(data.month_name, data.samarqand, color='darkorange', linestyle='dashed')
+plt.plot(data.month_name, data.london, color='darkorange')
+plt.show()
 ```
 
 ```python
