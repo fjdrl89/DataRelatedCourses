@@ -859,16 +859,298 @@ HAVING COUNT(DISTINCT certification) > 10
 
 ## PROJECT 1: Analyzing Students' Mental Health
 
----
+Explore and analyze the `students` data to see how the length of stay (`stay`) impacts the average mental health diagnostic scores of the international students present in the study.
+- Return a table with nine rows and five columns.
+- The five columns should be aliased as: `stay`, `count_int`, `average_phq`, `average_scs`, and `average_as`, in that order.
+- The average columns should contain the average of the `todep` (PHQ-9 test), `tosc` (SCS test), and `toas` (ASISS test) columns for each length of stay, rounded to two decimal places.
+- The `count_int` column should be the number of international students for each length of stay.
+- Sort the results by the length of stay in descending order.
+
+Note: Creating new cells in the workbook will rename the DataFrame. Make sure that your final solution uses the name `df`.
+
+Does going to university in a different country affect your mental health? A Japanese international university surveyed its students in 2018 and published a study the following year that was approved by several ethical and regulatory boards.
+
+The study found that international students have a higher risk of mental health difficulties than the general population, and that social connectedness (belonging to a social group) and acculturative stress (stress associated with joining a new culture) are predictive of depression.
+
+Explore the `students` data using PostgreSQL to find out if you would come to a similar conclusion for international students and see if the length of stay is a contributing factor.
+
+Here is a data description of the columns you may find helpful.
+
+| Field Name    | Description                                      |
+| ------------- | ------------------------------------------------ |
+| `inter_dom`     | Types of students (international or domestic)   |
+| `japanese_cate` | Japanese language proficiency                    |
+| `english_cate`  | English language proficiency                     |
+| `academic`      | Current academic level (undergraduate or graduate) |
+| `age`           | Current age of student                           |
+| `stay`          | Current length of stay in years                  |
+| `todep`         | Total score of depression (PHQ-9 test)           |
+| `tosc`          | Total score of social connectedness (SCS test)   |
+| `toas`          | Total score of acculturative stress (ASISS test) |
+
+```sql
+SELECT * 
+FROM students;
+```
+
+```sql
+SELECT stay, 
+       COUNT(*) AS count_int,
+       ROUND(AVG(todep), 2) AS average_phq, 
+       ROUND(AVG(tosc), 2) AS average_scs, 
+       ROUND(AVG(toas), 2) AS average_as
+FROM students
+WHERE inter_dom = 'Inter'
+GROUP BY stay
+ORDER BY stay DESC;
+```
+
 ## 3. Joining Data in SQL
 
 ### 3.1 Introducing Inner Joins
 
+#### 3.1.1 The ins and outs of `INNER JOIN`
+
+- Joining data is an essential skill which enables us to draw information from separate tables together into a single, meaningful set of results.
+- `INNER JOIN`, which along with `LEFT JOIN` makes up one of the two most common joins.
+- A **key** is a single column or group of columns that uniquely identifies records in a table.
+- With SQL joins, you can join on a key field, or any other field.
+- The **INNER JOIN** shown looks for records in both tables with the same values in the key field, id.
+- The syntax for performing an `INNER JOIN` on our tables is shown step-by-step:
+  * It is common to begin constructing the query with the join first, and selecting fields later.
+  * After `FROM`, we list the left table, followed by the `INNER JOIN` keyword and the right table.
+  * We then specify the field to match the tables on, using the `ON` keyword.
+  * Lastly, we add `SELECT` at the start of the query and choose the fields we want returned.
+  * When selecting columns that exist in both tables, the table-dot-column_name format must be used to avoid a SQL error.
+
+```sql
+SELECT prime_ministers.country, prime_ministers.continent, prime_minister, president
+FROM presidents
+INNER JOIN prime_ministers
+ON  presidents.country = prime_ministers.country;
+```
+
+- When joining on two identical column names, we can employ the `USING` command followed by the shared column name in parentheses.
+
+```sql
+SELECT p2.country, p2.continent, prime_minister, president
+FROM presidents AS p1
+INNER JOIN prime_ministers AS p2
+USING(country);
+```
+
+Examples:
+- Perform an inner join with the cities table on the left and the countries table on the right; you do not need to alias tables here.
+- Join ON the country_code and code columns, making sure you identify them with the correct table.
+
+```sql
+SELECT * 
+FROM cities
+-- Inner join to countries
+INNER JOIN countries
+-- Match on country codes
+ON cities.country_code = countries.code;
+```
+
+- Complete the SELECT statement to keep three columns: the name of the city, the name of the country, and the region the country is located in (in this order).
+- Alias the name of the city AS city and the name of the country AS country.
+
+```sql
+-- Select name fields (with alias) and region 
+SELECT cities.name AS city, countries.name AS country, countries.region AS region
+FROM cities
+INNER JOIN countries
+ON cities.country_code = countries.code;
+```
+
+- Use the country `code` field to complete the `INNER JOIN` with `USING`; do not change any alias names.
+
+```sql
+SELECT c.name AS country, l.name AS language, official
+FROM countries AS c
+INNER JOIN languages AS l
+-- Match using the code column
+USING(code)
+```
+
+#### 3.1.2 Defining Relationships
+
+- The first type of relationship we'll talk about is a **one-to-many** relationship.
+- This is the most common type of relationship, one where a single entity can be associated with several entities.
+- A second type of relationship is a **one-to-one** relationship.
+- **One-to-one** relationships imply unique pairings between entities and are therefore less common.
+- The last type of relationship we'll discuss is a **many-to-many** relationship. 
+
+Examples:
+
+- Select the country `name`, aliased as `country`, from the `countries` table.
+
+```sql
+-- Select country (aliased) from countries
+SELECT name AS country
+FROM countries
+```
+
+- Now add an alias `c` for the `countries` table and perform an inner join with the `languages` table, `l`, on the right;
+- Join on `code` in line 8 with the `USING` keyword; include the language name, aliased as `language`.
+
+```sql
+-- Select country and language names (aliased)
+SELECT c.name AS country, l.name AS language
+-- From countries (aliased)
+FROM countries AS c
+-- Join to languages (aliased)
+INNER JOIN languages AS l
+-- Use code as the joining field with the USING keyword
+USING(code);
+```
+
+- Add a `WHERE` clause to find how many countries speak the language `'Bhojpuri'`.
+
+```sql
+-- Select country and language name (aliased)
+SELECT c.name AS country, l.name AS language
+-- From countries (aliased)
+FROM countries AS c
+-- Join to languages (aliased)
+INNER JOIN languages AS l
+-- Use code as the joining field with the USING keyword
+USING(code)
+-- Filter for the Bhojpuri language
+WHERE l.name='Bhojpuri';
+```
+
+#### 3.1.3 Multiple Joins
+
+- A powerful feature of SQL is that multiple joins can be combined and run in a single query.
+- We begin with the same `INNER JOIN` as before, and then chain another `INNER JOIN` to the result of our first `INNER JOIN`.
+- Notice that we use `left_table.id` in the last line of this example.
+- If we want to perform the second join using the id field of `right_table` rather than `left_table`, we can replace `left_table.id` with `right_table.id` in the final line.
+
+```sql
+SELECT *
+FROM left_table
+INNER JOIN right_table
+ON left_table.id = right_table.id
+INNER JOIN another_table
+ON left_table.id = another_table.id
+```
+
+- The `ON` clause in a `JOIN` statement requires a condition that evaluates to a boolean value.
+- One more thing to know about joins is that it isn't always the case that each value in the field being joined on corresponds to exactly one record in the joining field of the right table.
+- We can limit the records returned by supplying an additional field to join on by adding the AND keyword to our ON clause.
+
+```sql
+-- SQL query for chaining inner joins
+SELECT p1.country, p1.continent, president, prime_minister, pm_start
+FROM prime_ministers as p1
+INNER JOIN presidents as p2
+USING(country)
+INNER JOIN prime_minister_terms as p3
+USING(prime_minister);
+```
+
+```sql
+SELECT *
+FROM left_table
+INNER JOIN right_table
+ON left_table.id = right_table.id
+  AND left_table.date = right_table.date;
+```
+
+**Examples:**
+
+Suppose you are interested in the relationship between fertility and unemployment rates. Your task in this exercise is to join tables to return the country name, year, fertility rate, and unemployment rate in a single result from the `countries`, `populations` and `economies` tables.
+  
+1. Do an inner join of `countries AS c` (left) with `populations AS p` (right), on `code`.
+   Select `name` and `fertility_rate`.
+
+```sql
+-- Select relevant fields
+SELECT c.name, p.fertility_rate
+FROM countries AS c
+-- Inner join countries and populations, aliased, on code
+INNER JOIN populations AS p
+ON c.code = p.country_code;
+```
+
+2. Chain an inner join with the `economies` table `AS e`, on `code`.
+   Select `year` and `unemployment_rate` from the `economies` table.
+
+```sql
+-- Select fields
+SELECT name, e.year, fertility_rate, e.unemployment_rate
+FROM countries AS c
+INNER JOIN populations AS p
+ON c.code = p.country_code
+-- Join to economies (as e)
+INNER JOIN economies AS e
+-- Match on country code
+ON c.code = e.code;
+```
+
+3. The last join was performed on `c.code = e.code`, without also joining on `year`.
+   Your task in this exercise is to fix your query by explicitly stating that both the country `code` and `year` should match!
+
+```sql
+SELECT name, e.year, fertility_rate, unemployment_rate
+FROM countries AS c
+INNER JOIN populations AS p
+ON c.code = p.country_code
+INNER JOIN economies AS e
+ON c.code = e.code
+-- Add an additional joining condition such that you are also joining on year
+	AND p.year = e.year;
+```
 
 ### 3.2 Outer Joins, Cross Joins and Self Joins
 
+#### 3.2.1 LEFT and RIGHT JOINs
+
+
+
+#### 3.2.2 FULL JOINs
+
+
+
+#### 3.2.3 Crossing into CROSS JOIN
+
+
+
+#### 3.2.4 Self Joins
+
+
+
+```sql
+
+```
+
+```sql
+
+```
+
+```sql
+
+```
+
+```sql
+
+```
+
+---
 
 ### 3.3 Set Theory for SQL Joins
+
+#### 3.3.1 Set Theory for SQL Joins
+
+
+#### 3.3.2 At the INTERSECT
+
+
+
+#### 3.3.3 EXCEPT
+
+
 
 
 ### 3.4 Subqueries
