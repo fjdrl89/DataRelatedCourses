@@ -1605,14 +1605,137 @@ ORDER BY name;
 - We'll use the two tables, `left_table` and `right_table`, in the diagram shown.
 - A semi join chooses records in the first table where a condition is met in the second table.
 
+<img width="945" height="568" alt="image" src="https://github.com/user-attachments/assets/6c5e8b24-c63c-433e-aff6-31f5b7e36ab2" />
 
+- More specifically, the semi join will return all values of `left_table` where values of `col1` are in a column we specify, namely `col2` in the `right_table`.
+- Records not of interest to the semi join have been faded out.
 
+<img width="779" height="756" alt="image" src="https://github.com/user-attachments/assets/82c4749c-39e9-478a-80cc-740a3952a609" />
 
+<img width="1289" height="805" alt="image" src="https://github.com/user-attachments/assets/c10d883c-0a28-4916-a908-4c8795bf96c3" />
 
+- Moving on to anti joins! The anti join chooses records in the first table where `col1` does NOT find a match in `col2`.
+
+<img width="782" height="782" alt="image" src="https://github.com/user-attachments/assets/121052ec-3155-47f9-bdfb-4fe3a00c74fa" />
+
+- The final result of our anti join is records corresponding to ids 1 and 4. Again, no new columns are added.
+
+<img width="1328" height="817" alt="image" src="https://github.com/user-attachments/assets/d42ef963-8814-4296-8d69-2b2e36a91345" />
+
+**EXAMPLES:**
+
+1. Select country `code` as a single field from the `countries` table, filtering for countries in the `'Middle East'` `region`.
+
+```sql
+-- Select country code for countries in the Middle East
+SELECT code
+FROM countries
+WHERE region='Middle East'
+```
+
+2. Write a second query to `SELECT` the name of each unique language appearing in the `languages` table; do not use column aliases here.
+   Order the result set by `name` in ascending order.
+
+```sql
+-- Select unique language names
+SELECT DISTINCT name
+FROM languages
+-- Order by the name of the language
+ORDER BY name ASC;
+```
+
+3. Create a semi join out of the two queries you've written, which filters unique languages returned in the first query for only those languages spoken in the `'Middle East'`.
+
+```sql
+SELECT DISTINCT name
+FROM languages
+WHERE code IN
+  (SELECT code
+  FROM countries
+  WHERE region = 'Middle East')
+ORDER BY name;
+```
+
+The anti join is a related and powerful joining tool. It can be particularly useful for identifying whether an incorrect number of records appears in a join.
+
+Say you are interested in identifying currencies of Oceanian countries. You have written the following `INNER JOIN`, which returns 15 records. Now, you want to ensure that all Oceanian countries from the countries table are included in this result. You'll do this in the first step.
+
+```sql
+SELECT c1.code, name, basic_unit AS currency
+FROM countries AS c1
+INNER JOIN currencies AS c2
+ON c1.code = c2.code
+WHERE c1.continent = 'Oceania';
+```
+
+If there are any Oceanian countries excluded in this `INNER JOIN`, you want to return the names of these countries. You'll write an anti join to this in the second step!
+
+1. Begin by writing a query to return the `code` and `name` (in order, not aliased) for all countries in the `continent` of `Oceania` from the `countries` table.
+   Observe the number of records returned and compare this with the provided `INNER JOIN`, which returns 15 records.
+```sql
+-- Select code and name of countries from Oceania
+SELECT code, name
+FROM countries
+WHERE continent='Oceania'
+```
+
+3. Now, build on your query to complete your anti join, by adding an additional filter to return every country `code` that is not included in the `currencies` table.
+```sql
+SELECT code, name
+FROM countries
+WHERE continent = 'Oceania'
+-- Filter for countries not included in the bracketed subquery
+  AND code NOT IN
+    (SELECT code
+    FROM currencies);
+```
 
 #### 3.4.2 Subqueries inside WHERE and SELECT
 
+- The semi joins and anti joins we have seen so far involve subqueries inside `WHERE`.
+- The `WHERE` clause is the most common place for subqueries, because filtering data is one of the most common data manipulation tasks.
+- Let's revisit this with some generic syntax and understand the nuances of this type of subquery.
+-  Have a look at the query shown. Recall that the `WHERE IN` clause enables us to provide a list of values to filter on.
 
+```sql
+SELECT *
+FROM some_table
+WHERE some_numeric_field IN (4,8, 12);
+```
+
+- As we have seen in the lesson on semi joins, arguments to the `IN` operator are not limited to lists typed out by us.
+- We can include a SQL subquery as an argument for the IN operator, provided the result of the subquery is of the same data type as the field we are filtering on.
+
+```sql
+SELECT *
+FROM some_table
+WHERE some_field IN
+		(include subquery here);
+```
+
+- The query shown will only work if `some_field` is of the same data type as `some_numeric_field`, because the result of the subquery will be a numeric field.
+- Subqueries inside `WHERE` can be from the same table or from a different table, and here, the subquery is from a different table.
+
+```sql
+SELECT *
+FROM some_table
+WHERE some_field IN
+		(SELECT some_numeric_field
+		 FROM another_table
+		 WHERE field2 = some_condition);
+```
+
+- The second most common type of subquery is inside a `SELECT` clause.
+- Subqueries inside WHERE can either be from the same table or a different table.
+
+**EXAMPLES:**
+
+1. Begin by calculating the average life expectancy from the `populations` table.
+   Filter your answer to use records from `2015` only.
+
+```sql
+
+```
 
 #### 3.4.3 Subqueries inside FROM
 
