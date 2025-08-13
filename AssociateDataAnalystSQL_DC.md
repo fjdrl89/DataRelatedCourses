@@ -1453,6 +1453,9 @@ WHERE p1.year = 2010
 - Note that set operations do not require a field to join `ON`.
 - This is because they do not do quite the same thing as join operations we covered in earlier chapters.
 - Rather than comparing and merging tables on the left and right, they stack fields on top of one another.
+- For all set operations, the number of selected columns and their respective data types must be identical.
+- For instance, we can't stack a number field on top of a character field.
+- The result will only use field names (or aliases, if used) of the first `SELECT` statement in the query.
 
 ```sql
 SELECT *
@@ -1462,6 +1465,9 @@ SELECT *
 FROM right_table;
 ```
 
+<img width="995" height="1013" alt="image" src="https://github.com/user-attachments/assets/3345f1fc-8045-4d1a-8aa6-3aad523341b9" />
+
+
 ```sql
 SELECT *
 FROM left_table
@@ -1470,17 +1476,147 @@ SELECT *
 FROM right_table;
 ```
 
+<img width="1321" height="1026" alt="image" src="https://github.com/user-attachments/assets/cfea2edd-d825-44a0-b956-7848a459b755" />
+
+**EXAMPLES:**
+
+1. Begin your query by selecting all fields from `economies2015`.
+   Create a second query that selects all fields from `economies2019`.
+   Perform a set operation to combine the two queries you just created, ensuring you do not return duplicates.
+
+```sql
+-- Select all fields from economies2015
+SELECT *
+FROM economies2015  
+-- Set operation
+UNION
+-- Select all fields from economies2019
+SELECT *
+FROM economies2019
+ORDER BY code, year;
+```
+
+2. Perform an appropriate set operation that determines all pairs of country code and year (in that order) from economies and populations, excluding duplicates.
+   Order by country code and year.
+
+```sql
+-- Query that determines all pairs of code and year from economies and populations, without duplicates
+SELECT code, year
+FROM economies
+UNION
+SELECT country_code, year
+FROM populations
+ORDER BY code, year;
+```
+
+3. Amend the query to return all combinations (including duplicates) of country `code` and `year` in the `economies` or the `populations` tables.
+
+```sql
+SELECT code, year
+FROM economies
+-- Set theory clause
+UNION ALL
+SELECT country_code, year
+FROM populations
+ORDER BY code, year;
+```
 
 #### 3.3.2 At the INTERSECT
 
+- `INTERSECT` takes two tables as input, and returns only the records that exist in both tables.
+- In the diagram shown, we have two tables, `left_table` and `right_table`.
+- The result of performing `INTERSECT` on these tables is only the records common to both tables: the first record.
+- All records that are not of interest to the `INTERSECT` operation are faded out.
 
+<img width="1610" height="839" alt="image" src="https://github.com/user-attachments/assets/42c858f3-846e-4e62-8749-e6d7757980a4" />
+
+- The syntax for this set operation is very similar to that of `UNION` and `UNION ALL`.
+- We perform a `SELECT` statement on our first table, a `SELECT` statement on our second table, and specify our set operator between them.
+
+```sql
+SELECT id, val
+FROM left_table
+INTERSECT
+SELECT id, val
+FROM right_table
+```
+
+- Let's compare `INTERSECT` to performing an `INNER JOIN` on two fields with identical field names.
+- Similar to `UNION`, for a record to be returned, `INTERSECT` requires all fields to match, since in set operations we do not specify any fields to match on.
+- This is also why it requires the left and right table to have the same number of columns in order to compare records.
+- In the figure shown, only records where both columns match are returned.
+- In `INNER JOIN`, similar to `INTERSECT`, only results where both fields match are returned.
+- `INNER JOIN` will return duplicate values, whereas `INTERSECT` will only return common records once.
+- As we know from earlier lessons, INNER JOIN will add more columns to the result set.
+
+<img width="1887" height="777" alt="image" src="https://github.com/user-attachments/assets/788bad21-efe7-4b67-8f71-e800dc1c196a" />
+
+-  The `INTERSECT` operation requires both queries to return the same number of columns.
+-  When you use `SELECT *`, it selects all columns from the tables, and if the tables have a different number of columns, the `INTERSECT` operation will fail.
+-  That is why, you need to ensure that both queries return the same single column, which should be the name column.
+
+```sql
+SELECT name
+FROM cities
+INTERSECT
+SELECT name
+FROM countries
+```
 
 #### 3.3.3 EXCEPT
 
+- `EXCEPT` allows us to identify the records that are present in one table, but not the other.
+- More specifically, it retains only records from the left table that are not present in the right table.
+- The diagram shown illustrates the workings of the `EXCEPT` operation.
+- All records that are not of interest to the `EXCEPT` operation are faded out.
+- Only the last two records of the left_table are returned.
+- Note that while the id 4 does exist in the `right_table`, the whole record does not match, which is why the last record of `left_table` is not faded out.
 
+<img width="1366" height="753" alt="image" src="https://github.com/user-attachments/assets/50b84e47-9d95-4031-bbab-0ebad9dbda93" />
 
+```sql
+SELECT monarch, country
+FROM monarchs
+EXCEPT
+SELECT prime_minister, country
+FROM prime_ministers;
+```
+
+```sql
+SELECT name
+FROM cities
+EXCEPT
+SELECT name
+FROM countries
+ORDER BY name;
+```
 
 ### 3.4 Subqueries
+
+#### 3.4.1 Subquerying with semi joins and anti joins
+
+- The six joins we've worked with so far are all "additive" in that they add columns to the original "left" table.
+- The diagram shows an `INNER JOIN` on the id field, showing an additional column being added to the original left table.
+
+<img width="1829" height="619" alt="image" src="https://github.com/user-attachments/assets/30e2591c-6501-4a05-a72c-64b211c7b8c2" />
+
+- In this lesson, we'll see ways of joining data that do not expressly use `JOIN` keywords and are not additive in the same way.
+- Instead of using `JOIN` or set operators, we can leverage the `WHERE` clause to specify the records to include.
+- We'll use the two tables, `left_table` and `right_table`, in the diagram shown.
+- A semi join chooses records in the first table where a condition is met in the second table.
+
+
+
+
+
+
+#### 3.4.2 Subqueries inside WHERE and SELECT
+
+
+
+#### 3.4.3 Subqueries inside FROM
+
+
 
 ---
 ## 4. Data Manipulation in SQL
