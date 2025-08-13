@@ -1107,41 +1107,368 @@ ON c.code = e.code
 
 #### 3.2.1 LEFT and RIGHT JOINs
 
+- We'll now compare `INNER JOIN` with three types of outer joins, beginning with `LEFT JOIN`.
+- **Outer joins** can obtain records from other tables, even if matches are not found for the field being joined on.
+- A **LEFT JOIN** will return all records in the `left_table`, and those records in the `right_table` that match on the joining field provided.
+- Records that are not of interest to a `LEFT JOIN` on the id field have been faded out.
+- `RIGHT JOIN` is the second type of outer join, and is much less common than LEFT JOIN so we won't spend as much time on it here.
+- Instead of matching entries in the id column of the left table to the id column of the right table, a `RIGHT JOIN` does the reverse.
+- All records are retained from `right_table`, even when id doesn't find a corresponding match in `left_table`.
+- **Null values** are returned for the `left_value` field in records that do not find a match.
+- Generic syntax for a `RIGHT JOIN` is shown.
+- Note that the order of `left_table` and `right_table` is the same as in `LEFT JOIN`.
+- The only change is that we call `RIGHT JOIN` instead of `LEFT JOIN`.
+- `RIGHT JOIN` can also be written as `RIGHT OUTER JOIN` in SQL.
 
+```sql
+SELECT *
+FROM left_table
+RIGHT JOIN right_table
+ON left_table.id = right_table.id
+```
+
+- `RIGHT JOIN` is less commonly used. A key reason for this is that a `RIGHT JOIN` can always be re-written as a `LEFT JOIN`.
+- Because we typically type from left to right, `LEFT JOIN` feels more intuitive to most users when constructing queries.
+
+**EXAMPLES:**
+
+1. Perform an inner join with `cities AS c1` on the left and `countries AS c2` on the right.
+   Use `code` as the field to merge your tables on.
+
+```sql
+SELECT 
+    c1.name AS city,
+    code,
+    c2.name AS country,
+    region,
+    city_proper_pop
+FROM cities AS c1
+-- Perform an inner join with cities as c1 and countries as c2 on country code
+INNER JOIN countries AS c2
+ON c1.country_code = c2.code
+ORDER BY code DESC;
+```
+
+2. Change the code to perform a `LEFT JOIN` instead of an `INNER JOIN`.
+   After executing this query, have a look at how many records the query result contains.
+
+```sql
+SELECT 
+	c1.name AS city, 
+    code, 
+    c2.name AS country,
+    region, 
+    city_proper_pop
+FROM cities AS c1
+-- Join right table (with alias)
+LEFT JOIN countries AS c2
+ON c1.country_code = c2.code
+ORDER BY code DESC;
+```
+
+3. Complete the `LEFT JOIN` with the `countries` table on the left and the `economies` table on the right on the `code` field.
+   Filter the records from the `year` 2010.
+
+```sql
+SELECT name, region, gdp_percapita
+FROM countries AS c
+LEFT JOIN economies AS e
+-- Match on code fields
+USING(code)
+-- Filter for the year 2010
+WHERE year = 2010;
+```
+
+4. To calculate per capita GDP per region, begin by grouping by `region`.
+   After your `GROUP BY`, choose `region` in your `SELECT` statement, followed by average GDP per capita using the `AVG()` function, with `AS avg_gdp` as your alias.
+
+```sql
+-- Select region, and average gdp_percapita as avg_gdp
+SELECT c.region, AVG(e.gdp_percapita) AS avg_gdp
+FROM countries AS c
+LEFT JOIN economies AS e
+USING(code)
+WHERE year = 2010
+-- Group by region
+GROUP BY c.region;
+```
+
+5. Order the result set by the average GDP per capita from highest to lowest.
+   Return only the first 10 records in your result.
+
+```sql
+SELECT region, AVG(gdp_percapita) AS avg_gdp
+FROM countries AS c
+LEFT JOIN economies AS e
+USING(code)
+WHERE year = 2010
+GROUP BY region
+-- Order by descending avg_gdp
+ORDER BY avg_gdp DESC
+-- Return only first 10 records
+LIMIT 10;
+```
+
+6. Write a new query using `RIGHT JOIN` that produces an identical result to the `LEFT JOIN` provided.
+
+```sql
+-- Modify this query to use RIGHT JOIN instead of LEFT JOIN
+SELECT countries.name AS country, languages.name AS language, percent
+FROM languages
+RIGHT JOIN countries
+USING(code)
+ORDER BY language;
+```
 
 #### 3.2.2 FULL JOINs
 
+- `FULL JOIN` is the last of the three types of outer join.
+- We'll compare `FULL JOIN` to the two other types of outer join we have learned (`LEFT JOIN` and `RIGHT JOIN`), as well as to `INNER JOIN`.
+- A `FULL JOIN` combines a `LEFT JOIN` and a `RIGHT JOIN`.
+- Time for some SQL code... In order to produce a `FULL JOIN`, the general format aligns closely with the SQL syntax we've been using for `INNER JOIN`, `LEFT JOIN` and `RIGHT JOIN`.
+- We adapt our join to have the word 'FULL' before 'JOIN'.
+- Note that the keyword `FULL OUTER JOIN` can also be used to return the same result.
 
+```sql
+SELECT left_table.id AS L_id,
+	   right_table.id AS R_id,
+	   left_table.val AS L_val,
+	   right_table.val AS R_val
+FROM left_table
+FULL JOIN right_table
+USING (id);
+```
+
+<img width="2042" height="742" alt="image" src="https://github.com/user-attachments/assets/445c5b55-275e-4f23-ba35-62ce8b04e7b6" />
+
+**EXAMPLES:**
+
+1. Perform a full join with `countries` (left) and `currencies` (right).
+   Filter for the `North America` `region` or `NULL` country names.
+
+```sql
+SELECT name AS country, code, region, basic_unit
+FROM countries
+-- Join to currencies
+FULL JOIN currencies
+USING (code)
+-- Where region is North America or name is null
+WHERE countries.region = 'North America'
+    OR name is NULL
+ORDER BY region;
+```
+
+2. Repeat the same query as before, turning your full join into a left join with the `currencies` table.
+   Have a look at what has changed in the output by comparing it to the full join result.
+
+```sql
+SELECT name AS country, code, region, basic_unit
+FROM countries
+-- Join to currencies
+LEFT JOIN currencies
+USING (code)
+WHERE region = 'North America' 
+	OR name IS NULL
+ORDER BY region;
+```
+
+3. Repeat the same query again, this time performing an inner join of `countries` with `currencies`.
+   Have a look at what has changed in the output by comparing it to the full join and left join results!
+
+```sql
+SELECT name AS country, code, region, basic_unit
+FROM countries
+-- Join to currencies
+INNER JOIN currencies
+USING (code)
+WHERE region = 'North America' 
+	OR name IS NULL
+ORDER BY region;
+```
+
+4. Complete the `FULL JOIN` with `countries AS c1` on the left and `languages AS l` on the right, using `code` to perform this join.
+   Next, chain this join with another `FULL JOIN`, placing `currencies` on the right, joining on `code` again.
+
+```sql
+SELECT 
+	c1.name AS country, 
+    region, 
+    l.name AS language,
+	basic_unit, 
+    frac_unit
+FROM countries as c1 
+-- Full join with languages (alias as l)
+FULL JOIN languages AS l
+USING(code)
+-- Full join with currencies (alias as c2)
+FULL JOIN currencies AS c2
+USING(code)
+WHERE region LIKE 'M%esia';
+```
 
 #### 3.2.3 Crossing into CROSS JOIN
 
+- `CROSS JOINs` are slightly different than joins we have seen previously: they create all possible combinations of two tables.
+- Let's explore the diagram for a `CROSS JOIN`:
+  * In this diagram we have two tables named table1 and table2, with one field each: id1 and id2, respectively.
+  * The result of the `CROSS JOIN` is all nine combinations of the id values of 1, 2, and 3 in table1 with the id values of A, B, and C for table2.
 
+<img width="660" height="732" alt="image" src="https://github.com/user-attachments/assets/2458fdb4-9511-426d-9660-297dc30981ee" />
+
+- Note that the syntax is very minimal, and we do not specify ON or USING with CROSS JOIN.
+
+```sql
+SELECT id1, id2
+FROM table1
+CROSS JOIN table2;
+```
+
+**EXAMPLES:**
+
+Imagine you are a researcher interested in the languages spoken in two countries: Pakistan and India. You are interested in asking:
+* What are the languages presently spoken in the two countries?
+* Given the shared history between the two countries, what languages could potentially have been spoken in either country over the course of their history?
+
+In this exercise, we will explore how INNER JOIN and CROSS JOIN can help us answer these two questions, respectively.
+
+1. Complete the code to perform an `INNER JOIN` of `countries AS c` with `languages AS l` using the `code` field to obtain the languages currently spoken in the two countries.
+
+```sql
+SELECT c.name AS country, l.name AS language
+-- Inner join countries as c with languages as l on code
+FROM countries AS c
+INNER JOIN languages AS l 
+USING(code)
+WHERE c.code IN ('PAK','IND')
+	AND l.code in ('PAK','IND');
+```
+
+2. Change your `INNER JOIN` to a different kind of join to look at possible combinations of languages that could have been spoken in the two countries given their history.
+   Observe the differences in output for both joins.
+
+```sql
+SELECT c.name AS country, l.name AS language
+FROM countries AS c        
+-- Perform a cross join to languages (alias as l)
+CROSS JOIN languages AS l
+WHERE c.code in ('PAK','IND')
+	AND l.code in ('PAK','IND');
+```
+
+3. You will determine the names of the five countries and their respective regions with the lowest life expectancy for the year 2010. Use your knowledge about joins, filtering, sorting and limiting to create this list!
+	- Complete the join of countries AS c with populations as p.
+ 	- Filter on the year 2010.
+  	- Sort your results by life expectancy in ascending order.
+   	- Limit the result to five countries.
+
+```sql
+SELECT 
+	c.name AS country,
+    region,
+    life_expectancy AS life_exp
+FROM countries AS c
+-- Join to populations (alias as p) using an appropriate join
+INNER JOIN populations AS p
+ON c.code = p.country_code
+-- Filter for only results in the year 2010
+WHERE p.year = 2010
+-- Sort by life_exp
+ORDER BY life_exp ASC
+-- Limit to five records
+LIMIT 5;
+```
 
 #### 3.2.4 Self Joins
 
+- We'll now dive into a special kind of join, where a table is joined with itself. These types of joins are called **self joins**.
+- Self joins are used to compare values from part of a table to other values from within the same table.
 
-
-```sql
-
-```
-
-```sql
-
-```
+**EXAMPLES**
 
 ```sql
-
+SELECT p1.country AS country1,
+       p2.country AS country2,
+       p1.continent
+FROM prime_ministers AS p1
+INNER JOIN prime_ministers AS p2
+ON p1.continent = p2.continent
+LIMIT 10;
 ```
+
+1. Perform an inner join of populations with itself ON country_code, aliased p1 and p2 respectively.
+   Select the country_code from p1 and the size field from both p1 and p2, aliasing p1.size as size2010 and p2.size as size2015 (in that order).
 
 ```sql
-
+-- Select aliased fields from populations as p1
+SELECT p1.country_code, p1.size AS size2010, p2.size AS size2015
+FROM populations AS p1 
+-- Join populations as p1 to itself, alias as p2, on country code
+INNER JOIN populations AS p2
+USING(country_code);
 ```
 
+2. Since you want to compare records from 2010 and 2015, eliminate unwanted records by extending the `WHERE` statement to include only records where the `p1.year` matches `p2.year - 5`.
+
+```sql
+SELECT 
+	p1.country_code, 
+    p1.size AS size2010, 
+    p2.size AS size2015
+FROM populations AS p1
+INNER JOIN populations AS p2
+ON p1.country_code = p2.country_code
+WHERE p1.year = 2010
+-- Filter such that p1.year is always five years before p2.year
+    AND p1.year = p2.year - 5
+```
 ---
 
 ### 3.3 Set Theory for SQL Joins
 
 #### 3.3.1 Set Theory for SQL Joins
+
+- SQL has three main set operations, UNION, INTERSECT and EXCEPT.
+- The Venn diagrams shown visualize the differences between them.
+- We can think of each circle as representing a table.
+- The green parts represent what is included after the set operation is performed on each pair of tables.
+
+<img width="1444" height="496" alt="image" src="https://github.com/user-attachments/assets/1a89a551-b979-4f8a-9ca7-0e4603651c19" />
+
+- In SQL, the `UNION` operator takes two tables as input, and returns all records from both tables.
+- The diagram shows two tables: left and right, and performing a `UNION` returns all records in each table.
+- If two records are identical, `UNION` only returns them once.
+- To illustrate this, the first two records of the right table have been faded out. Our result has seven records.
+
+<img width="1014" height="678" alt="image" src="https://github.com/user-attachments/assets/0ee1dfaa-de89-4b03-95f5-8ca9d0953e0e" />
+
+- In SQL, there is a further operator for unions called `UNION ALL`.
+- In contrast to `UNION`, given the same two tables, `UNION ALL` will include duplicate records.
+- Therefore, performing `UNION ALL` on this data will return nine records, whereas `UNION` only returned seven.
+- No records have been faded out.
+
+<img width="920" height="724" alt="image" src="https://github.com/user-attachments/assets/efc8e654-fa25-4196-a901-87499b125940" />
+
+- The syntax for performing all the set operations in this chapter is highly similar.
+- We perform a `SELECT` statement on our first table, a `SELECT` statement on our second table, and specify a set operation (in this example, either `UNION` or `UNION ALL`) between them.
+- Note that set operations do not require a field to join `ON`.
+- This is because they do not do quite the same thing as join operations we covered in earlier chapters.
+- Rather than comparing and merging tables on the left and right, they stack fields on top of one another.
+
+```sql
+SELECT *
+FROM left_table
+UNION
+SELECT *
+FROM right_table;
+```
+
+```sql
+SELECT *
+FROM left_table
+UNION ALL
+SELECT *
+FROM right_table;
+```
 
 
 #### 3.3.2 At the INTERSECT
