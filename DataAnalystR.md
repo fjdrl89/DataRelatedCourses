@@ -1,121 +1,348 @@
-
-# Data Analysis in R
+# Data Analysis in R: Notes (based on DataCamp’s Data Analyst with R)
 
 ## 1. Introduction to R
 
-### 1.1 Intro to basics
+### 1.1 Basics of R & the R environment
+
+**What is R?**
+
+* R is a programming language and environment designed for statistics, data analysis, and visualization.
+* It is open-source and has a rich ecosystem (CRAN, Bioconductor, etc.).
+* You can run R interactively (in console, RStudio) or via scripts (`.R` files) or literate programming notebooks (`.Rmd`, `.qmd`).
+
+**R Interfaces / Workflow**
+
+* **R console / REPL** — type expressions interactively.
+* **Scripts** — plain text `.R` files; useful for reproducibility.
+* **R Markdown / Quarto** — combine narrative text + code + output (figures, tables).
+* **RStudio** — popular IDE that integrates console, script panes, visualizations, package manager.
+
+**Comments**
+Use `#` to write comments; they are ignored in execution:
+
+```r
+# This is a comment
+x <- 5  # assign 5 to x
+```
+
+**Basic arithmetic & arithmetic with vectors**
+
+R supports standard arithmetic operators: `+`, `-`, `*`, `/`, `^`, `%%`, `%/%` (mod, integer division).
+
+```r
+2 + 3
+5 * 4
+10 / 3
+10 %% 3   # remainder = 1
+10 %/% 3  # integer division = 3
+2 ^ 3     # 8
+```
+
+Because R is vectorized, arithmetic is often applied elementwise:
+
+```r
+a <- c(2, 4, 6, 8)
+b <- c(1, 3, 5, 7)
+a + b    # c(3, 7, 11, 15)
+a * 2    # c(4, 8, 12, 16)
+a / b    # c(2/1, 4/3, 6/5, 8/7)
+```
+
+---
 
 ### 1.2 Vectors
 
-#### Functions and Operations
+Vectors are the foundational one-dimensional data structure in R.
 
-Core functions are available for common data manipulations:
+#### Types / Modes of vectors
 
-* The function **`sum()`** calculates the total of all elements within a **vector** (or other data structure).
-* The function **`mean()`** is used to calculate the **average** of the elements.
+Each vector has a *mode* (or type). Common ones:
+
+* Numeric (double, integer)
+* Character
+* Logical (TRUE / FALSE)
+* Complex (less frequently used)
+* Factor (categorical, but internally stored as integer + levels) — technically not *just* a vector, but worth noting now.
+
+You can inspect a vector’s type using:
+
+```r
+x <- c(1.2, 3.4, 5.6)
+class(x)    # “numeric”
+typeof(x)   # “double”
+
+y <- c("a", "b", "c")
+class(y)    # “character”
+
+z <- c(TRUE, FALSE, TRUE)
+class(z)    # “logical”
+```
+
+Also, you can coerce between types (with caution), e.g. `as.numeric()`, `as.character()`, `as.logical()`.
+
+#### Common helper functions
+
+Useful functions that operate on vectors:
+
+| Function            | Description                                  | Example                    |
+| ------------------- | -------------------------------------------- | -------------------------- |
+| `sum(x)`            | Sum of all elements                          | `sum(c(1,2,3)) == 6`       |
+| `mean(x)`           | Arithmetic mean                              | `mean(c(2,4,6)) == 4`      |
+| `median(x)`         | Median                                       | `median(c(1, 5, 10)) == 5` |
+| `sd(x)`             | Sample standard deviation                    | —                          |
+| `var(x)`            | Sample variance                              | —                          |
+| `min(x)` / `max(x)` | Minimum / Maximum value                      | —                          |
+| `range(x)`          | c(min, max)                                  | —                          |
+| `length(x)`         | Number of elements                           | —                          |
+| `sort(x)`           | Sorts the elements                           | —                          |
+| `rev(x)`            | Reverses the element order                   | —                          |
+| `unique(x)`         | Unique values                                | —                          |
+| `which(x)`          | Indices of TRUE elements in a logical vector | —                          |
+
+Example:
+
+```r
+x <- c(5, 3, 8, 1, 3)
+sum(x)      # 20
+mean(x)     # 4
+sd(x)
+unique(x)   # c(5, 3, 8, 1)
+which(x == 3)  # indices where x equals 3 → c(2, 5)
+```
+
+#### Subsetting and indexing
+
+One of the most powerful features of R is subsetting. You can extract parts of a vector using `[]`.
+
+* **Numeric (positional) indexing**
+  R indexes start at **1** (not 0).
+
+  ```r
+  v <- c(10, 20, 30, 40, 50)
+  v[1]         # 10
+  v[3]         # 30
+  v[c(1, 5)]    # c(10, 50)
+  v[2:4]        # c(20, 30, 40)
+  ```
+
+* **Negative indexing (exclusion)**
+  You can exclude certain indices by using negative numbers:
+
+  ```r
+  v[-1]       # all except the first → c(20, 30, 40, 50)
+  v[-c(2,4)]  # exclude 2nd and 4th → c(10, 30, 50)
+  ```
+
+* **Logical indexing / Boolean masking**
+  Use a logical (TRUE / FALSE) vector of the same length:
+
+  ```r
+  x <- c(-1, 0, 5, 8, -3)
+  sel <- x > 0            # produces c(FALSE, FALSE, TRUE, TRUE, FALSE)
+  x[sel]                  # c(5, 8)
+  # You can do it in one line:
+  x[x > 0]                # c(5, 8)
+  ```
+
+* **Named vectors**
+  You can assign names to elements, then use names to index:
+
+  ```r
+  w <- c(a = 10, b = 20, c = 30)
+  w["b"]     # 20
+  w[c("a", "c")]  # c(a = 10, c = 30)
+  ```
+
+* **Indexing out-of-range or invalid indices**
+
+  * Accessing beyond the length returns `NA` (e.g. `v[10]` if `v` has length 5).
+  * Using a logical vector of wrong length throws an error or recycles (but be careful with recycling rules).
+
+#### Logical / comparison operators
+
+| Operator | Description                       |
+| -------- | --------------------------------- |
+| `<`      | Less than                         |
+| `>`      | Greater than                      |
+| `<=`     | Less than or equal to             |
+| `>=`     | Greater than or equal to          |
+| `==`     | Equal to (note: use `==` not `=`) |
+| `!=`     | Not equal to                      |
+
+These produce a logical vector when comparing elementwise:
+
+```r
+a <- c(1, 5, 10)
+a > 5       # c(FALSE, FALSE, TRUE)
+a == 5      # c(FALSE, TRUE, FALSE)
+a != 1      # c(FALSE, TRUE, TRUE)
+```
+
+Also, **logical operators** combining conditions:
+
+* `&` : elementwise “AND”
+* `|` : elementwise “OR”
+* `!` : logical NOT
+
+```r
+x <- c(2, 4, 6, 8, 10)
+# pick elements that are > 3 AND <= 8
+x[ x > 3 & x <= 8 ]  # c(4, 6, 8)
+# elements that are < 3 OR > 8
+x[ x < 3 | x > 8 ]   # c(2, 10)
+# invert a logical vector
+!(x > 5)  # c(TRUE, TRUE, FALSE, FALSE, FALSE)
+```
+
+#### Exercise suggestions
+
+1. Let `y <- -5:5`. Extract only the **even** values (hint: use `%%` and logical indexing).
+2. Given `z <- c(3, 7, 3, 9, 7, 10)`, find which positions correspond to the **maximum** value.
+3. Create a named vector `scores <- c(Alice = 85, Bob = 92, Carol = 78)` and then extract Bob’s score.
 
 ---
-
-#### Subsetting and Indexing Data
-
-To **select elements** from a data structure (such as vectors, matrices, or data frames), **square brackets** (`[]`) are used. The desired elements are indicated between these brackets.
-
-##### Numerical Indexing
-
-* To select a single element, its **numeric position** (or **index**) is placed inside the brackets. For example, to access the first element of a vector named `data_vector`, the syntax is `data_vector[1]`.
-* In some programming environments (like R), the **first element has an index of 1**, unlike other languages where the index may start at 0.
-* To select **multiple, non-consecutive elements**, a vector of indices is used. For instance, to select the elements at positions 1 and 5, the syntax is `data_vector[c(1, 5)]`.
-* For selecting a **range of consecutive elements**, a shorthand notation using the colon operator (`:`) is often available. For example, the vector `c(2, 3, 4)` can be simplified to **`2:4`**, which generates a sequence of natural numbers from 2 up to 4.
-
-##### Named Indexing
-
-* Elements can also be selected by using their **names** instead of their numeric positions, provided the elements have been named.
-
----
-
-#### Logical Comparison Operators
-
-**Logical comparison operators** are used to create conditional expressions, yielding a **`TRUE`** or **`FALSE`** result. Common operators include:
-
-| Operator | Meaning |
-| :---: | :--- |
-| **`<`** | Less than |
-| **`>`** | Greater than |
-| **`<=`** | Less than or equal to |
-| **`>=`** | Greater than or equal to |
-| **`==`** | Equal to |
-| **`!=`** | Not equal to |
-
----
-
-#### Working with Comparisons
-
-Working with **comparisons** can simplify **data analysis**. Instead of manually selecting a subset of data points for investigation, a user can simply instruct the system (e.g., a programming language like R) to return only those points that meet a specific condition.
-
-For example, a **logical vector** can be created to identify elements that satisfy a condition, such as having a value greater than zero: `selection_vector <- data_vector > 0`. This vector indicates *which* elements meet the criteria.
-
-To retrieve *the values* themselves (not just the indicator of whether they met the criteria), the logical vector is placed within the **square brackets** following the original data vector: `data_vector[selection_vector]`.
-
-When a logical vector is used for **subsetting** in this manner, the system will select and return only the elements from the `data_vector` that correspond to **TRUE** values in the `selection_vector`.
 
 ### 1.3 Matrices
 
-#### The Concept of a Matrix
+Matrices are the next step up: two-dimensional arrays with **rows** and **columns**, storing elements all of the **same type**.
 
-A **matrix** is a fundamental data structure used to organize a collection of elements. It is characterized by its **two-dimensional** arrangement, meaning the elements are structured into a fixed number of **rows** and **columns**. A key characteristic is that all elements within a single matrix must be of the **same data type** (e.g., all numeric, all character, or all logical).
+#### Creating matrices
+
+Use `matrix()` or convert from vectors:
+
+```r
+# Combine data into a vector
+new_hope      <- c(460.9, 314.4, 775.3)
+empire_strike <- c(290.4, 247.9, 538.3)
+return_jedi   <- c(309.3, 165.8, 475.1)
+
+box_office <- c(new_hope, empire_strike, return_jedi)
+
+# Create a 3 × 3 matrix, filled by rows
+sw_mat <- matrix(
+  box_office,
+  nrow = 3,
+  byrow = TRUE
+)
+
+# Assign row and column names
+rownames(sw_mat) <- c("New Hope", "Empire", "Jedi")
+colnames(sw_mat) <- c("US", "Non-US", "Worldwide")
+
+sw_mat
+```
+
+That gives:
+
+```
+           US Non-US Worldwide
+New Hope   460.9   314.4     775.3
+Empire     290.4   247.9     538.3
+Jedi       309.3   165.8     475.1
+```
+
+Alternatively, filling by **columns** (default `byrow = FALSE`):
+
+```r
+m2 <- matrix(box_office, nrow = 3, byrow = FALSE)
+```
+
+#### Accessing / indexing matrices
+
+Much like vectors, but with two dimensions using `[row, column]`.
+
+* **Single element**:
+
+  ```r
+  sw_mat[2, 3]   # 2nd row, 3rd column → 538.3
+  ```
+
+* **Entire row or column**:
+
+  ```r
+  sw_mat[1, ]    # first row, all columns → c(460.9, 314.4, 775.3)
+  sw_mat[, 2]    # second column, all rows → c(314.4, 247.9, 165.8)
+  ```
+
+* **Submatrices / slices**:
+
+  ```r
+  sw_mat[1:2, 2:3] # rows 1–2, columns 2–3
+  ```
+
+* **Named indexing**:
+
+  ```r
+  sw_mat["Jedi", "Non-US"]  # 165.8
+  ```
+
+* **Logical indexing** (vectors or matrices of TRUE/FALSE):
+
+  ```r
+  sw_mat > 300        # gives a matrix of TRUE / FALSE
+  sw_mat[sw_mat > 300]  # returns a vector of elements > 300
+  ```
+
+* **Negative indexing** (exclude rows/columns):
+
+  ```r
+  sw_mat[-1, ]   # drop first row
+  sw_mat[, -3]   # drop third column
+  ```
+
+#### Matrix operations
+
+Because a matrix is a special case of an array, many vector operations extend, but also there are **matrix-specific** operations.
+
+* **Elementwise arithmetic**:
+
+  ```r
+  2 * sw_mat        # each element multiplied by 2
+  sw_mat + sw_mat   # elementwise sum
+  ```
+
+* **Matrix multiplication**:
+
+  Use `%*%` for matrix multiplication (inner dimension must match):
+
+  ```r
+  A <- matrix(1:6, nrow = 2)
+  B <- matrix(6:1, nrow = 3)
+  # A is 2×3, B is 3×2 → result is 2×2
+  A %*% B
+  ```
+
+* **Transpose**:
+
+  ```r
+  t(sw_mat)
+  ```
+
+* **Matrix inverse / solving linear systems** (for square, nonsingular matrices):
+
+  ```r
+  M <- matrix(c(2, 3, 1, 4), nrow = 2)
+  solve(M)        # inverse
+  det(M)          # determinant
+  ```
+
+* **Row/column sums and means**:
+
+  ```r
+  rowSums(sw_mat)
+  colSums(sw_mat)
+  rowMeans(sw_mat)
+  colMeans(sw_mat)
+  ```
+
+#### Exercises to deepen understanding
+
+1. Using `sw_mat` above, what fraction of **Worldwide** box office comes from **US** (i.e. compute `US / Worldwide` for each movie)?
+2. Return the names of the movies for which **Non-US** box office > 200.
+3. Create a 4 × 5 matrix filled with random integers (1–100). Compute the sum of each row and column.
 
 ---
 
-#### Matrix Construction
-
-Matrices are typically created using a dedicated function (e.g., the `matrix()` function in R). The construction process involves several key inputs:
-
-1.  **Data Elements:** The input must include the **collection of elements** that will populate the matrix. This is often a single vector containing all values. For convenience, a sequence shortcut (e.g., `1:9` for 1, 2, ..., 9) may be used.
-2.  **Dimensions:** The desired structure is defined by specifying the number of **rows** (e.g., using an `nrow` argument) or columns.
-3.  **Filling Order:** An argument (e.g., `byrow`) specifies the order in which the data elements should be placed into the matrix:
-    * If **TRUE**, the matrix is filled **by row** (moving across the first row, then the second, and so on).
-    * If **FALSE**, the matrix is filled **by column** (moving down the first column, then the second, and so on).
-
-##### Example of Construction
-
-A general function call might look like this:
-
-`matrix(data elements, byrow = TRUE/FALSE, nrow = number)`
-
----
-
-#### Workflow: From Vectors to a Matrix
-
-The practical application of matrix construction often requires two sequential steps: **data preparation** (concatenation) and **structural definition** (using the constructor function).
-
-##### Data Preparation: Concatenation using **`c()`**
-
-Before a matrix can be constructed, its source data must be collected into a single, one-dimensional sequence. This process uses the **concatenation function** **`c()`**.
-
-* **Function:** **`c()`** combines multiple atomic vectors into one longer vector, ensuring the entire dataset is treated as a unified **`data`** stream for the matrix function.
-* **Contextual Example:** To unify box office figures from three source vectors (representing different films), the vectors are passed as arguments to **`c()`**:
-
-    `box_office <- c(new_hope, empire_strikes, return_jedi)`
-
----
-
-##### Structural Definition: Key Matrix Arguments
-
-Once the unified **`data`** vector is prepared, the **`matrix()`** function is used to impose the **two-dimensional structure**. The arguments define how the data is shaped:
-
-1.  **Data Source (First Argument):** The concatenated vector (e.g., `box_office`) serves as the data to be arranged.
-2.  **Row Dimension (`nrow`):** This argument explicitly sets the number of **observations** or **entities** the matrix should hold.
-    * **Study Point:** Setting `nrow = 3` signifies that each of the three films will occupy exactly one row in the final matrix.
-3.  **Filling Order (`byrow`):** This boolean argument is critical for maintaining the **logical grouping** of data elements.
-    * **Study Point:** Setting `byrow = TRUE` ensures that all related figures (e.g., all revenue types for the first movie) are placed sequentially along the first row *before* moving to the next row. This is essential when each **row represents a single entity** (like a movie or an experimental subject).
-
-###### Applied Matrix Construction
-
-The entire operation is executed and assigned to a final object:
-
-`star_wars_matrix <- matrix(box_office, nrow = 3, byrow = TRUE)`
-
-**Resulting Structure:** The final object, `star_wars_matrix`, is a **2D structure** where the **rows** categorize the movies and the **columns** categorize the revenue metrics (assuming the original vectors were structured consistently).
 
 
 
