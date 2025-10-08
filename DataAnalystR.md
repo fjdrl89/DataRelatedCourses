@@ -2,7 +2,7 @@
 
 ## 1. Introduction to R
 
-## 1.1 Intro to basics
+### 1.1 Intro to basics
 
 **What this subsection gives you:** a conceptual map of how R “thinks”, plus small runnable
 snippets. You’ll learn what objects are, how R stores values (types/classes/attributes), how
@@ -10,7 +10,7 @@ missing values behave, why R is called *vectorized*, and how to help yourself wi
 
 ---
 
-### 1) How R “thinks”: objects, names, and environments (concept)
+#### 1) How R “thinks”: objects, names, and environments (concept)
 
 * **Everything is an object.** Numbers, text, logicals, functions, models, and plots are all objects.
 * **Names point to objects.** When you write `x <- 2`, you create an object `2` and bind it to the
@@ -36,7 +36,7 @@ console. The REPL auto-prints, but scripts don’t.
 
 ---
 
-### 2) Types, classes, and attributes (concept + examples)
+#### 2) Types, classes, and attributes (concept + examples)
 
 R separates **low-level storage type** (what the object is made of) from **high-level class**
 (how functions should treat it). Many objects also carry **attributes** (metadata), like names or
@@ -85,7 +85,7 @@ functions (e.g., factors vs character; dates vs numbers). It also prevents silen
 
 ---
 
-### 3) Missing values and special numbers (concept + examples)
+#### 3) Missing values and special numbers (concept + examples)
 
 R distinguishes **missing** from **undefined math** and **infinity**:
 
@@ -119,7 +119,7 @@ Real datasets have gaps. If you don’t handle `NA`, summaries become `NA`. Lear
 
 ---
 
-### 4) Vectorization (concept before details in §1.2)
+#### 4) Vectorization (concept before details in §1.2)
 
 R is **vectorized**: many functions and operators work on **whole vectors** at once (internally implemented in C), which is both concise and fast.
 
@@ -140,7 +140,7 @@ errors. Subsetting + vectorized transforms are the backbone of data wrangling.
 
 ---
 
-### 5) Equality and floating point (concept + examples)
+#### 5) Equality and floating point (concept + examples)
 
 R (like most languages) uses IEEE-754 floating-point. Many decimals are **not exactly representable**,
 so avoid exact `==` on numeric results; use **tolerance-based** checks.
@@ -158,7 +158,7 @@ a safe precision before comparing.
 
 ---
 
-### 6) Assignment, printing, and naming (practice)
+#### 6) Assignment, printing, and naming (practice)
 
 * Use `<-` for assignment in code; use `=` for **function arguments** to avoid confusion.
 * Names: letters, digits, dots, underscores; do **not** start with a digit.
@@ -175,7 +175,7 @@ print(mean(x))
 
 ---
 
-### 7) Getting help and self-service (concept + examples)
+#### 7) Getting help and self-service (concept + examples)
 
 Use the help system **constantly**. It’s part of the workflow.
 
@@ -194,7 +194,7 @@ do I…?” answers are a `?function` away.
 
 ---
 
-## Templates (generic code + expected outputs)
+#### Templates (generic code + expected outputs)
 
 Use these as quick patterns in your own scripts.
 
@@ -218,7 +218,7 @@ sum(x, na.rm = TRUE); mean(x, na.rm = TRUE)
 
 ---
 
-## Tips / Hints / Hacks (optional, add where useful)
+#### Tips / Hints / Hacks (optional, add where useful)
 
 * Prefer `<-` for assignments and `=` for function arguments: clearer and less error-prone.
 * Use `seq_len(n)` / `seq_along(x)` (instead of `1:n`) to avoid zero-length traps later.
@@ -227,7 +227,7 @@ sum(x, na.rm = TRUE); mean(x, na.rm = TRUE)
 
 ---
 
-## Micro-exercises
+#### Micro-exercises
 
 1. Create three objects: an **integer**, a **double**, and a **character**. Show `typeof()`, `class()`,
    and any **attributes** present.
@@ -278,7 +278,7 @@ round(0.1 + 0.2, 10) == round(0.3, 10)
 ::contentReference[oaicite:0]{index=0}
 
 
-## 1.2 Vectors
+### 1.2 Vectors
 
 **Concept:** A (base) vector in R is a **homogeneous**, one-dimensional container: every element has
 the same **atomic type** (logical, integer, double, character, complex, raw). Vectors have a
