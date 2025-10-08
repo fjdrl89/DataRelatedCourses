@@ -290,7 +290,7 @@ lists later; here we focus on atomic vectors.
 
 ---
 
-### What vectors are used for (why it matters)
+#### What vectors are used for (why it matters)
 
 * **Filtering & slicing**: pick observations by conditions (`x[x > 0]`).
 * **Vectorized transforms**: compute element-wise (`x*2`, `log(x)`), fast and concise.
@@ -299,7 +299,7 @@ lists later; here we focus on atomic vectors.
 
 ---
 
-### Creating vectors
+#### Creating vectors
 
 ```r
 # Combine values
@@ -342,7 +342,7 @@ non-unit steps.
 
 ---
 
-### Types, coercion, and inspection
+#### Types, coercion, and inspection
 
 Vectors have both **storage type** (`typeof()`) and a **behavioral class** (`class()`). Atomic type
 is uniform within a vector. If you mix types in `c(...)`, R **coerces** to a common supertype:
@@ -384,7 +384,7 @@ numeric vectors and breaking calculations).
 
 ---
 
-### Names (optional metadata)
+#### Names (optional metadata)
 
 ```r
 names(v) <- c("a","b","c")
@@ -401,7 +401,7 @@ label rather than position.
 
 ---
 
-### Vectorized arithmetic and recycling
+#### Vectorized arithmetic and recycling
 
 ```r
 x <- c(1, 2, 3)
@@ -442,7 +442,7 @@ round(c(1.234, 5.678), 2)
 
 ---
 
-### Logical vectors and comparisons
+#### Logical vectors and comparisons
 
 Logical vectors (`TRUE`/`FALSE`/`NA`) are central for filtering:
 
@@ -475,7 +475,7 @@ c(TRUE, FALSE) &  c(FALSE, TRUE)
 
 ---
 
-### Subsetting vectors
+#### Subsetting vectors
 
 ```r
 v <- c(10, 20, 30, 40, 50)
@@ -517,7 +517,7 @@ which(v > 25)
 
 ---
 
-### Membership, alignment, ordering, deduplication
+#### Membership, alignment, ordering, deduplication
 
 ```r
 letters_vec <- c("a","b","c","d","b")
@@ -565,7 +565,7 @@ setequal(u, c("c","b","a"))
 
 ---
 
-### Missing values (NA) in vectors
+#### Missing values (NA) in vectors
 
 ```r
 u <- c(1, NA, 3, NA)
@@ -592,7 +592,7 @@ summaries.
 
 ---
 
-### Templates (generic code + expected outputs)
+#### Templates (generic code + expected outputs)
 
 ```r
 # Template: subset by condition + count/proportion
@@ -619,7 +619,7 @@ replace(x, is.na(x), <value>)
 
 ---
 
-### Tips / Hints / Hacks (optional)
+#### Tips / Hints / Hacks (optional)
 
 * Count matches with `sum(cond)` and compute shares with `mean(cond)`.
 * Prefer `seq_len(n)` / `seq_along(x)` for robustness.
@@ -629,7 +629,7 @@ replace(x, is.na(x), <value>)
 
 ---
 
-### Micro-exercises
+#### Micro-exercises
 
 1. `p <- 1:10`. Return all **even** values, then compute their **count** and **share**.
 2. Let `names <- c("ana","bob","cara","bob")` and `scores <- c(10, 7, 9, 8)`.
@@ -700,7 +700,7 @@ setequal(u, c("c","b","a"))
 </details>
 ::contentReference[oaicite:0]{index=0}
 
-## 1.3 Matrices
+### 1.3 Matrices
 
 **Concept:** A **matrix** is a 2D, **homogeneous** data structure: all entries share the same atomic
 type (logical, integer, double, character, etc.). Internally, a matrix is just a **vector** with a
@@ -711,7 +711,7 @@ they teach key ideas you’ll reuse with higher-level structures (e.g., `data.fr
 
 ---
 
-### Creating matrices
+#### Creating matrices
 
 ```r
 # By default, matrix() fills by columns (column-major)
@@ -750,7 +750,7 @@ matrix(c(1, "2", TRUE), nrow = 1)
 
 ---
 
-### Dimensions, names, and metadata
+#### Dimensions, names, and metadata
 
 ```r
 nrow(m); ncol(m); dim(m)
@@ -773,7 +773,7 @@ dimnames(m) <- list(c("r1","r2"), c("c1","c2","c3"))
 
 ---
 
-### Indexing fundamentals
+#### Indexing fundamentals
 
 Use `[row, col]`. Blank means “all”.
 
@@ -836,7 +836,7 @@ whenever you need to preserve matrix shape in pipelines.
 
 ---
 
-### Binding, reshaping, and transpose
+#### Binding, reshaping, and transpose
 
 ```r
 a <- 1:3; b <- 4:6
@@ -863,7 +863,7 @@ t(m)               # transpose
 
 ---
 
-### Element-wise vs matrix operations
+#### Element-wise vs matrix operations
 
 Element-wise arithmetic uses `+ - * /` and **recycles** as needed:
 
@@ -901,7 +901,7 @@ bugs.
 
 ---
 
-### Row/column summaries (fast path)
+#### Row/column summaries (fast path)
 
 ```r
 rowSums(m); colSums(m)
@@ -920,7 +920,7 @@ rowMeans(m); colMeans(m)
 
 ---
 
-### Logical selection by rows/columns
+#### Logical selection by rows/columns
 
 ```r
 # Keep rows whose column 'c2' is >= 4
@@ -941,7 +941,7 @@ m[, keep_c, drop = FALSE]
 
 ---
 
-### Templates (generic code + expected outputs)
+#### Templates (generic code + expected outputs)
 
 ```r
 # Template: build and label a matrix
@@ -965,7 +965,7 @@ which(M < <threshold>, arr.ind = TRUE)
 
 ---
 
-### Tips / Hints / Hacks (optional)
+#### Tips / Hints / Hacks (optional)
 
 * Use `drop = FALSE` whenever you select a single row/col in pipelines.
 * For repeated summaries, prefer `rowSums()`/`colSums()` over `apply()` for speed.
@@ -976,7 +976,7 @@ which(M < <threshold>, arr.ind = TRUE)
 
 ---
 
-### Micro-exercises
+#### Micro-exercises
 
 1. **By-row build + labels:** Create a `2 x 3` matrix filled **by rows** with `1:6`.
    Name rows `r1, r2` and columns `c1, c2, c3`.
