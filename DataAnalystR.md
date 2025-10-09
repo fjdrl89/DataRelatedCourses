@@ -1673,33 +1673,695 @@ Tips / Hints / Hacks
 • Beware `as.numeric(factor)`: it returns codes, not label values.
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ### 1.5 Data Frames
+
+---
+
+#### What is a data frame?
+
+Idea: A **data frame** is a 2D, tabular, **heterogeneous** structure: each **column** (variable) has one type; different columns can have different types. Rows are observations.
+
+Generic pattern
+
+```r
+df <- data.frame(col1 = <vector1>, col2 = <vector2>, ..., stringsAsFactors = FALSE)
+```
+
+Gotcha: Since R 4.0+, `stringsAsFactors = FALSE` by default; older code may assume strings become factors.
+
+---
+
+#### Create a minimal, reproducible data frame
+
+```r
+# Minimal columns (same length)
+name     <- c("Mercury","Venus","Earth","Mars","Jupiter","Saturn","Uranus","Neptune")
+type     <- c("terrestrial","terrestrial","terrestrial","terrestrial","gas_giant","gas_giant","ice_giant","ice_giant")
+diameter <- c(0.382, 0.949, 1.000, 0.532, 11.209, 9.449, 4.007, 3.883)  # Earth = 1
+rings    <- c(FALSE, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, TRUE)
+
+planets_df <- data.frame(name, type, diameter, rings)  # strings stay character in R>=4.0
+planets_df
+#>      name        type diameter rings
+#> 1  Mercury terrestrial    0.382 FALSE
+#> 2    Venus terrestrial    0.949 FALSE
+#> 3    Earth terrestrial    1.000 FALSE
+#> 4     Mars terrestrial    0.532 FALSE
+#> 5  Jupiter   gas_giant   11.209  TRUE
+#> 6   Saturn   gas_giant    9.449  TRUE
+#> 7   Uranus    ice_giant   4.007  TRUE
+#> 8  Neptune    ice_giant   3.883  TRUE
+```
+
+Tip: Prefer consistent, lowercase snake_case column names (`colnames(df) <- tolower(colnames(df))`).
+
+---
+
+#### Peek at the data: `head()`, `tail()`, `str()`, `summary()`, `dim()`, `nrow()`, `ncol()`, `names()`
+
+Generic pattern
+
+```r
+head(df, n = 6); tail(df, n = 6)
+str(df); summary(df)
+dim(df); nrow(df); ncol(df); names(df)      # or colnames(df), rownames(df)
+```
+
+Example
+
+```r
+head(planets_df, 3)
+#>      name        type diameter rings
+#> 1  Mercury terrestrial    0.382 FALSE
+#> 2    Venus terrestrial    0.949 FALSE
+#> 3    Earth terrestrial    1.000 FALSE
+
+tail(planets_df, 2)
+#>      name      type diameter rings
+#> 7   Uranus ice_giant    4.007  TRUE
+#> 8  Neptune ice_giant    3.883  TRUE
+
+str(planets_df)
+#> 'data.frame': 8 obs. of  4 variables:
+#>  $ name    : chr  "Mercury" "Venus" "Earth" "Mars" ...
+#>  $ type    : chr  "terrestrial" "terrestrial" "terrestrial" "terrestrial" ...
+#>  $ diameter: num  0.382 0.949 1 0.532 11.209 ...
+#>  $ rings   : logi  FALSE FALSE FALSE FALSE TRUE TRUE ...
+
+summary(planets_df)
+#>     name               type              diameter         rings        
+#>  Length:8           Length:8           Min.   : 0.382   Mode :logical  
+#>  Class :character   Class :character   1st Qu.: 0.506   FALSE:4        
+#>  Mode  :character   Mode  :character   Median : 2.944   TRUE :4        
+#>                                        Mean   : 3.919                  
+#>                                        3rd Qu.: 4.696                  
+#>                                        Max.   :11.209                  
+
+dim(planets_df)  #> 8 4
+nrow(planets_df) #> 8
+ncol(planets_df) #> 4
+names(planets_df)#> "name" "type" "diameter" "rings"
+```
+
+Gotcha: `str()` is often the *first thing* to run on new data.
+
+---
+
+#### Select by indices: `[rows, cols]`
+
+Generic pattern
+
+```r
+df[i, j]           # single cell
+df[i, ]            # rows i (all columns)
+df[ , j]           # columns j (all rows)
+df[i_vec, j_vec]   # multiple rows/cols
+```
+
+Example
+
+```r
+planets_df[1, 2]
+#> "terrestrial"
+
+planets_df[1:3, 2:4]
+#>      type        diameter rings
+#> 1 terrestrial    0.382    FALSE
+#> 2 terrestrial    0.949    FALSE
+#> 3 terrestrial    1.000    FALSE
+
+planets_df[, 3]                     # vector (numeric)
+#> 0.382 0.949 1.000 0.532 11.209 9.449 4.007 3.883
+
+planets_df[, "diameter", drop = FALSE]  # keep as 1-column data frame
+#>   diameter
+#> 1    0.382
+#> ...
+```
+
+Gotcha: Use `drop = FALSE` to preserve data-frame shape when selecting a single column.
+
+---
+
+#### Select by names (columns): `df[ , "col"]` and `$`
+
+Generic pattern
+
+```r
+df[ , "colname"]
+df$colname
+```
+
+Example
+
+```r
+planets_df[1:3, "type"]
+#> "terrestrial" "terrestrial" "terrestrial"
+
+planets_df$diameter
+#> 0.382 0.949 1.000 0.532 11.209 9.449 4.007 3.883
+```
+
+Tip: `$` is concise but non-programmatic; prefer `[[`/`[ , ]` for programmatic column names.
+
+---
+
+#### Filter rows: `subset()` (and its base equivalents)
+
+Generic pattern
+
+```r
+subset(df, subset = <logical condition>, select = <cols or -cols>)
+df[ <logical_vector>, <cols> ]          # base equivalent
+```
+
+Example
+
+```r
+subset(planets_df, subset = rings)
+#>      name      type diameter rings
+#> 5  Jupiter gas_giant  11.209  TRUE
+#> 6   Saturn gas_giant   9.449  TRUE
+#> 7   Uranus ice_giant   4.007  TRUE
+#> 8  Neptune ice_giant   3.883  TRUE
+
+# Multiple conditions
+subset(planets_df, diameter > 1 & type != "gas_giant", select = c(name, type, diameter))
+#>      name      type diameter
+#> 7   Uranus ice_giant   4.007
+#> 8  Neptune ice_giant   3.883
+
+# Base equivalent:
+planets_df[planets_df$rings, ]
+planets_df[planets_df$diameter > 1 & planets_df$type != "gas_giant", c("name","type","diameter")]
+```
+
+Gotcha: `subset()` is convenient but can mask variables from the search path; for programming, prefer explicit `df[...]`.
+
+---
+
+#### Sort rows: `order()`
+
+Idea: `order(x, ...)` returns permutation indices to sort by one or more vectors.
+
+Generic pattern
+
+```r
+idx <- order(df$col, decreasing = FALSE)
+df_sorted <- df[idx, ]
+
+# Multi-key sort
+idx <- order(df$key1, df$key2)                # ascending both
+idx <- order(df$key1, -df$key2)               # key2 descending (numeric only)
+```
+
+Example
+
+```r
+# Smallest to largest diameter
+planets_df[order(planets_df$diameter), ]
+#>       name        type diameter rings
+#> 1   Mercury terrestrial   0.382 FALSE
+#> 4      Mars terrestrial   0.532 FALSE
+#> 2     Venus terrestrial   0.949 FALSE
+#> 3     Earth terrestrial   1.000 FALSE
+#> 8   Neptune   ice_giant   3.883  TRUE
+#> 7    Uranus   ice_giant   4.007  TRUE
+#> 6    Saturn   gas_giant   9.449  TRUE
+#> 5   Jupiter   gas_giant  11.209  TRUE
+
+# Multi-key: type (A→Z), then diameter (Z→A)
+o <- with(planets_df, order(type, -diameter))
+planets_df[o, c("type","name","diameter")]
+#>          type     name diameter
+#> 5   gas_giant  Jupiter  11.209
+#> 6   gas_giant   Saturn   9.449
+#> 7    ice_giant   Uranus   4.007
+#> 8    ice_giant  Neptune   3.883
+#> 3  terrestrial    Earth   1.000
+#> 2  terrestrial    Venus   0.949
+#> 4  terrestrial     Mars   0.532
+#> 1  terrestrial  Mercury   0.382
+```
+
+Tip: For character columns, `order()` uses lexicographic order; control locale with `Sys.getlocale()` if needed.
+
+---
+
+#### Useful extras (base R)
+
+Generic patterns & examples
+
+```r
+# Rename columns
+colnames(planets_df) <- c("name","type","diameter","rings")  # already set
+# Add / modify columns
+planets_df$density_idx <- with(planets_df, diameter / mean(diameter))
+head(planets_df[ , c("name","density_idx")])
+#>      name density_idx
+#> 1  Mercury   0.0975
+#> 2    Venus   0.2420
+#> ...
+
+# Bind rows/columns (ensure compatible shapes/types)
+more <- data.frame(name="Pluto", type="dwarf", diameter=0.187, rings=FALSE)
+rbind(planets_df, more)
+#>      name        type diameter rings
+#> ... Pluto        dwarf   0.187 FALSE
+
+# Merge/join on key(s)
+left <- data.frame(name = c("Earth","Mars","Jupiter"), mass = c(1.00,0.107,317.8))
+merge(planets_df, left, by = "name", all.x = TRUE)  # left join
+#>      name        type diameter rings   mass
+#> 3    Earth terrestrial   1.000 FALSE  1.000
+#> 5   Jupiter   gas_giant 11.209  TRUE 317.800
+#> 4      Mars terrestrial  0.532 FALSE  0.107
+#> ...
+
+# NA handling
+has_na <- is.na(planets_df$diameter)
+planets_df[!complete.cases(planets_df), ]   # rows with any NA
+na.omit(planets_df)                         # drop rows with any NA
+
+# Type checks
+is.data.frame(planets_df)  #> TRUE
+sapply(planets_df, class)  # per-column classes
+
+# Save/load (CSV)
+# write.csv(planets_df, "planets.csv", row.names = FALSE)
+# read.csv("planets.csv")  # -> data.frame
+```
+
+Gotchas:
+
+* `rbind()` will coerce types to match; mixing types can upcast (e.g., numeric → character).
+* `merge()` may reorder rows; use `sort = FALSE` if you want to preserve the order of the first table when keys are unique.
+* `with()`/`within()` are handy for readability; prefer explicit code in functions.
+
+---
+
+#### Micro-exercises
+
+1. Select & filter
+   Select `name` and `diameter` for planets with rings **and** `diameter > 4`, sorted by `diameter` descending.
+
+<details><summary>Solution</summary>
+
+```r
+res <- subset(planets_df, rings & diameter > 4, select = c(name, diameter))
+res[order(-res$diameter), ]
+#>      name diameter
+#> 5  Jupiter  11.209
+#> 6   Saturn   9.449
+#> 7   Uranus   4.007
+```
+
+</details>
+
+2. Keep data-frame shape
+   Select only the `type` column but keep it as a data frame (not a vector).
+
+<details><summary>Solution</summary>
+
+```r
+planets_df[, "type", drop = FALSE]
+#>          type
+#> 1  terrestrial
+#> 2  terrestrial
+#> ...
+```
+
+</details>
+
+3. Join extra info
+   Given `left <- data.frame(name=c("Mars","Neptune"), moons=c(2,14))`, left-join to `planets_df` and list rows with `NA` in `moons`.
+
+<details><summary>Solution</summary>
+
+```r
+left <- data.frame(name=c("Mars","Neptune"), moons=c(2,14))
+j <- merge(planets_df, left, by="name", all.x=TRUE, sort=FALSE)
+j[is.na(j$moons), c("name","moons")]
+#>      name moons
+#> 1  Mercury   NA
+#> 2    Venus   NA
+#> 3    Earth   NA
+#> 5  Jupiter   NA
+#> 6   Saturn   NA
+#> 7   Uranus   NA
+```
+
+</details>
+
+4. Find and drop duplicates (illustrative)
+   Create a duplicated row and remove duplicates.
+
+<details><summary>Solution</summary>
+
+```r
+dup <- rbind(planets_df, planets_df[8, ])       # add a duplicate of row 8
+nodup <- dup[!duplicated(dup), ]
+nrow(dup) - nrow(nodup)
+#> 1
+```
+
+</details>
+
+---
+
+#### Quick reference (functions covered)
+
+Creation & basics: `data.frame()`, `is.data.frame()`, `sapply(df, class)`
+Inspect: `head()`, `tail()`, `str()`, `summary()`, `dim()`, `nrow()`, `ncol()`, `names()/colnames()/rownames()`
+Select: `df[i, j]`, `df[, "col", drop=FALSE]`, `$`, `with()`
+Filter: `subset(df, subset=..., select=...)`, `df[logical, ]`
+Sort: `order()` (single/multi-key, `decreasing`)
+Combine: `rbind()`, `cbind()`, `merge(..., by=..., all.x=...)`
+NA & duplicates: `is.na()`, `complete.cases()`, `na.omit()`, `duplicated()`
+I/O: `read.csv()`, `write.csv()`
+
+If you want, I can add a short parallel “tibble/dplyr” box later—but this keeps to base R as requested.
 
 ### 1.6 Lists
 
+#### What is a list?
+
+Idea: A **list** is a flexible container that can hold elements of **any type and length** (vectors, matrices, data frames, other lists). Think “super container.”
+
+Generic pattern
+
+```r
+lst <- list(item1, item2, ..., itemK)
+named <- list(name1 = item1, name2 = item2)
+```
+
+Gotcha: A list is **ordered**. Elements keep their positions.
+
+---
+
+#### Create a minimal, reproducible list
+
+```r
+# Components of mixed types
+title   <- "The Shining"
+year    <- 1980L                     # integer
+actors  <- c("Jack Nicholson", "Shelley Duvall", "Danny Lloyd")
+scores  <- data.frame(
+  source = c("IMDb","RottenTomatoes"),
+  score  = c(8.4, 82),
+  stringsAsFactors = FALSE
+)
+
+shining_list <- list(title, year, actors, scores)
+shining_list
+#> [[1]]
+#> [1] "The Shining"
+#>
+#> [[2]]
+#> [1] 1980
+#>
+#> [[3]]
+#> [1] "Jack Nicholson" "Shelley Duvall" "Danny Lloyd"
+#>
+#> [[4]]
+#>       source score
+#> 1        IMDb   8.4
+#> 2 RottenTomatoes 82
+```
+
+---
+
+#### Create a named list (recommended)
+
+```r
+shining_list <- list(
+  title  = title,
+  year   = year,
+  actors = actors,
+  reviews = scores
+)
+
+names(shining_list)
+#> "title" "year" "actors" "reviews"
+```
+
+Equivalent two-step naming:
+
+```r
+shining_list <- list(title, year, actors, scores)
+names(shining_list) <- c("title","year","actors","reviews")
+```
+
+---
+
+#### Inspect a list quickly
+
+```r
+length(shining_list)     #> 4  (number of components)
+str(shining_list)
+#> List of 4
+#>  $ title  : chr "The Shining"
+#>  $ year   : int 1980
+#>  $ actors : chr [1:3] "Jack Nicholson" "Shelley Duvall" "Danny Lloyd"
+#>  $ reviews:'data.frame': 2 obs. of 2 variables: ...
+sapply(shining_list, class)
+#>       title        year      actors     reviews
+#> "character" "integer" "character" "data.frame"
+```
+
+Tip: `lengths()` returns the length of **each** element of a list.
+
+```r
+lengths(shining_list)
+#> title  year actors reviews 
+#>     1     1      3       2
+```
+
+---
+
+#### Selecting from a list: `[ ]` vs `[[ ]]` vs `$`
+
+Key idea:
+
+* `lst[i]` returns a **sublist** (still a list).
+* `lst[[i]]` returns the **element itself**.
+* `lst$name` is shorthand for `lst[["name"]]` (element itself).
+
+Generic pattern
+
+```r
+lst[i]           # sublist (list of length i-length)
+lst[[i]]         # element at position i
+lst[["name"]]    # element by name
+lst$name         # element by name (non-programmatic)
+```
+
+Example
+
+```r
+# Sublist vs element
+shining_list[1]         #> a list with one component (title)
+shining_list[[1]]       #> "The Shining"
+
+# By name
+shining_list[["reviews"]]
+#> data frame (not a list)
+shining_list$reviews$score
+#> 8.4 82
+
+# Vector element inside a component
+shining_list[["actors"]][1]
+#> "Jack Nicholson"
+```
+
+Gotcha: Use `[[ ]]` when you need the actual object (e.g., data frame) not wrapped in a list; use `[ ]` when you want to keep list structure.
+
+---
+
+#### Selecting multiple components at once (subsetting to a sublist)
+
+```r
+shining_list[c("title","year")]   # returns a list with those two components
+#> $title
+#> [1] "The Shining"
+#>
+#> $year
+#> [1] 1980
+```
+
+---
+
+#### Accessing nested elements
+
+You can index **recursively** with `[[ c(...) ]]`:
+
+```r
+# Same as shining_list[["reviews"]][["score"]]
+shining_list[[c("reviews","score")]]
+#> 8.4 82
+
+# First actor via recursive indexing (positionally)
+shining_list[[c(3, 1)]]
+#> "Jack Nicholson"
+```
+
+---
+
+#### Modify, append, and remove components
+
+```r
+# Modify existing
+shining_list$year <- 1980L
+
+# Append new component
+shining_list$studio <- "Warner Bros."
+# or:
+shining_list <- c(shining_list, list(runtime_min = 146))
+
+# Remove a component
+shining_list$studio <- NULL
+
+# Rename components
+names(shining_list)[names(shining_list) == "reviews"] <- "ratings"
+
+# Replace inside a component
+shining_list$actors[3] <- "Danny Lloyd (child)"
+```
+
+Gotchas:
+
+* Assigning `NULL` to a component **removes** it.
+* `c(listA, listB)` concatenates lists (shallow); names may duplicate—consider unique names.
+
+---
+
+#### Transform lists with apply-family helpers
+
+```r
+# Map classes of components
+lapply(shining_list, class)
+#> list of classes per component
+
+# Simplify when possible (tries to return vector/matrix)
+sapply(shining_list, length)
+#> named integer vector
+
+# Flatten (be careful: coerces to a vector if possible)
+unlist(list(a = 1:2, b = 10), use.names = TRUE)
+#> a1 a2  b 
+#>  1  2 10
+```
+
+Tips:
+
+* Prefer `lapply()` for consistent list output; `sapply()` is convenient but may change type (vector/matrix) depending on contents.
+* Use `purrr::map*` in the tidyverse for stricter types; here we stay in base R.
+
+---
+
+#### Converting between list and data frame (common pattern)
+
+```r
+# List of equal-length vectors → data frame
+person <- list(name = c("Ann","Bo"), age = c(28, 31))
+as.data.frame(person)
+#>   name age
+#> 1  Ann  28
+#> 2   Bo  31
+
+# Data frame rows → list of rows (each row a list)
+rows_as_list <- split(iris, seq_len(nrow(iris)))
+length(rows_as_list)  #> 150
+```
+
+---
+
+#### Micro-exercises
+
+1. Pull a nested value
+   Extract only the numeric vector of scores from `shining_list`.
+
+<details><summary>Solution</summary>
+
+```r
+shining_list[[c("ratings","score")]]   # if you renamed reviews→ratings above
+# or, if still "reviews":
+# shining_list[[c("reviews","score")]]
+#> 8.4 82
+```
+
+</details>
+
+2. Sublist vs element
+   Return a list containing only `title` and `actors` (keep list structure), and separately return just the character vector of `actors`.
+
+<details><summary>Solution</summary>
+
+```r
+part <- shining_list[c("title","actors")]
+is.list(part)        #> TRUE
+
+acts <- shining_list$actors
+is.character(acts)   #> TRUE
+```
+
+</details>
+
+3. Append and remove
+   Add a logical component `classic = TRUE`, then remove it.
+
+<details><summary>Solution</summary>
+
+```r
+shining_list$classic <- TRUE
+names(shining_list)        # check it exists
+shining_list$classic <- NULL
+"classic" %in% names(shining_list)  #> FALSE
+```
+
+</details>
+
+4. Apply over components
+   Create a vector with the length of each component in `shining_list`, sorted decreasing.
+
+<details><summary>Solution</summary>
+
+```r
+lens <- sapply(shining_list, length)
+lens[order(-lens)]
+#> e.g., actors  ratings  title  year
+#>      3        2        1      1
+```
+
+</details>
+
+---
+
+#### Quick reference (functions covered)
+
+Creation & naming: `list()`, `names()`, `names(x) <-`, `c()`
+Inspect: `length()`, `lengths()`, `str()`, `sapply()`, `lapply()`, `class()`, `typeof()`
+Select: `x[i]` (sublist), `x[[i]]`, `x[["name"]]`, `x$name`, recursive `x[[c("a","b")]]`
+Modify: assignment with `$`, append via `c(x, list(...))`, remove via `x$name <- NULL`, rename with `names()`
+Coercion: `unlist()`, `as.data.frame()`, `split()`
+
+Gotcha: Remember—`[ ]` keeps a list, `[[ ]]` drops the list and gives you the element itself.
+
+---
+---
 
 ## 2. Introduction to the Tidyverse
+
+
+
+
+
+
+
+
+
+
+
 
 ## 3. Data Manipulation with dplyr
 
