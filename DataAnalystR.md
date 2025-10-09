@@ -1036,42 +1036,663 @@ which(M %% 2 == 1, arr.ind = TRUE)
 #> r1c3   1   3
 #> r2c2   2   2
 ```
-
 </details>
-::contentReference[oaicite:0]{index=0}
 
+---
 
+#### Worked example — Star Wars box office (concise, end-to-end)
 
+```r
+# Build a 3x2 matrix with row/col names (original trilogy)
+box_office <- c(
+  460.998, 314.400,   # A New Hope: US, non-US
+  290.475, 247.900,   # The Empire Strikes Back
+  309.306, 165.800    # Return of the Jedi
+)
+region <- c("US", "non-US")
+titles <- c("A New Hope", "The Empire Strikes Back", "Return of the Jedi")
 
+star_wars_matrix <- matrix(
+  box_office, nrow = 3, byrow = TRUE,
+  dimnames = list(titles, region)
+)
+star_wars_matrix
+#>                          US non-US
+#> A New Hope           460.998 314.400
+#> The Empire Strikes Back 290.475 247.900
+#> Return of the Jedi   309.306 165.800
 
+# Worldwide totals per movie (row-wise) and add as a new column
+worldwide_vector <- rowSums(star_wars_matrix)
+all_wars_with_worldwide <- cbind(star_wars_matrix, Worldwide = worldwide_vector)
+all_wars_with_worldwide
+#>                          US non-US Worldwide
+#> A New Hope           460.998 314.400   775.398
+#> The Empire Strikes Back 290.475 247.900   538.375
+#> Return of the Jedi   309.306 165.800   475.106
+```
 
+Add a second trilogy and **row-bind** (illustrative numbers for demo):
 
+```r
+prequel_box <- c(
+  431.100, 552.500,   # The Phantom Menace: US, non-US (illustrative)
+  310.700, 338.700,   # Attack of the Clones (illustrative)
+  380.300, 468.500    # Revenge of the Sith (illustrative)
+)
+prequel_titles <- c("The Phantom Menace", "Attack of the Clones", "Revenge of the Sith")
 
+star_wars_matrix2 <- matrix(
+  prequel_box, nrow = 3, byrow = TRUE,
+  dimnames = list(prequel_titles, region)   # same 2 column names: US, non-US
+)
+pre_worldwide <- rowSums(star_wars_matrix2)
 
+both_trilogies <- rbind(
+  all_wars_with_worldwide,
+  cbind(star_wars_matrix2, Worldwide = pre_worldwide)
+)
+both_trilogies
+#>                          US non-US Worldwide
+#> A New Hope              460.998 314.4   775.398
+#> The Empire Strikes Back 290.475 247.9   538.375
+#> Return of the Jedi      309.306 165.8   475.106
+#> The Phantom Menace      431.100 552.5   983.600
+#> Attack of the Clones    310.700 338.7   649.400
+#> Revenge of the Sith     380.300 468.5   848.800
 
+# Quick integrity check: sum of row totals equals sum over columns
+sum(rowSums(both_trilogies)) == sum(colSums(both_trilogies))
+#> [1] TRUE
+```
 
+**Tip:** Before `rbind()`, ensure identical column names and order. If needed:
 
+```r
+star_wars_matrix2 <- star_wars_matrix2[, colnames(star_wars_matrix), drop = FALSE]
+```
 
+---
 
+**Micro-exercises (2 quick checks)**
 
+1. From `both_trilogies`, return the **top-2** movies by `Worldwide`.
 
+   <details><summary>Solution</summary>
 
+   ```r
+   both_trilogies[order(both_trilogies[, "Worldwide"], decreasing = TRUE)[1:2], , drop = FALSE]
+   ```
 
+   </details>
 
+2. Filter rows where **non-US > US**, keep the 2D shape.
 
+   <details><summary>Solution</summary>
 
+   ```r
+   keep <- both_trilogies[, "non-US"] > both_trilogies[, "US"]
+   both_trilogies[keep, , drop = FALSE]
+   ```
 
+   </details>
 
+---
 
+#### Row totals and saga total
 
+```r
+# Minimal setup if you don't already have all_wars_matrix (6x2: US, non-US)
+if (!exists("all_wars_matrix")) {
+  region <- c("US","non-US")
+  titles_all <- c("A New Hope","The Empire Strikes Back","Return of the Jedi",
+                  "The Phantom Menace","Attack of the Clones","Revenge of the Sith")
+  all_wars_matrix <- matrix(
+    c(
+      460.998, 314.400,   # A New Hope
+      290.475, 247.900,   # Empire
+      309.306, 165.800,   # Jedi
+      431.100, 552.500,   # Phantom  (illustrative)
+      310.700, 338.700,   # Attack   (illustrative)
+      380.300, 468.500    # Revenge  (illustrative)
+    ),
+    nrow = 6, byrow = TRUE,
+    dimnames = list(titles_all, region)
+  )
+}
 
+# Per-movie worldwide totals
+worldwide <- rowSums(all_wars_matrix)
+worldwide
+#>           A New Hope The Empire Strikes Back    Return of the Jedi 
+#>               775.398                  538.375                  475.106 
+#>    The Phantom Menace    Attack of the Clones       Revenge of the Sith 
+#>               983.600                  649.400                  848.800
 
+# Total box office for the whole saga (all entries)
+saga_total <- sum(all_wars_matrix)
+saga_total
+#> [1] 4270.679
 
+# Integrity check: rowSums vs colSums totals
+sum(worldwide) == sum(colSums(all_wars_matrix))
+#> [1] TRUE
+```
 
+**Why:** `rowSums()`/`colSums()` give fast, intention-revealing summaries, and `sum()` over a matrix
+just sums all entries (after treating it as a vector).
 
+---
 
+#### Selecting matrix elements (column/row slices)
+
+```r
+# Entire second column (non-US) for all movies
+non_us_all <- all_wars_matrix[, "non-US"]
+non_us_all
+#>   A New Hope The Empire Strikes Back    Return of the Jedi 
+#>        314.4                 247.9                 165.8 
+#> The Phantom Menace    Attack of the Clones       Revenge of the Sith 
+#>        552.5                 338.7                 468.5
+mean(non_us_all)
+#> [1] 347.9667
+
+# Non-US revenue for the first two movies only
+non_us_some <- all_wars_matrix[1:2, "non-US"]
+non_us_some
+#> A New Hope The Empire Strikes Back 
+#>     314.4                 247.9
+mean(non_us_some)
+#> [1] 281.15
+```
+
+**Tip:** Use names (`"non-US"`) for safer slicing than numeric positions.
+
+---
+
+#### Element-wise arithmetic (scalar)
+
+```r
+# Estimate visitors assuming a flat USD 5 ticket
+ticket_price <- 5
+visitors_fixed <- all_wars_matrix / ticket_price
+visitors_fixed[1:3, ]              # peek at first three movies
+#>                          US  non-US
+#> A New Hope           92.1996  62.880
+#> The Empire Strikes Back 58.095  49.580
+#> Return of the Jedi   61.8612  33.160
+```
+
+**Why:** Matrix arithmetic with scalars applies **element-wise**, just like vectors.
+
+---
+
+#### Element-wise arithmetic with varying prices (matrix)
+
+```r
+# Ticket prices that changed over time (illustrative numbers)
+ticket_prices_matrix <- matrix(
+  c(
+    5.0, 5.0,   # A New Hope       (US, non-US)
+    5.0, 5.5,   # Empire
+    5.0, 6.0,   # Jedi
+    6.0, 6.5,   # Phantom
+    6.5, 7.0,   # Attack
+    7.0, 7.5    # Revenge
+  ),
+  nrow = 6, byrow = TRUE,
+  dimnames = dimnames(all_wars_matrix)
+)
+
+# Element-wise division: revenue / price = estimated visitors
+visitors_varprice <- all_wars_matrix / ticket_prices_matrix
+visitors_varprice[1:3, ]
+#>                          US   non-US
+#> A New Hope           92.1996 62.88000
+#> The Empire Strikes Back 58.095 45.07273
+#> Return of the Jedi   61.8612 27.63333
+```
+
+**Gotcha:** This is **not** matrix multiplication; `%*%` is for linear algebra with conformable
+dimensions. Here we use plain `/` for element-wise division.
+
+---
+
+**Micro-exercises (quick)**
+
+1. Using `all_wars_matrix`, compute the **mean US** revenue for the last three movies only.
+
+   <details><summary>Solution</summary>
+
+   ```r
+   mean(all_wars_matrix[4:6, "US"])
+   ```
+
+   </details>
+
+2. Create a logical mask for movies where **non-US > US**, then return those rows (keep 2D).
+
+   <details><summary>Solution</summary>
+
+   ```r
+   keep <- all_wars_matrix[, "non-US"] > all_wars_matrix[, "US"]
+   all_wars_matrix[keep, , drop = FALSE]
+   ```
+
+   </details>
+
+Goal: expand subsection 1.4 “Factors” with clear, runnable R examples, pitfalls, and micro-exercises.
 
 ### 1.4 Factors
+
+Concept: A **factor** is R’s data type for **categorical** variables (finite set of levels). Internally, a factor is an **integer vector** with a **levels** attribute. Use unordered factors for nominal categories and **ordered** factors for ranked categories.
+
+Why it matters: Correct factor handling drives proper summaries, plotting, and modeling (contrasts, dummy variables, baseline choice).
+
+---
+
+#### Creating factors (nominal)
+
+Idea: Encode a character vector as a factor; by default levels are sorted alphabetically.
+
+Generic pattern
+
+```r
+x_chr <- c("catA","catB", ...)
+x_fac <- factor(x_chr)               # unordered by default
+levels(x_fac)                        # inspect level set
+```
+
+Example
+
+```r
+sex_chr <- c("Male","Female","Female","Male","Male")
+sex_fac <- factor(sex_chr)
+sex_fac
+levels(sex_fac)
+#> [1] Male   Female Female Male   Male  
+#> Levels: Female Male
+#> [1] "Female" "Male"
+```
+
+Gotcha: Since R 4.0, data.frame() does NOT auto-convert strings to factors; set `stringsAsFactors = TRUE` explicitly if you need that behavior.
+
+Micro-exercise
+Make a factor from `c("yes","no","no","yes","no")`. What levels do you get?
+
+<details><summary>Solution</summary>
+
+```r
+yn_fac <- factor(c("yes","no","no","yes","no"))
+levels(yn_fac)
+#> [1] "no"  "yes"
+```
+
+</details>
+
+---
+
+#### Setting level order and labels
+
+Idea: Control the **order** and **names** of levels at creation or with `levels()`.
+
+Generic pattern
+
+```r
+x_fac <- factor(x_chr, levels = c("F","M"), labels = c("Female","Male"))
+# or later:
+levels(x_fac) <- c("Female","Male")  # order matters!
+```
+
+Example
+
+```r
+survey_chr <- c("F","M","F","F","M")
+survey_fac <- factor(survey_chr, levels = c("F","M"), labels = c("Female","Male"))
+table(survey_fac)
+#> survey_fac
+#> Female   Male 
+#>      3      2
+```
+
+Gotcha: If you rename with `levels(x) <- ...`, the new vector must match current level order exactly; otherwise you’ll mislabel categories.
+
+Micro-exercise
+Create `c("M","F","M")` and map to `c("Male","Female")` in that order.
+
+<details><summary>Solution</summary>
+
+```r
+z <- factor(c("M","F","M"), levels = c("M","F"), labels = c("Male","Female"))
+levels(z)
+#> [1] "Male"   "Female"
+```
+
+</details>
+
+---
+
+#### Ordered factors (ordinal)
+
+Idea: Use `ordered=TRUE` and specify `levels=` from lowest to highest to enable meaningful comparisons.
+
+Generic pattern
+
+```r
+ord_fac <- factor(x_chr, ordered = TRUE, levels = c("Low","Medium","High"))
+ord_fac[1] < ord_fac[2]  # TRUE/FALSE
+```
+
+Example
+
+```r
+speed_chr <- c("medium","slow","fast","fast","slow")
+speed_fac <- factor(speed_chr, ordered = TRUE,
+                    levels = c("slow","medium","fast"))
+speed_fac[2] < speed_fac[3]
+#> TRUE
+summary(speed_fac)
+#> slow  medium    fast 
+#>    2       1       2
+```
+
+Gotcha: Comparisons (`<`, `>`) on **unordered** factors are invalid (warning). Order them first if ranking is intended.
+
+Micro-exercise
+Create an ordered factor for `c("S","M","L","M")` with order S < M < L and check if the first element is less than the third.
+
+<details><summary>Solution</summary>
+
+```r
+sz <- factor(c("S","M","L","M"), ordered = TRUE, levels = c("S","M","L"))
+sz[1] < sz[3]
+#> TRUE
+```
+
+</details>
+
+---
+
+#### Summaries and counts
+
+Idea: `summary()` and `table()` give frequency counts; `prop.table()` yields proportions.
+
+Generic pattern
+
+```r
+summary(fac)
+table(fac)
+prop.table(table(fac))
+```
+
+Example
+
+```r
+table(speed_fac)
+prop.table(table(speed_fac))
+#> speed_fac
+#>  slow medium   fast 
+#>     2      1      2
+#> speed_fac
+#> slow  medium    fast 
+#>  0.4     0.2     0.4
+```
+
+Gotcha: `table()` drops unused levels by default in display, but the factor may still carry them (see `droplevels()`).
+
+Micro-exercise
+Compute the share of “Male” in `survey_fac`.
+
+<details><summary>Solution</summary>
+
+```r
+prop.table(table(survey_fac))["Male"]
+#> 0.4
+```
+
+</details>
+
+---
+
+#### Dropping unused levels after subsetting
+
+Idea: After filtering, remove levels that no longer appear.
+
+Generic pattern
+
+```r
+x2 <- subset_df$fac
+x2 <- droplevels(x2)
+```
+
+Example
+
+```r
+keep_fast <- speed_fac[speed_fac == "fast"]
+levels(keep_fast)
+#> [1] "slow"   "medium" "fast"
+keep_fast <- droplevels(keep_fast)
+levels(keep_fast)
+#> [1] "fast"
+```
+
+Gotcha: Unused levels can cause confusing legends or model matrices; clean them up.
+
+Micro-exercise
+Subset `survey_fac` to “Female” only and drop unused levels.
+
+<details><summary>Solution</summary>
+
+```r
+f_only <- droplevels(survey_fac[survey_fac == "Female"])
+levels(f_only)
+#> [1] "Female"
+```
+
+</details>
+
+---
+
+#### Changing the reference (baseline) level
+
+Idea: The first level is the baseline in many models. Use `relevel()` to set it.
+
+Generic pattern
+
+```r
+fac2 <- relevel(fac, ref = "desired_baseline")
+```
+
+Example
+
+```r
+survey_ref <- relevel(survey_fac, ref = "Male")
+levels(survey_ref)
+#> [1] "Male"   "Female"
+```
+
+Gotcha: Baseline choice affects model coefficients and interpretation, not predictions.
+
+Micro-exercise
+Set “medium” as the baseline in `speed_fac`.
+
+<details><summary>Solution</summary>
+
+```r
+speed_ref <- relevel(speed_fac, ref = "medium")
+levels(speed_ref)
+#> [1] "medium" "slow"   "fast"
+```
+
+</details>
+
+---
+
+#### Safe coercion to/from character
+
+Idea: Convert to character for clean printing or string ops; avoid converting factors straight to numeric codes unless you truly want the underlying integer codes.
+
+Generic pattern
+
+```r
+as.character(fac)
+as.numeric(fac)          # integer codes (1..k), NOT the original numbers
+as.numeric(as.character(fac_numlike))  # if labels are numeric strings
+```
+
+Example
+
+```r
+fac_num <- factor(c("10","20","10"))
+as.numeric(fac_num)
+as.numeric(as.character(fac_num))
+#> 1 2 1
+#> 10 20 10
+```
+
+Gotcha: `as.numeric(factor(...))` returns the internal codes, not the label values.
+
+Micro-exercise
+Turn factor `c("3","1","2")` into numeric vector `c(3,1,2)`.
+
+<details><summary>Solution</summary>
+
+```r
+fx <- factor(c("3","1","2"))
+as.numeric(as.character(fx))
+#> 3 1 2
+```
+
+</details>
+
+---
+
+#### Collapsing and relabeling categories (forcats)
+
+Idea: `forcats` functions streamline factor wrangling.
+
+Generic pattern
+
+```r
+library(forcats)
+fct_recode(f, New = "Old")
+fct_relevel(f, "baseline", after = 0)
+fct_collapse(f, Group = c("A","B"))
+fct_lump_n(f, n = 3)   # keep top 3, lump others
+```
+
+Example
+
+```r
+# install.packages("forcats") if needed
+library(forcats)
+animal <- factor(c("Dog","Cat","Dog","Horse","Cat","Ferret"))
+f1 <- fct_collapse(animal, Pet = c("Dog","Cat"))
+f2 <- fct_lump_n(animal, n = 2)
+levels(f1); table(f1)
+levels(f2); table(f2)
+#> [1] "Pet"    "Ferret" "Horse"
+#> f1
+#>   Pet Ferret  Horse 
+#>     4      1      1
+#> [1] "Cat"   "Dog"   "Other"
+#> f2
+#>   Cat   Dog Other 
+#>     2     2     2
+```
+
+Gotcha: After collapsing/lumping, consider relabeling and re-ordering to keep plots and summaries interpretable.
+
+Micro-exercise
+Keep only the top 1 animal by frequency and lump the rest as “Other”.
+
+<details><summary>Solution</summary>
+
+```r
+top1 <- forcats::fct_lump_n(animal, n = 1)
+levels(top1); table(top1)
+#> [1] "Dog"   "Other"
+#> top1
+#>   Dog Other 
+#>     2     4
+```
+
+</details>
+
+---
+
+#### Handling unknown or missing categories
+
+Idea: Encode unknowns explicitly; decide whether `NA` means missing or a valid “Unknown” group.
+
+Generic pattern
+
+```r
+x_fac <- factor(x_chr, levels = c("A","B","Unknown"))
+x_fac[is.na(x_fac)] <- "Unknown"
+x_fac <- droplevels(x_fac)
+```
+
+Example
+
+```r
+ans <- c("A","B",NA,"B")
+ans_fac <- factor(ans, levels = c("A","B","Unknown"))
+ans_fac[is.na(ans_fac)] <- "Unknown"
+table(ans_fac)
+#> ans_fac
+#>       A       B Unknown 
+#>       1       2       1
+```
+
+Gotcha: Converting a factor with labels not in `levels` yields `NA`. Define all expected levels up front to avoid silent NAs.
+
+Micro-exercise
+Make `c("Low","Medium",NA,"High")` an ordered factor Low < Medium < High, replacing `NA` with “Medium”.
+
+<details><summary>Solution</summary>
+
+```r
+x <- c("Low","Medium",NA,"High")
+xf <- factor(x, ordered = TRUE, levels = c("Low","Medium","High"))
+xf[is.na(xf)] <- "Medium"
+xf
+#> [1] Low    Medium Medium High  
+#> Levels: Low < Medium < High
+```
+
+</details>
+
+---
+
+Tips / Hints / Hacks
+• Prefer setting `levels=` and `labels=` at creation time for clarity.
+• Use `droplevels()` after filtering to avoid ghost levels.
+• Choose the baseline with `relevel()` before modeling; it simplifies interpretation.
+• For heavy factor wrangling, `forcats` is concise and safer than manual `levels()` edits.
+• Beware `as.numeric(factor)`: it returns codes, not label values.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ### 1.5 Data Frames
 
