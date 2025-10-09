@@ -2352,6 +2352,46 @@ Gotcha: Remember—`[ ]` keeps a list, `[[ ]]` drops the list and gives you the 
 
 ## 2. Introduction to the Tidyverse
 
+### 2.1 Data Wrangling
+
+Before you can work with the gapminder dataset, you'll need to load two R packages that contain the tools for working with it, then display the gapminder dataset so that you can see what it contains.
+
+When you submit your code, your R script is executed and the output is shown in the console/shell. DataCamp checks whether your submission is correct and gives you feedback. You can submit your code as often as you want. If you're stuck, you can ask for a hint or a solution by clicking the lightbulb icon.
+
+You can use the console/shell interactively by simply typing R code and hitting Enter. When you work in the console directly, your code will not be checked for correctness so it is a great way to experiment and explore.
+
+This course introduces a lot of new concepts, so if you ever need a quick refresher, download the Tidyverse For Beginners Cheat Sheet and keep it handy!
+
+Most data analyses in R, and everything you'll do in this course, are centered around data frames. As described in the first line of the output, this is a special type of data frame called a tibble.
+
+this chapter you'll learn about the "verbs" in the dplyr package - these are the atomic steps you use to transform data.  The first verb you'll use is filter.
+
+You use filter when you want to look only at a subset of your observations, based on a particular condition. Filtering data is a common first step in an analysis. Every time you apply a verb, you'll use a pipe.
+
+A pipe is a percent, greater than, percent. It says "take whatever is before it, and feed it into the next step." After the pipe, we can perform our first verb.
+
+We have data on many years, but we'd like to filter for just one. Let's say we filter for 2007, the most recent data in the dataset. The "year equals equals 2007" is the condition we are using to filter observations. The "equals equals" may be surprising: it's what we call a "logical equals"- an operation to compare two values: each year, and the number 2007. A single equals here would mean something different in R, which you'll see later. Here, we're saying we want to filter for only the observations from 2007. 
+
+filter is returning a new dataset, one with fewer rows, that then gets printed to the screen.
+
+You could choose another condition to filter on, besides the year.
+
+we can specify multiple conditions in the filter. Each of the conditions is separated by a comma: here we are saying we want only the one observation for the year 2007, comma, where the country is the United States. Each of these equals equals expressions is called an argument. This kind of double filter is useful for extracting a single observation you're interested in. 
+
+
+
+
+
+### 2.2 Data Visualization
+
+
+
+### 2.3 Grouping and summarizing
+
+
+
+
+### 2.4 Types of Visualization
 
 
 
