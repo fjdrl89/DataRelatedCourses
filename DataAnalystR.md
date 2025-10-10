@@ -2378,6 +2378,22 @@ You could choose another condition to filter on, besides the year.
 
 we can specify multiple conditions in the filter. Each of the conditions is separated by a comma: here we are saying we want only the one observation for the year 2007, comma, where the country is the United States. Each of these equals equals expressions is called an argument. This kind of double filter is useful for extracting a single observation you're interested in. 
 
+Here is what I have covered in my last lesson:
+
+You learned about the basics of data wrangling in R, focusing on the Gapminder dataset. Data wrangling is a crucial step in data analysis that involves filtering observations, arranging them in a desired order, and mutating data frames to add or change columns. Here are the key points you covered:
+
+Introduction to the Gapminder dataset: A real dataset that tracks economic and social indicators like life expectancy and GDP per capita across countries over time. Each row in the dataset represents a unique pair of a country and a year, with variables such as continent, life expectancy, population, and GDP per capita.
+
+Loading R packages: You learned that R packages extend the functionality of R. You used the library() function to load the gapminder and dplyr packages. The gapminder package contains the dataset you're analyzing, while dplyr offers tools for data transformation.
+
+# Load the gapminder and dplyr packages
+library(gapminder)
+library(dplyr)
+
+Exploring data frames: You discovered that the Gapminder data is stored in a data frame, a key data structure in R for storing tabular data. You used the command gapminder to display the dataset and learned about its structure, including observations (rows) and variables (columns).
+This lesson equipped you with the foundational skills to start manipulating and exploring your data using R, setting the stage for more advanced data analysis techniques.
+
+The goal of the next lesson is to introduce more dplyr verbs for transforming and summarizing datasets, building on the foundation of data filtering with filter.
 
 
 
