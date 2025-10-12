@@ -2354,46 +2354,236 @@ Gotcha: Remember—`[ ]` keeps a list, `[[ ]]` drops the list and gives you the 
 
 ### 2.1 Data Wrangling
 
-Before you can work with the gapminder dataset, you'll need to load two R packages that contain the tools for working with it, then display the gapminder dataset so that you can see what it contains.
+Idea: Load tidyverse tools, inspect a tibble, and subset rows with readable, piped verbs.
 
-When you submit your code, your R script is executed and the output is shown in the console/shell. DataCamp checks whether your submission is correct and gives you feedback. You can submit your code as often as you want. If you're stuck, you can ask for a hint or a solution by clicking the lightbulb icon.
+#### Setup: packages and data peek
 
-You can use the console/shell interactively by simply typing R code and hitting Enter. When you work in the console directly, your code will not be checked for correctness so it is a great way to experiment and explore.
+```r
+# Install once if needed:
+# install.packages(c("gapminder", "dplyr"))
 
-This course introduces a lot of new concepts, so if you ever need a quick refresher, download the Tidyverse For Beginners Cheat Sheet and keep it handy!
-
-Most data analyses in R, and everything you'll do in this course, are centered around data frames. As described in the first line of the output, this is a special type of data frame called a tibble.
-
-this chapter you'll learn about the "verbs" in the dplyr package - these are the atomic steps you use to transform data.  The first verb you'll use is filter.
-
-You use filter when you want to look only at a subset of your observations, based on a particular condition. Filtering data is a common first step in an analysis. Every time you apply a verb, you'll use a pipe.
-
-A pipe is a percent, greater than, percent. It says "take whatever is before it, and feed it into the next step." After the pipe, we can perform our first verb.
-
-We have data on many years, but we'd like to filter for just one. Let's say we filter for 2007, the most recent data in the dataset. The "year equals equals 2007" is the condition we are using to filter observations. The "equals equals" may be surprising: it's what we call a "logical equals"- an operation to compare two values: each year, and the number 2007. A single equals here would mean something different in R, which you'll see later. Here, we're saying we want to filter for only the observations from 2007. 
-
-filter is returning a new dataset, one with fewer rows, that then gets printed to the screen.
-
-You could choose another condition to filter on, besides the year.
-
-we can specify multiple conditions in the filter. Each of the conditions is separated by a comma: here we are saying we want only the one observation for the year 2007, comma, where the country is the United States. Each of these equals equals expressions is called an argument. This kind of double filter is useful for extracting a single observation you're interested in. 
-
-Here is what I have covered in my last lesson:
-
-You learned about the basics of data wrangling in R, focusing on the Gapminder dataset. Data wrangling is a crucial step in data analysis that involves filtering observations, arranging them in a desired order, and mutating data frames to add or change columns. Here are the key points you covered:
-
-Introduction to the Gapminder dataset: A real dataset that tracks economic and social indicators like life expectancy and GDP per capita across countries over time. Each row in the dataset represents a unique pair of a country and a year, with variables such as continent, life expectancy, population, and GDP per capita.
-
-Loading R packages: You learned that R packages extend the functionality of R. You used the library() function to load the gapminder and dplyr packages. The gapminder package contains the dataset you're analyzing, while dplyr offers tools for data transformation.
-
-# Load the gapminder and dplyr packages
 library(gapminder)
 library(dplyr)
 
-Exploring data frames: You discovered that the Gapminder data is stored in a data frame, a key data structure in R for storing tabular data. You used the command gapminder to display the dataset and learned about its structure, including observations (rows) and variables (columns).
-This lesson equipped you with the foundational skills to start manipulating and exploring your data using R, setting the stage for more advanced data analysis techniques.
+# Gapminder is a tibble (modern data frame)
+gapminder
+#> # A tibble: 1,704 × 6
+#>   country continent  year lifeExp      pop gdpPercap
+#>   <fct>   <fct>     <int>   <dbl>    <int>     <dbl>
+#>   ...
+```
 
-The goal of the next lesson is to introduce more dplyr verbs for transforming and summarizing datasets, building on the foundation of data filtering with filter.
+Gotcha: Tibbles print only a few rows/columns. Use `print(gapminder, n = 20)`, `glimpse(gapminder)`, or `View(gapminder)` (RStudio) to see more.
+
+#### The pipe `%>%`
+
+Idea: “Take this… then do that.” Improves readability by chaining verbs.
+
+Generic pattern
+
+```r
+data %>%
+  verb1(args) %>%
+  verb2(args)
+```
+
+Example
+
+```r
+gapminder %>%
+  filter(year == 2007) %>%   # keep 2007 only
+  head(3)
+#> # A tibble: 3 × 6
+#>   country     continent  year lifeExp     pop gdpPercap
+#>   <fct>       <fct>     <int>   <dbl>   <int>     <dbl>
+#>   ...
+```
+
+Gotcha: In grader-style exercises, place `%>%` at the end of the first line (`gapminder %>%`) rather than starting the next line with it.
+
+Tip: Base R has a native pipe `|>` (R ≥ 4.1). In tidyverse-heavy code and many courses, prefer `%>%`.
+
+#### `filter()`: keep rows that meet conditions
+
+Idea: Subset observations by logical conditions.
+
+Generic pattern
+
+```r
+data %>%
+  filter(condition_1, condition_2, ...)  # commas act like logical AND
+```
+
+Example: filter a single year
+
+```r
+gm_2007 <- gapminder %>%
+  filter(year == 2007)
+
+nrow(gm_2007)
+#> 142   # 142 countries measured in 2007
+```
+
+Example: one country AND one year
+
+```r
+us_2007 <- gapminder %>%
+  filter(year == 2007, country == "United States")
+
+us_2007
+#> # A tibble: 1 × 6
+#>   country        continent  year lifeExp      pop gdpPercap
+#>   <fct>          <fct>     <int>   <dbl>    <int>     <dbl>
+#>   United States  Americas   2007    ...      ...       ...
+```
+
+Gotcha: Use `==` for comparison. A single `=` inside `filter()` does **not** compare values; it tries to name an argument and will error.
+
+#### Combining conditions: AND, OR, NOT, membership
+
+Idea: Build complex filters using `&`, `|`, `!`, and `%in%`.
+
+Generic patterns
+
+```r
+# AND (both true)
+filter(x > 0, y == "A")     # same as filter(x > 0 & y == "A")
+
+# OR (either true)
+filter(x > 0 | y == "A")
+
+# NOT
+filter(!(country %in% c("Denmark", "Mexico")))
+
+# Membership
+filter(country %in% c("Denmark", "Mexico"), year == 2007)
+```
+
+Examples
+
+```r
+# Two specific countries in 2007
+dmx_2007 <- gapminder %>%
+  filter(year == 2007, country %in% c("Denmark", "Mexico"))
+
+dmx_2007
+#> # A tibble: 2 × 6
+#>   country continent  year lifeExp     pop gdpPercap
+#>   <fct>   <fct>     <int>   <dbl>   <int>     <dbl>
+#>   Denmark Europe     2007     ...     ...       ...
+#>   Mexico  Americas   2007     ...     ...       ...
+```
+
+Tip: String matches are case-sensitive; use exact country names as in the data (see `distinct(gapminder, country)` to inspect).
+
+#### Missing values and `filter()`
+
+Idea: `filter()` keeps rows where the condition is `TRUE` and drops rows where it is `FALSE` **or `NA`**.
+
+Generic patterns
+
+```r
+# Keep rows where var is missing
+filter(is.na(var))
+
+# Keep rows where var is present
+filter(!is.na(var))
+```
+
+(You won’t typically hit NAs in `gapminder`, but this matters in real datasets.)
+
+---
+
+### Micro-exercises
+
+1. Keep Europe in 2007, show the first 5 rows.
+
+```r
+eu_2007 <- gapminder %>%
+  filter(year == 2007, continent == "Europe")
+head(eu_2007, 5)
+```
+
+<details><summary>Solution</summary>
+
+```r
+eu_2007 <- gapminder %>%
+  filter(year == 2007, continent == "Europe")
+head(eu_2007, 5)
+#> # A tibble: 5 × 6
+#>   country continent  year lifeExp     pop gdpPercap
+#>   <fct>   <fct>     <int>   <dbl>   <int>     <dbl>
+#>   ...
+```
+
+</details>
+
+2. Retrieve the single row for Mexico in 2002.
+
+```r
+gapminder %>%
+  filter(country == "Mexico", year == 2002)
+```
+
+<details><summary>Solution</summary>
+
+```r
+mx_2002 <- gapminder %>%
+  filter(country == "Mexico", year == 2002)
+
+nrow(mx_2002)
+#> 1
+```
+
+</details>
+
+3. Countries in 2007 with life expectancy ≥ 80.
+
+```r
+gapminder %>%
+  filter(year == 2007, lifeExp >= 80)
+```
+
+<details><summary>Solution</summary>
+
+```r
+longlife_2007 <- gapminder %>%
+  filter(year == 2007, lifeExp >= 80)
+
+# Quick check: all lifeExp values meet the threshold?
+all(longlife_2007$lifeExp >= 80)
+#> TRUE
+```
+
+</details>
+
+---
+
+### Quick validation ideas
+
+* Sanity check row counts:
+
+```r
+stopifnot(nrow(filter(gapminder, year == 2007)) == 142)
+stopifnot(nrow(filter(gapminder, year == 2007, country == "United States")) == 1)
+```
+
+* Confirm filtering logic equivalence:
+
+```r
+a <- filter(gapminder, year == 2007, country == "Denmark")
+b <- filter(gapminder, year == 2007 & country == "Denmark")
+stopifnot(identical(a, b))
+```
+
+---
+
+### Common gotchas (brief)
+
+* `==` vs `=`: comparisons use `==`. Using `=` inside `filter()` will fail.
+* Exact names: use the exact country/continent strings present in the data.
+* NA logic: rows with `NA` in the condition are dropped; add `!is.na(var)` if needed.
+* Pipe placement: for some graders, keep `%>%` at the end of lines (not the start of the next line).
 
 
 
