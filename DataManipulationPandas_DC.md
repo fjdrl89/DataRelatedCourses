@@ -283,9 +283,239 @@ dogs[dogs["bmi"] < 100]
 
 ## 2. Aggregating Data
 
-* Summary statistics
-* Counting
-* Grouped summary statistics
+This chapter focuses on calculating summary statistics on DataFrame columns. We will move from simple summaries of a single column to complex, grouped summaries and pivot tables.
+
+### 2.1. Summary Statistics
+
+Aggregating data is the process of collapsing many rows into a single summary value.
+
+- Common Aggregations: Pandas provides many common aggregation methods as built-in Series methods:
+    * `.mean()`: Average
+    * `.median()`: The 50th percentile
+    * `.mode()`: The most frequent value
+    * `.min()`: The minimum value
+    * `.max()`: The maximum value
+    * `.var()`: Variance
+    * `.std()`: Standard deviation
+    * `.sum()`: The total
+    * `.quantile()`: The nth percentile (e.g., .quantile(0.25) for the 25th)
+
+```python
+# Calculate the mean of a single column
+# print(dogs["height_cm"].mean())
+# 49.714285714285715
+```
+
+#### Summarizing Dates
+
+- Aggregation methods work on dates, too. This is extremely useful for finding the start and end of a time period.
+    * Pro-tip: This only works correctly if your date column is a datetime `dtype`, not `object`. (See Chapter 1 `.info() pro-tip).# Get the oldest dog's date of birth
+# print(dogs["date_of_birth"].min())
+# '2011-12-11'
+
+# Get the youngest dog's date of birth
+# print(dogs["date_of_birth"].max())
+# '2018-02-27'
+Efficient Summaries with .agg()The .agg() method (short for "aggregate") is a powerful and flexible method that allows you to:Apply your own custom aggregation functions.Apply multiple aggregations at once.# 1. Using a custom function
+def pct30(column):
+    return column.quantile(0.3)
+
+# print(dogs["weight_kg"].agg(pct30))
+# 22.599999999999998
+
+# You can also apply it to multiple columns at once
+# print(dogs[["weight_kg", "height_cm"]].agg(pct30))
+# weight_kg    22.6
+# height_cm    45.4
+# dtype: float64
+
+# 2. Applying multiple functions
+def pct40(column):
+    return column.quantile(0.4)
+
+# Pass a list of functions (as strings or function names)
+# print(dogs["weight_kg"].agg([pct30, pct40]))
+# pct30    22.6
+# pct40    24.0
+# Name: weight_kg, dtype: float64
+
+# You can even mix strings of built-in methods
+# print(dogs["weight_kg"].agg(["mean", "median", pct30]))
+# mean     27.428571
+# median   24.000000
+# pct30    22.600000
+# Name: weight_kg, dtype: float64
+Cumulative StatisticsSometimes you need a running summary. Cumulative statistics apply an operation cumulatively down the rows..cumsum(): Cumulative sum (a running total)..cummax(): Cumulative maximum (the running max)..cummin(): Cumulative minimum (the running min)..cumprod(): Cumulative product.# Original weight column
+# 0    24
+# 1    24
+# 2    24
+# 3    17
+# 4    29
+# 5     2
+# 6    74
+# Name: weight_kg, dtype: int64
+
+# Cumulative sum
+# print(dogs["weight_kg"].cumsum())
+# 0     24  (24)
+# 1     48  (24 + 24)
+# 2     72  (48 + 24)
+# 3     89  (72 + 17)
+# 4    118  (89 + 29)
+# 5    120  (118 + 2)
+# 6    194  (120 + 74)
+# Name: weight_kg, dtype: int64
+2.2. CountingCounting is a critical part of data analysis, but it's important to avoid double counting.Dropping Duplicates (.drop_duplicates())When a dataset has one row per event (like vet_visits), but you want one row per object (like dogs), you must drop duplicates.The subset argument is key. It defines which column(s) to use to identify duplicates.# Example: vet_visits has multiple entries for 'Max' and 'Lucy'
+#      date    name      breed  weight_kg
+# 0  2018-09-02   Bella   Labrador      24.87
+# 1  2019-06-07     Max   Chow Chow     24.01
+# ...
+# 72 2019-06-07     Max   Chow Chow     24.01
+# 73 2018-08-20    Lucy   Chow Chow     24.40
+# 74 2019-04-22     Max    Labrador     28.54
+
+# Drop rows where the 'name' is duplicated
+# This keeps the *first* occurrence of each name
+unique_dogs = vet_visits.drop_duplicates(subset="name")
+
+# Drop rows where the *combination* of 'name' AND 'breed' is duplicated
+# This would keep both rows for 'Max' since ('Max', 'Chow Chow') 
+# is different from ('Max', 'Labrador')
+unique_dogs_breed = vet_visits.drop_duplicates(subset=["name", "breed"])
+Counting Categorical Variables (.value_counts())This is the go-to method for counting the occurrences of each value in a categorical column.It returns a Series with the unique values as the index and their counts as the values.By default, it sorts the results in descending order by count.# Count the occurrences of each breed in our unique dogs list
+# print(unique_dogs_breed["breed"].value_counts())
+# Labrador       2
+# Chow Chow      2
+# Schnauzer      1
+# St. Bernard    1
+# Poodle         1
+# Chihuahua      1
+# Name: breed, dtype: int64
+
+# Use sort=True to sort by count (default)
+# print(unique_dogs_breed["breed"].value_counts(sort=True))
+
+# Use normalize=True to get proportions (percentages)
+# This is extremely useful for understanding distribution.
+# print(unique_dogs_breed["breed"].value_counts(normalize=True))
+# Labrador       0.250
+# Chow Chow      0.250
+# Schnauzer      0.125
+# St. Bernard    0.125
+# Poodle         0.125
+# Chihuahua      0.125
+# Name: breed, dtype: float64
+2.3. Grouped Summary StatisticsThis is one of the most powerful features of pandas. It allows you to calculate summary statistics for sub-groups of your data.This follows the "Split-Apply-Combine" pattern:Split the data into groups based on some criteria.Apply an aggregation function to each group.Combine the results into a new data structure.The "Long Way" (Bad): You could filter for each group and then call .mean(). This is repetitive and inefficient.# dogs[dogs["color"] == "Black"]["weight_kg"].mean()
+# dogs[dogs["color"] == "Brown"]["weight_kg"].mean()
+# ... etc. ...
+The "Pandas Way" (.groupby()):The .groupby() method is used for this. You chain it with an aggregation method.# 1. Group by "color"
+# 2. Select the "weight_kg" column
+# 3. Apply the .mean() function to each group
+# print(dogs.groupby("color")["weight_kg"].mean())
+# color
+# Black    26.5
+# Brown    24.0
+# Gray     17.0
+# Tan       2.0
+# White    74.0
+# Name: weight_kg, dtype: float64
+Multiple Grouped SummariesJust like with .agg() before, you can use .agg() on a groupby object to get multiple summaries at once.# Get the min, max, and sum of weight for each color
+# print(dogs.groupby("color")["weight_kg"].agg([min, max, sum]))
+#        min  max  sum
+# color
+# Black   24   29   53
+# Brown   24   24   48
+# Gray    17   17   17
+# Tan      2    2    2
+# White   74   74   74
+Grouping by Multiple VariablesYou can group by multiple columns by passing a list of column names to .groupby(). This creates a MultiIndex in the result.# 1. Group by both "color" AND "breed"
+# 2. Get the mean of "weight_kg" for each group
+# print(dogs.groupby(["color", "breed"])["weight_kg"].mean())
+# color  breed
+# Black  Labrador     29
+#        Poodle       24
+# Brown  Chow Chow    24
+#        Labrador     24
+# Gray   Schnauzer    17
+# Tan    Chihuahua     2
+# White  St. Bernard  74
+# Name: weight_kg, dtype: int64
+
+# You can also get summaries for multiple value columns
+# print(dogs.groupby(["color", "breed"])[["weight_kg", "height_cm"]].mean())
+#                      weight_kg  height_cm
+# color breed
+# Black Labrador              29         59
+#       Poodle                24         43
+# Brown Chow Chow             24         46
+#       Labrador              24         56
+# Gray  Schnauzer             17         49
+# Tan   Chihuahua              2         18
+# White St. Bernard           74         77
+2.4. Pivot TablesPivot tables are an alternative, spreadsheet-like way to perform grouped summary statistics. They are especially good for "pivoting" or "unstacking" one of your grouping variables into new columns.values: The column to aggregate.index: The column to group by (will become the rows).aggfunc: The aggregation function to use (defaults to mean).# This .groupby() call...
+# dogs.groupby("color")["weight_kg"].mean()
+
+# ...is equivalent to this .pivot_table() call:
+# print(dogs.pivot_table(values="weight_kg", index="color"))
+#        weight_kg
+# color
+# Black       26.5
+# Brown       24.0
+# Gray        17.0
+# Tan          2.0
+# White       74.0
+
+# Use aggfunc to change the statistic
+# print(dogs.pivot_table(values="weight_kg", index="color", aggfunc="median"))
+
+# Pass a list to aggfunc for multiple statistics
+# print(dogs.pivot_table(values="weight_kg", index="color", aggfunc=["mean", "median"]))
+#           mean   median
+#      weight_kg weight_kg
+# color
+# Black       26.5      26.5
+# Brown       24.0      24.0
+# Gray        17.0      17.0
+# Tan          2.0       2.0
+# White       74.0      74.0
+Pivoting on Two VariablesThe real power of pivot tables comes from using the columns argument. This "pivots" the unique values from one column into new columns in the output.# This .groupby() (which produces a MultiIndex)...
+# dogs.groupby(["color", "breed"])["weight_kg"].mean()
+
+# ...can be "pivoted" into this table:
+# print(dogs.pivot_table(values="weight_kg", index="color", columns="breed"))
+# breed  Chihuahua  Chow Chow  Labrador  Poodle  Schnauzer  St. Bernard
+# color
+# Black        NaN        NaN      29.0    24.0        NaN          NaN
+# Brown        NaN       24.0      24.0     NaN        NaN          NaN
+# Gray         NaN        NaN       NaN     NaN       17.0          NaN
+# Tan          2.0        NaN       NaN     NaN        NaN          NaN
+# White        NaN        NaN       NaN     NaN        NaN         74.0
+Handling Missing Values & TotalsThe NaN (Not a Number) values appear because there are no "Black Chihuahuas" in the data. You can clean this up.fill_value: Replaces NaNs with a specific value (e.g., 0).margins: Set to True to add a "All" row and "All" column that show the totals (the mean for all breeds/colors).# Pivot with fill_value=0 and margins=True
+print(
+    dogs.pivot_table(
+        values="weight_kg",
+        index="color",
+        columns="breed",
+        fill_value=0,
+        margins=True
+    )
+)
+# breed  Chihuahua  Chow Chow  Labrador  Poodle  Schnauzer  St. Bernard        All
+# color
+# Black          0         0      29.0      24          0           0  26.500000
+# Brown          0        24      24.0       0          0           0  24.000000
+# Gray           0         0       0.0       0         17           0  17.000000
+# Tan            2         0       0.0       0          0           0   2.000000
+# White          0         0       0.0       0          0          74  74.000000
+# All            2        24      26.5      24         17          74  27.714286
+
+
+
+
+
+
+
+
 
 ## 3. Slicing and Indexing Data
 
