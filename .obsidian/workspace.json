@@ -14,7 +14,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "DataCamp/IntroductionToGitHub_DC.md",
+                "file": "DataCamp/GitHub/IntroductionToGitHub_DC.md",
                 "mode": "source",
                 "source": true
               },
@@ -36,7 +36,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "DataCamp/IntroductionToGitHub_DC.md",
+                "file": "DataCamp/GitHub/IntroductionToGitHub_DC.md",
                 "mode": "preview",
                 "source": true
               },
@@ -102,8 +102,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "right": {
     "id": "db7bd2e8489ae432",
@@ -138,7 +137,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "DataCamp/IntroductionToGitHub_DC.md",
+                "file": "DataCamp/GitHub/IntroductionToGitHub_DC.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
@@ -182,7 +181,7 @@
             "state": {
               "type": "footnotes",
               "state": {
-                "file": "DataCamp/IntroductionToGitHub_DC.md"
+                "file": "DataCamp/GitHub/IntroductionToGitHub_DC.md"
               },
               "icon": "lucide-file-signature",
               "title": "Footnotes"
@@ -209,8 +208,9 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "e63839d83922b28e",
+  "active": "64e1d8fe70177ee0",
   "lastOpenFiles": [
+    "IntroductionToGitHub_DC.pdf",
     "DataCamp/Python/Project_ExploringNYCPublicSchool.md",
     "DataCamp/Python/DataManipulationPandas_DC.md",
     "DataCamp/Python/PythonDataFundamentals_DC.md",
@@ -223,6 +223,6 @@
     "DataCamp/Python",
     "DataCamp/BI",
     "DataCamp/SQL",
-    "DataCamp/IntroductionToGitHub_DC.md"
+    "DataCamp/GitHub/IntroductionToGitHub_DC.md"
   ]
 }
