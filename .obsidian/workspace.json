@@ -6,6 +6,7 @@
       {
         "id": "13f02fb5dfb196fa",
         "type": "tabs",
+        "dimension": 64.453125,
         "children": [
           {
             "id": "e63839d83922b28e",
@@ -19,7 +20,30 @@
               },
               "icon": "lucide-file",
               "title": "IntroductionToGitHub_DC"
-            }
+            },
+            "group": "1c9296255dcd0e76"
+          }
+        ]
+      },
+      {
+        "id": "0a5846f427a1dffa",
+        "type": "tabs",
+        "dimension": 35.546875,
+        "children": [
+          {
+            "id": "878d97100577bf44",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "DataCamp/IntroductionToGitHub_DC.md",
+                "mode": "preview",
+                "source": true
+              },
+              "icon": "lucide-file",
+              "title": "IntroductionToGitHub_DC"
+            },
+            "group": "1c9296255dcd0e76"
           }
         ]
       }
@@ -78,7 +102,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "right": {
     "id": "db7bd2e8489ae432",
@@ -113,12 +138,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "DataCamp/Introduction to GitHub.md",
+                "file": "DataCamp/IntroductionToGitHub_DC.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from Introduction to GitHub"
+              "title": "Outgoing links from IntroductionToGitHub_DC"
             }
           },
           {
@@ -186,6 +211,18 @@
   },
   "active": "e63839d83922b28e",
   "lastOpenFiles": [
+    "DataCamp/Python/Project_ExploringNYCPublicSchool.md",
+    "DataCamp/Python/DataManipulationPandas_DC.md",
+    "DataCamp/Python/PythonDataFundamentals_DC.md",
+    "DataCamp/GitHub",
+    "DataCamp/New folder",
+    "DataCamp/SQL/AssociateDataAnalystSQL_DC.md",
+    "DataCamp/BI/PowerBIFundamentals_SK_DC.md",
+    "DataCamp/BI/DataAnalystPowerBI_DC.md",
+    "DataCamp/R",
+    "DataCamp/Python",
+    "DataCamp/BI",
+    "DataCamp/SQL",
     "DataCamp/IntroductionToGitHub_DC.md"
   ]
 }
