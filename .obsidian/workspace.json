@@ -14,12 +14,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "DataCamp/GitHub/IntroductionToGitHub_DC.md",
+                "file": "DataCamp/GitHub/SK_GitHub_Foundations_DC/C1_IntroductionToGit_DC.md",
                 "mode": "source",
                 "source": true
               },
               "icon": "lucide-file",
-              "title": "IntroductionToGitHub_DC"
+              "title": "C1_IntroductionToGit_DC"
             },
             "group": "1c9296255dcd0e76"
           }
@@ -36,12 +36,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "DataCamp/GitHub/IntroductionToGitHub_DC.md",
+                "file": "DataCamp/GitHub/SK_GitHub_Foundations_DC/C1_IntroductionToGit_DC.md",
                 "mode": "preview",
                 "source": true
               },
               "icon": "lucide-file",
-              "title": "IntroductionToGitHub_DC"
+              "title": "C1_IntroductionToGit_DC"
             },
             "group": "1c9296255dcd0e76"
           }
@@ -208,8 +208,15 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "64e1d8fe70177ee0",
+  "active": "e63839d83922b28e",
   "lastOpenFiles": [
+    "DataCamp/GitHub/SK_GitHub_Foundations_DC/C3_IntroductionToGitHub_DC.md",
+    "DataCamp/GitHub/SK_GitHub_Foundations_DC/C1_IntroductionToGit_DC.md",
+    "Introduction-To-Git.md",
+    "DataCamp/GitHub/SK_GitHub_Foundations_DC/C2_Intermediate_Git_DC.md",
+    "DataCamp/GitHub/SK_GitHub_Foundations_DC/C4_IntermediateGitHubConcepts_DC.md",
+    "DataCamp/GitHub/SK_GitHub_Foundations_DC",
+    "DataCamp/GitHub/Untitled.canvas",
     "IntroductionToGitHub_DC.pdf",
     "DataCamp/Python/Project_ExploringNYCPublicSchool.md",
     "DataCamp/Python/DataManipulationPandas_DC.md",
@@ -222,7 +229,6 @@
     "DataCamp/R",
     "DataCamp/Python",
     "DataCamp/BI",
-    "DataCamp/SQL",
-    "DataCamp/GitHub/IntroductionToGitHub_DC.md"
+    "DataCamp/SQL"
   ]
 }

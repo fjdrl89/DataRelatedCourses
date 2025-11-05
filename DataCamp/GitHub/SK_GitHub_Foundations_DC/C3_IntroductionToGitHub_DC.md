@@ -1285,8 +1285,9 @@ If you've navigated away from the PR:
 - **Restored Branch State:** When you restore a branch, it comes back exactly as it was when deleted, pointing to the same commits. You can then continue working on it, revert the merge if necessary, or extract specific commits as needed. This safety mechanism gives you confidence to delete merged branches knowing you can always recover them if circumstances change.
 
 ---
+---
+---
 
-**Chapter 3 Summary:** Collaboration is where GitHub truly shines. By mastering cloning and forking, you can work with any repository whether you're a team member or external contributor. Issues provide a structured way to track work, communicate plans, and document decisions. Pull requests create a review gateway that ensures code quality and spreads knowledge across teams. Together, these features transform GitHub from a simple code hosting platform into a complete collaboration environment. The workflows might seem complex at first—fork, clone, branch, commit, push, pull request, review, merge—but each step serves a purpose in maintaining code quality and enabling safe, effective teamwork. As you practice these workflows, they'll become second nature, and you'll appreciate how they prevent the chaos that can arise when multiple people modify the same codebase without structure. Whether you're contributing to a major open-source project or collaborating with a small team, these are the fundamental patterns that make successful software development possible.
 
 
 
