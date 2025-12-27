@@ -14,12 +14,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "DataCamp/GitHub/ST_Git_Fundamentals/C3_Advanced_Git.md",
+                "file": "DataCamp/GitHub/ST_Git_Fundamentals/C3a_AdvancedGit_DC.md",
                 "mode": "source",
                 "source": true
               },
               "icon": "lucide-file",
-              "title": "C3_Advanced_Git"
+              "title": "C3a_AdvancedGit_DC"
             },
             "group": "1c9296255dcd0e76"
           }
@@ -36,12 +36,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "DataCamp/GitHub/ST_Git_Fundamentals/C3_Advanced_Git.md",
+                "file": "DataCamp/GitHub/ST_Git_Fundamentals/C3a_AdvancedGit_DC.md",
                 "mode": "preview",
                 "source": true
               },
               "icon": "lucide-file",
-              "title": "C3_Advanced_Git"
+              "title": "C3a_AdvancedGit_DC"
             },
             "group": "1c9296255dcd0e76"
           }
@@ -210,15 +210,15 @@
   },
   "active": "e63839d83922b28e",
   "lastOpenFiles": [
-    "DataCamp/GitHub/ST_Git_Fundamentals/C2_Intermediate_Git_DC.md",
-    "DataCamp/GitHub/ST_Git_Fundamentals/C3_Advanced_Git.md",
-    "DataCamp/GitHub/ST_GitHub_Foundations_DC/C2_Intermediate_Git_DC.md",
+    "DataCamp/GitHub/ST_Git_Fundamentals/C2_IntermediateGit_DC.md",
     "DataCamp/GitHub/ST_Git_Fundamentals/C1_IntroductionToGit_DC.md",
+    "DataCamp/GitHub/ST_Git_Fundamentals/C3a_AdvancedGit_DC.md",
+    "DataCamp/GitHub/ST_GitHub_Foundations_DC/C4_IntermediateGitHubConcepts_DC.md",
+    "DataCamp/GitHub/ST_GitHub_Foundations_DC/C3b_IntroductionToGitHub_DC.md",
+    "DataCamp/GitHub/ST_GitHub_Foundations_DC/C2_IntermediateGit_DC.md",
     "DataCamp/GitHub/ST_GitHub_Foundations_DC/C1_IntroductionToGit_DC.md",
     "DataCamp/GitHub/ST_Git_Fundamentals",
-    "DataCamp/GitHub/ST_GitHub_Foundations_DC/C3_IntroductionToGitHub_DC.md",
     "Introduction-To-Git.md",
-    "DataCamp/GitHub/ST_GitHub_Foundations_DC/C4_IntermediateGitHubConcepts_DC.md",
     "DataCamp/GitHub/ST_GitHub_Foundations_DC",
     "DataCamp/GitHub/Untitled.canvas",
     "IntroductionToGitHub_DC.pdf",
