@@ -585,6 +585,58 @@ not 1 > 2    # Evaluates to True
 not 1 == 1   # Evaluates to False
 ```
 
+### Else Statements
+
+* An `else` block lets you define what should happen when an `if` condition evaluates to `False`.
+* `else` must come immediately after an `if` (or after the last `elif`) and uses the same indentation level as the matching `if`.
+* Using `else` avoids writing multiple separate `if` statements for “all other cases” and keeps control flow cleaner.
+* Only one of the blocks runs: either the `if` block (when the condition is `True`) or the `else` block (when it is `False`).
+
+Generic pattern
+
+```python
+if condition:
+  # runs when condition is True
+  ...
+else:
+  # runs when condition is False
+  ...
+```
+
+Example
+
+```python
+age = 12
+
+if age >= 13:
+  msg = "Access granted."
+else:
+  msg = "Sorry, you must be 13 or older to watch this movie."
+
+msg
+#> 'Sorry, you must be 13 or older to watch this movie.'
+```
+
+Gotcha
+
+* `else` cannot stand alone: it always needs a matching `if` (and correct indentation), otherwise you’ll get a `SyntaxError`.
+
+Micro-exercise: set `age = 13` and confirm the message becomes `"Access granted."`
+
+<details><summary>Solution</summary>  
+
+```python
+age = 13
+
+if age >= 13:
+  msg = "Access granted."
+else:
+  msg = "Sorry, you must be 13 or older to watch this movie."
+
+msg
+#> 'Access granted.'
+```
+
 
 
 
