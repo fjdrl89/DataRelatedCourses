@@ -587,55 +587,266 @@ not 1 == 1   # Evaluates to False
 
 ### Else Statements
 
-* An `else` block lets you define what should happen when an `if` condition evaluates to `False`.
-* `else` must come immediately after an `if` (or after the last `elif`) and uses the same indentation level as the matching `if`.
-* Using `else` avoids writing multiple separate `if` statements for “all other cases” and keeps control flow cleaner.
-* Only one of the blocks runs: either the `if` block (when the condition is `True`) or the `else` block (when it is `False`).
-
-Generic pattern
+* The Python `else` statement allows us to define what code should run when the condition in an `if` statement evaluates to `False`.
+* An `else` statement must always appear together with an `if` statement and cannot exist on its own.
+* Using `else` helps keep code clean and readable by handling all cases where the `if` condition is not met without writing multiple separate `if` statements.
+* Only one block is executed: either the `if` block (when the condition is `True`) or the `else` block (when it is `False`).
 
 ```python
-if condition:
-  # runs when condition is True
-  ...
+# else Statement
+
+weekday = False
+
+if weekday:
+  print("wake up at 6:30")
 else:
-  # runs when condition is False
-  ...
+  print("sleep in")
 ```
 
-Example
+* In this example, the `if` block runs only if `weekday` is `True`.
+
+* If `weekday` is `False`, the code inside the `else` block is executed instead.
+
+* `else` statements are especially useful when we want to define a default action for all situations where a condition is not satisfied.
 
 ```python
 age = 12
 
 if age >= 13:
-  msg = "Access granted."
+  print("Access granted.")
 else:
-  msg = "Sorry, you must be 13 or older to watch this movie."
-
-msg
-#> 'Sorry, you must be 13 or older to watch this movie.'
+  print("Sorry, you must be 13 or older to watch this movie.")
 ```
 
-Gotcha
+### Else If Statements (`elif`)
 
-* `else` cannot stand alone: it always needs a matching `if` (and correct indentation), otherwise you’ll get a `SyntaxError`.
-
-Micro-exercise: set `age = 13` and confirm the message becomes `"Access granted."`
-
-<details><summary>Solution</summary>  
+* In Python, an `elif` statement is short for **“else if”**.
+* An `elif` statement checks an additional condition **only if** the previous `if` (or `elif`) condition evaluated to `False`.
+* `elif` statements allow us to control the **order** in which conditions are evaluated.
+* Python evaluates conditional statements **from top to bottom**:
+  1. The `if` condition is checked first.
+  2. Each `elif` condition is checked in order.
+  3. The `else` block runs only if none of the previous conditions are met.
+* As soon as one condition evaluates to `True`, its block is executed and the rest are skipped.
 
 ```python
-age = 13
+# if / elif / else structure
 
-if age >= 13:
-  msg = "Access granted."
+print("Thank you for the donation!")
+
+if donation >= 1000:
+  print("You've achieved platinum status")
+elif donation >= 500:
+  print("You've achieved gold donor status")
+elif donation >= 100:
+  print("You've achieved silver donor status")
 else:
-  msg = "Sorry, you must be 13 or older to watch this movie."
-
-msg
-#> 'Access granted.'
+  print("You've achieved bronze donor status")
 ```
+
+* Even if multiple conditions are technically `True`, **only the first matching block** is executed.
+* This prevents multiple messages from being printed for a single input value.
+* Using `elif` is preferable to multiple independent `if` statements when conditions are mutually exclusive.
+
+```python
+# Example: letter grades
+
+grade = 85
+
+if grade >= 90:
+  print("A")
+elif grade >= 80:
+  print("B")
+elif grade >= 70:
+  print("C")
+elif grade >= 60:
+  print("D")
+else:
+  print("F")
+```
+
+* This pattern is commonly used for categorization tasks such as grading, pricing tiers, access levels, or status labels.
+* The order of conditions matters: more restrictive conditions should appear before broader ones.
+
+### Review
+
+* In this lesson, we expanded our understanding of **control flow** and how Python makes decisions based on conditions.
+
+* A **Boolean expression** is an expression that evaluates to either `True` or `False`.
+
+* A **Boolean variable** stores one of these two values: `True` or `False`.
+
+* Boolean expressions are commonly built using **comparison (relational) operators**:
+
+  * `==` equals
+  * `!=` not equals
+  * `>` greater than
+  * `>=` greater than or equal to
+  * `<` less than
+  * `<=` less than or equal to
+
+* `if` statements allow us to control which blocks of code are executed based on whether a condition evaluates to `True`.
+
+* `else` statements define what code should run when the corresponding `if` condition is not met.
+
+* `elif` statements allow us to check multiple conditions in sequence, stopping as soon as one condition evaluates to `True`.
+
+* Together, `if`, `elif`, and `else` statements let us write clear, readable programs that respond differently depending on input, state, or user behavior.
+
+* These tools form the foundation for building logic in Python programs, such as decision-making, categorization, and validation.
+
+## Match Statements in Python (match case)
+
+### Overview
+
+* **Match statements** (introduced in **Python 3.10**) provide a structured way to control program flow based on the value or structure of an expression.
+* They are Python’s answer to **switch statements** found in other languages, but with **extra power** through *structural pattern matching*.
+* Conceptually, they often replace long `if`–`elif`–`else` chains when logic depends on many discrete cases.
+
+---
+
+### What Is a Match (Switch) Statement?
+
+* A match statement evaluates **one expression** and compares it against multiple possible **patterns**.
+* When a matching case is found:
+
+  * Its block executes.
+  * Control immediately exits the `match` block.
+* Only **one case** runs per match statement.
+
+Equivalent logic using `if`–`elif`:
+
+```python
+user_name = "Dave"
+
+if user_name == "Dave":
+    print("Get off my computer Dave!")
+elif user_name == "angela_catlady_87":
+    print("I know it is you, Dave! Go away!")
+elif user_name == "Codecademy":
+    print("Access Granted.")
+else:
+    print("Username not recognized.")
+```
+
+The same logic using `match`:
+
+```python
+user_name = "Dave"
+
+match user_name:
+    case "Dave":
+        print("Get off my computer Dave!")
+    case "angela_catlady_87":
+        print("I know it is you, Dave! Go away!")
+    case "Codecademy":
+        print("Access Granted.")
+    case _:
+        print("Username not recognized.")
+```
+
+---
+
+#### Syntax of a Match Statement
+
+General form:
+
+```python
+match expression:
+    case pattern_1:
+        # code for pattern_1
+    case pattern_2:
+        # code for pattern_2
+    case pattern_N:
+        # code for pattern_N
+    case _:
+        # default case
+```
+
+Key components:
+
+* **`match`** starts the statement.
+* **`expression`** is evaluated once.
+* **`case`** defines a pattern to compare against the expression.
+* **`_`** (underscore) is the default case (equivalent to `else`).
+
+---
+
+#### Important Rules and Behavior
+
+* `expression` can be:
+
+  * A variable
+  * A literal
+  * A Boolean expression
+  * A Python object (string, tuple, list, etc.)
+* Matching is **top-down**: cases are checked in order.
+* Once a case matches, no other cases are evaluated.
+* There is **no fall-through** behavior (unlike C-style switch).
+* The default case (`case _:`) is optional but strongly recommended.
+
+---
+
+#### Match vs If–Elif–Else
+
+**Use `if`–`elif` when:**
+
+* Conditions involve ranges (`x > 10`, `x < 0`)
+* Logic depends on complex Boolean expressions
+* Only a few branches exist
+
+**Use `match` when:**
+
+* One variable or expression has **many discrete values**
+* Logic reads better as “value → action”
+* You want to leverage **structural pattern matching**
+
+---
+
+#### Beyond Simple Equality
+
+Unlike traditional switch statements, `match` supports:
+
+* Tuple and list matching
+* Nested structures
+* Destructuring (unpacking values)
+* Guards (`if` conditions inside cases)
+
+Example (preview only):
+
+```python
+match point:
+    case (0, 0):
+        print("Origin")
+    case (x, 0):
+        print("On X-axis")
+    case (0, y):
+        print("On Y-axis")
+    case _:
+        print("Somewhere else")
+```
+
+---
+
+#### When to Use Match Statements
+
+* To replace long and repetitive `if`–`elif` chains.
+* When readability matters and logic is value-based.
+* When working with structured data (tuples, lists, objects).
+* When future extensibility is important.
+
+---
+
+#### Key Takeaways
+
+* `match`–`case` is available **only in Python 3.10+**.
+* It improves clarity for multi-branch decision logic.
+* It executes exactly **one matching case**.
+* It is more powerful than classic switch statements due to pattern matching.
+* Prefer `match` for clean, declarative control flow when checking many possible values.
+
+
+
 
 
 
