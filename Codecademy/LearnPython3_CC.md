@@ -845,9 +845,256 @@ match point:
 * It is more powerful than classic switch statements due to pattern matching.
 * Prefer `match` for clean, declarative control flow when checking many possible values.
 
+---
+--- 
+
+### Project 1 – Magic 8-Ball (Python)
+
+#### Project Goal
+
+Build a simple Python program that simulates a **Magic 8-Ball**: the user asks a Yes/No question, and the program returns a random fortune each time it runs.
+This project practices **variables**, **random numbers**, **control flow**, and **basic input/output formatting**.
+
+---
+
+#### Task 1 – Setting up the core variables
+
+We start by defining the basic information needed for the program.
+
+##### What we do
+
+* Store the name of the person asking the question.
+* Store the question itself.
+* Prepare a variable to hold the Magic 8-Ball’s answer.
+
+##### Code
+
+```python
+name = "Joe"
+question = "Will I win the lottery?"
+answer = ""
+```
+
+##### Tips
+
+* `name` and `question` are strings.
+* Initializing `answer` as an empty string is common when its value will be assigned later.
+* Avoid calling the variable `input`, since that shadows a built-in Python function.
+
+---
+
+#### Task 2 – Importing randomness
+
+To make the answer different every time, we need randomness.
+
+##### What we do
+
+* Import Python’s built-in `random` module.
+
+##### Code
+
+```python
+import random
+```
+
+##### Reminder
+
+* Imports should always go **at the top of the file**.
+* `random` is part of the Python standard library, so no installation is needed.
+
+---
+
+#### Task 3 – Generating a random number
+
+The Magic 8-Ball has 9 possible answers. We represent each one with a number from 1 to 9.
+
+##### What we do
+
+* Generate a random integer between 1 and 9 (inclusive).
+* Store it in a variable.
+
+##### Code
+
+```python
+random_number = random.randint(1, 9)
+```
+
+##### Debugging tip
+
+During development, it helps to check the output:
+
+```python
+print(random_number)
+```
+
+Once verified, comment it out:
+
+```python
+# print(random_number)
+```
+
+---
+
+#### Task 4 – Control flow with if / elif / else
+
+Now we map each random number to a specific Magic 8-Ball response.
+
+##### What we do
+
+* Use `if`, `elif`, and `else` statements.
+* Assign a different answer for each value from 1 to 9.
+* Add a defensive `else` case for unexpected values.
+
+##### Code
+
+```python
+if random_number == 1:
+    answer = "Yes - definitely"
+elif random_number == 2:
+    answer = "It is decidedly so"
+elif random_number == 3:
+    answer = "Without a doubt"
+elif random_number == 4:
+    answer = "Reply hazy, try again"
+elif random_number == 5:
+    answer = "Ask again later"
+elif random_number == 6:
+    answer = "Better not tell you now"
+elif random_number == 7:
+    answer = "My sources say no"
+elif random_number == 8:
+    answer = "Outlook not so good"
+elif random_number == 9:
+    answer = "Very doubtful"
+else:
+    answer = "Error"
+```
+
+##### Key points
+
+* Only **one branch** runs.
+* The `else` block is a safety net.
+* This is a classic use case for multi-branch control flow.
+
+---
+
+#### Task 5 – Printing the result
+
+Now we display the output in the required format.
+
+##### What we do
+
+* Print the user’s name and question.
+* Print the Magic 8-Ball’s answer.
+
+##### Code
+
+```python
+print(f"{name} asks: {question}")
+print(f"Magic 8-Ball's answer: {answer}")
+```
+
+##### Output example
+
+```
+Joe asks: Will I win the lottery?
+Magic 8-Ball's answer: My sources say no
+```
+
+---
+
+#### Optional Challenge 1 – Handling an empty name
+
+If the name is an empty string, the output formatting should change.
+
+##### What we do
+
+* Check whether `name` is empty.
+* Adjust the printed message accordingly.
+
+##### Code
+
+```python
+if name == "":
+    print(f"Question: {question}")
+else:
+    print(f"{name} asks: {question}")
+
+print(f"Magic 8-Ball's answer: {answer}")
+```
+
+##### Why this matters
+
+* Improves user experience.
+* Demonstrates conditional logic based on strings.
+
+---
+
+#### Optional Challenge 2 – Handling an empty question
+
+If no question is asked, the Magic 8-Ball should refuse to answer.
+
+##### What we do
+
+* Check if `question` is empty.
+* Print a warning instead of generating a fortune.
+
+##### Code
+
+```python
+if question == "":
+    print("You must ask a question for the Magic 8-Ball to work!")
+else:
+    if name == "":
+        print(f"Question: {question}")
+    else:
+        print(f"{name} asks: {question}")
+
+    print(f"Magic 8-Ball's answer: {answer}")
+```
+
+##### Reminder
+
+* Always validate inputs before producing output.
+* Nested `if` statements are fine when logic depends on multiple conditions.
+
+---
+
+#### Optional Challenge 3 – Adding more answers
+
+To extend the Magic 8-Ball:
+
+* Increase the range in `randint()`.
+* Add more `elif` branches.
+* Keep answers clearly mapped to numbers.
+
+Example:
+
+```python
+random_number = random.randint(1, 11)
+```
+
+---
+
+#### Key Takeaways
+
+* This project combines **variables**, **randomness**, **conditionals**, and **formatted output**.
+* `random.randint()` is ideal for discrete random choices.
+* `if` / `elif` chains are clear when mapping numbers to actions.
+* Input validation (empty strings) makes programs more robust.
+* This logic can later be simplified using lists or `match` statements once those concepts are learned.
+
+This is a strong foundational project and a perfect stepping stone toward more interactive programs.
+
+
+---
+
+### Project 2: Sal's Shipping
 
 
 
+---
+---
 
 
 
