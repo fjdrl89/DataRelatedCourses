@@ -1089,8 +1089,276 @@ This is a strong foundational project and a perfect stepping stone toward more i
 
 ---
 
-### Project 2: Sal's Shipping
+### Project 2 – Sal’s Shipping (Python)
 
+#### Project Goal
+
+Given a package `weight` (in pounds), compute the shipping cost for:
+
+* **Ground Shipping** (flat fee + weight-based rate)
+* **Ground Shipping Premium** (flat fee only)
+* **Drone Shipping** (no flat fee, but higher weight-based rate)
+
+Then determine **the cheapest option** for that weight.
+
+---
+
+#### Task 1 – Define the package weight
+
+##### What we do
+
+* Create a variable `weight` and assign any numeric value (int or float).
+
+```python
+weight = 8.4
+```
+
+##### Tips
+
+* Use a float if you want decimals (e.g., `4.8`, `41.5`).
+* Treat `weight` as **pounds** (lb).
+
+---
+
+#### Task 2 – Ground Shipping cost (if / elif / else)
+
+##### What we do
+
+* Implement the table rules for Ground Shipping:
+
+  * `<= 2 lb`: $1.50 per lb + $20
+  * `<= 6 lb`: $3.00 per lb + $20
+  * `<= 10 lb`: $4.00 per lb + $20
+  * `> 10 lb`: $4.75 per lb + $20
+* Print the cost for the current `weight`.
+
+```python
+# Ground Shipping
+if weight <= 2:
+    ground_cost = weight * 1.50 + 20.00
+elif weight <= 6:
+    ground_cost = weight * 3.00 + 20.00
+elif weight <= 10:
+    ground_cost = weight * 4.00 + 20.00
+else:
+    ground_cost = weight * 4.75 + 20.00
+
+print(f"Ground Shipping: ${ground_cost:.2f}")
+```
+
+##### Reminders
+
+* Use `<=` exactly as the table says.
+* Always keep the `$20.00` flat charge for Ground Shipping.
+
+---
+
+#### Task 3 – Test Ground Shipping with 8.4 lb
+
+Expected:
+
+* `8.4 * 4.00 + 20.00 = 53.60`
+
+```python
+weight = 8.4
+
+# Ground Shipping
+if weight <= 2:
+    ground_cost = weight * 1.50 + 20.00
+elif weight <= 6:
+    ground_cost = weight * 3.00 + 20.00
+elif weight <= 10:
+    ground_cost = weight * 4.00 + 20.00
+else:
+    ground_cost = weight * 4.75 + 20.00
+
+print(f"Ground Shipping: ${ground_cost:.2f}")  # should be $53.60
+```
+
+##### Quick check tip
+
+If you want a strict check (optional at this level):
+
+```python
+assert round(ground_cost, 2) == 53.60
+```
+
+---
+
+#### Task 4 – Ground Shipping Premium cost
+
+##### What we do
+
+* Premium is always a flat `$125.00`, regardless of weight.
+
+```python
+premium_cost = 125.00
+```
+
+---
+
+#### Task 5 – Print Premium cost
+
+```python
+print(f"Ground Shipping Premium: ${premium_cost:.2f}")
+```
+
+##### Tip
+
+Premium is often cheaper only for **heavy packages**.
+
+---
+
+#### Task 6 – Drone Shipping cost (if / elif / else)
+
+##### What we do
+
+* Implement Drone Shipping table rules:
+
+  * `<= 2 lb`: $4.50 per lb
+  * `<= 6 lb`: $9.00 per lb
+  * `<= 10 lb`: $12.00 per lb
+  * `> 10 lb`: $14.25 per lb
+* No flat charge.
+
+```python
+# Drone Shipping
+if weight <= 2:
+    drone_cost = weight * 4.50
+elif weight <= 6:
+    drone_cost = weight * 9.00
+elif weight <= 10:
+    drone_cost = weight * 12.00
+else:
+    drone_cost = weight * 14.25
+
+print(f"Drone Shipping: ${drone_cost:.2f}")
+```
+
+##### Reminder
+
+Drone has **no** added fee, so do not add `+ 20` or anything.
+
+---
+
+#### Task 7 – Test Drone Shipping with 1.5 lb
+
+Expected:
+
+* `1.5 * 4.50 = 6.75`
+
+```python
+weight = 1.5
+
+# Drone Shipping
+if weight <= 2:
+    drone_cost = weight * 4.50
+elif weight <= 6:
+    drone_cost = weight * 9.00
+elif weight <= 10:
+    drone_cost = weight * 12.00
+else:
+    drone_cost = weight * 14.25
+
+print(f"Drone Shipping: ${drone_cost:.2f}")  # should be $6.75
+```
+
+Optional strict check:
+
+```python
+assert round(drone_cost, 2) == 6.75
+```
+
+---
+
+#### Task 8 – Final solution: find the cheapest shipping method
+
+##### What we do
+
+1. Compute `ground_cost`, `premium_cost`, and `drone_cost`.
+2. Compare them.
+3. Print the cheapest method + price.
+
+##### Full reference script (clean and runnable)
+
+```python
+import random  # not needed here, but harmless if you already used it elsewhere
+
+weight = 4.8
+
+# Ground Shipping
+if weight <= 2:
+    ground_cost = weight * 1.50 + 20.00
+elif weight <= 6:
+    ground_cost = weight * 3.00 + 20.00
+elif weight <= 10:
+    ground_cost = weight * 4.00 + 20.00
+else:
+    ground_cost = weight * 4.75 + 20.00
+
+# Ground Shipping Premium
+premium_cost = 125.00
+
+# Drone Shipping
+if weight <= 2:
+    drone_cost = weight * 4.50
+elif weight <= 6:
+    drone_cost = weight * 9.00
+elif weight <= 10:
+    drone_cost = weight * 12.00
+else:
+    drone_cost = weight * 14.25
+
+# Find cheapest
+cheapest_cost = min(ground_cost, premium_cost, drone_cost)
+
+if cheapest_cost == ground_cost:
+    cheapest_method = "Ground Shipping"
+elif cheapest_cost == premium_cost:
+    cheapest_method = "Ground Shipping Premium"
+else:
+    cheapest_method = "Drone Shipping"
+
+print(f"Weight: {weight} lb")
+print(f"Ground Shipping: ${ground_cost:.2f}")
+print(f"Ground Shipping Premium: ${premium_cost:.2f}")
+print(f"Drone Shipping: ${drone_cost:.2f}")
+print(f"Cheapest method: {cheapest_method} at ${cheapest_cost:.2f}")
+```
+
+##### Tips
+
+* `min()` is the simplest way to find the smallest cost.
+* If two methods tie exactly, this logic picks the first one that matches (rare with these rates, but possible in other problems).
+* Formatting with `:.2f` keeps money readable.
+
+---
+
+#### Answers to the required test questions
+
+##### Cheapest shipping for a 4.8 lb package
+
+* Ground Shipping: `4.8 * 3.00 + 20.00 = 14.40 + 20.00 = 34.40`
+* Drone Shipping: `4.8 * 9.00 = 43.20`
+* Premium: `125.00`
+
+**Cheapest: Ground Shipping at $34.40**
+
+##### Cheapest shipping for a 41.5 lb package
+
+* Ground Shipping: `41.5 * 4.75 + 20.00 = 197.125 + 20.00 = 217.125` → **$217.13** (to 2 decimals)
+* Drone Shipping: `41.5 * 14.25 = 591.375` → **$591.38**
+* Premium: `125.00`
+
+**Cheapest: Ground Shipping Premium at $125.00**
+
+---
+
+#### Common gotchas
+
+* Using `<` instead of `<=` can put edge weights (2, 6, 10) into the wrong bracket.
+* Forgetting the `$20.00` flat fee for Ground Shipping is the most common mistake.
+* Mixing up Drone vs Ground rates: Drone is exactly **triple** Ground’s per-pound rates in each bracket.
 
 
 ---
