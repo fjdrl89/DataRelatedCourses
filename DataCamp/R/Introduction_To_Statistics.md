@@ -514,6 +514,366 @@ food_consumption %>%
 -----
 -----
 
+**Chapter 2 – Probability & Distributions**  
+
+These notes cover the full second chapter: how we measure chance, sampling with and without replacement, discrete and continuous probability distributions, the law of large numbers, and the binomial distribution.
+
+---
+
+## 1. Measuring Chance
+
+People talk about chance all the time (“What are the chances of closing the sale?”, “What’s the chance of rain?”).  
+**Probability** is the formal way to measure it.
+
+### The basic formula
+
+$$
+\[
+P(\text{event}) = \frac{\text{number of ways the event can happen}}{\text{total number of possible outcomes}}
+\]
+$$
+
+**Example – fair coin flip**
+
+$$
+\[
+P(\text{heads}) = \frac{1 \text{ way to get heads}}{2 \text{ possible outcomes (heads or tails)}} = \frac{1}{2} = 50\%
+\]
+$$
+
+Probability is always between **0 %** and **100 %**:
+- \(0\%\) → the event is **impossible**
+- \(100\%\) → the event is **certain**
+
+---
+
+## 2. Assigning Salespeople (A Practical Example)
+
+Imagine a sales team of four people: **Amir, Brian, Claire, Damian**.  
+We put their names in a box and draw one at random to decide who goes to a client meeting.
+
+$$
+\[
+P(\text{Brian}) = \frac{1}{4} = 25\%
+\]
+$$
+
+### Doing it in R with `dplyr`
+
+```r
+sales_counts
+#   name   n_sales
+# 1 Amir       178
+# 2 Brian      126
+# 3 Claire      75
+# 4 Damian      69
+
+sales_counts %>% sample_n(1)   # randomly picks one row
+```
+
+Every time you run `sample_n(1)` you may get a different person.  
+To make the result **reproducible** (important when showing the team how the choice was made), we set a **random seed**:
+
+```r
+set.seed(5)
+sales_counts %>% sample_n(1)   # always returns Brian when seed = 5
+```
+
+The seed is just a starting point for R’s random-number generator. Any number works; what matters is that you use the **same** seed to get the same result.
+
+---
+
+## 3. Sampling With vs Without Replacement
+
+### Sampling **without** replacement
+Brian has already been chosen and cannot attend two meetings at the same time.  
+We remove his name from the box. Now only three names remain.
+
+$$
+\[
+P(\text{Claire is chosen second}) = \frac{1}{3} \approx 33\%
+\]
+$$
+
+In R:
+```r
+sales_counts %>% sample_n(2)          # two different people
+```
+
+### Sampling **with** replacement
+The two meetings are on different days, so the same person *could* attend both.  
+We put Brian’s name **back** into the box.
+
+$$
+\[
+P(\text{Claire is chosen second}) = \frac{1}{4} = 25\%
+\]
+$$
+
+In R:
+```r
+sales_counts %>% sample_n(2, replace = TRUE)
+# or for 5 meetings on different days:
+sample(sales_team, 5, replace = TRUE)
+```
+
+---
+
+## 4. Independent vs Dependent Events
+
+| Concept | Definition | Typical sampling |
+|---------|------------|------------------|
+| **Independent events** | The probability of the second event is **not** affected by the outcome of the first | Sampling **with** replacement |
+| **Dependent events** | The probability of the second event **is** affected by the outcome of the first | Sampling **without** replacement |
+
+**With replacement (independent)**  
+No matter who is picked first, \(P(\text{Claire second}) = 25\%\).
+
+**Without replacement (dependent)**  
+- If Claire is picked first → \(P(\text{Claire second}) = 0\%\)  
+- If someone else is picked first → \(P(\text{Claire second}) = 33\%\)
+
+> **Rule of thumb**  
+> Sampling with replacement → independent trials  
+> Sampling without replacement → dependent trials
+
+---
+
+## 5. Discrete Probability Distributions
+
+A **probability distribution** describes the probability of every possible outcome in a scenario.
+
+### Fair six-sided die
+
+| Outcome | 1 | 2 | 3 | 4 | 5 | 6 |
+|---------|---|---|---|---|---|---|
+| Probability | \(\frac{1}{6}\) | \(\frac{1}{6}\) | \(\frac{1}{6}\) | \(\frac{1}{6}\) | \(\frac{1}{6}\) | \(\frac{1}{6}\) |
+
+This is a **discrete uniform distribution** (all outcomes equally likely).
+
+### Expected value (the mean of a distribution)
+
+$$
+\[
+E(X) = \sum x_i \cdot P(x_i)
+\]
+$$
+
+For a fair die:
+
+$$
+\[
+E(X) = 1\cdot\frac{1}{6} + 2\cdot\frac{1}{6} + 3\cdot\frac{1}{6} + 4\cdot\frac{1}{6} + 5\cdot\frac{1}{6} + 6\cdot\frac{1}{6} = 3.5
+\]
+$$
+
+### Probability = Area under the distribution
+
+$$
+\[
+P(\text{roll} \le 2) = P(1) + P(2) = \frac{1}{6} + \frac{1}{6} = \frac{1}{3}
+\]
+$$
+
+### Uneven die (2 turned into a 3)
+
+| Outcome | 1 | 2 | 3 | 4 | 5 | 6 |
+|---------|---|---|---|---|---|---|
+| Probability | \(\frac{1}{6}\) | \(0\) | \(\frac{1}{3}\) | \(\frac{1}{6}\) | \(\frac{1}{6}\) | \(\frac{1}{6}\) |
+
+New expected value:
+
+$$
+\[
+E(X) = 1\cdot\frac{1}{6} + 2\cdot 0 + 3\cdot\frac{1}{3} + 4\cdot\frac{1}{6} + 5\cdot\frac{1}{6} + 6\cdot\frac{1}{6} \approx 3.67
+\]
+$$
+
+$$
+\[
+P(\text{roll} \le 2) = \frac{1}{6} + 0 = \frac{1}{6}
+\]
+$$
+
+### Sampling from a discrete distribution in R
+
+```r
+die <- data.frame(n = 1:6)
+
+# Simulate 10 rolls (with replacement so we always sample from the same distribution)
+rolls_10 <- die %>% sample_n(10, replace = TRUE)
+mean(rolls_10$n)   # sample mean (will vary)
+```
+
+Visualize with a histogram:
+```r
+ggplot(rolls_10, aes(n)) + geom_histogram(bins = 6)
+```
+
+---
+
+## 6. The Law of Large Numbers
+
+As the size of your sample increases, the **sample mean approaches the theoretical expected value**.
+
+| Sample size | Sample mean (example) |
+|-------------|-----------------------|
+| 10          | 3.00                  |
+| 100         | 3.36                  |
+| 1 000       | 3.53                  |
+
+Theoretical mean of a fair die = **3.5**
+
+This is why larger samples give us more reliable estimates of the true underlying probability.
+
+---
+
+## 7. Continuous Distributions
+
+Discrete distributions work for countable outcomes (dice, number of customers, etc.).  
+For continuous variables (time, height, weight, temperature…) we need **continuous distributions**.
+
+### Waiting for the bus (Continuous Uniform Distribution)
+
+A bus arrives every 12 minutes. You arrive at a random time, so your waiting time can be anywhere from 0 to 12 minutes.
+
+Because there are infinitely many possible waiting times, we cannot draw individual bars. Instead we draw a continuous density:
+
+- The density is a **flat line** of height \(\frac{1}{12}\) from 0 to 12.  
+- This is the **continuous uniform distribution**.
+
+### Probability is still the area under the curve
+
+$$
+\[
+P(4 \le \text{wait} \le 7) = \text{width} \times \text{height} = 3 \times \frac{1}{12} = \frac{3}{12} = 0.25
+\]
+$$
+
+### Using the uniform distribution in R – `punif()`
+
+```r
+# Probability of waiting ≤ 7 minutes
+punif(7, min = 0, max = 12)                 # ≈ 0.583
+
+# Probability of waiting ≥ 7 minutes
+punif(7, min = 0, max = 12, lower.tail = FALSE)  # ≈ 0.417
+
+# Probability of waiting between 4 and 7 minutes
+punif(7, min = 0, max = 12) - punif(4, min = 0, max = 12)  # 0.25
+```
+
+### Important property of **all** continuous distributions
+
+The **total area under the curve must equal 1** (or 100 %).  
+This will also be true for the normal distribution, the Poisson distribution, and every other continuous distribution you will meet later.
+
+---
+
+## 8. The Binomial Distribution
+
+### Binary outcomes
+Many real-world situations have only two possible results:
+- Heads / Tails  
+- Success / Failure  
+- Win / Loss  
+- 1 / 0  
+
+These are called **binary outcomes**.
+
+### Simulating coin flips with `rbinom()`
+
+```r
+rbinom(n = number of experiments,
+       size = number of trials (coins) per experiment,
+       prob = probability of success)
+```
+
+| Code | Meaning | Result type |
+|------|---------|-------------|
+| `rbinom(1, 1, 0.5)` | 1 flip of 1 coin | single 0 or 1 |
+| `rbinom(8, 1, 0.5)` | 8 flips of 1 coin | vector of eight 0/1 |
+| `rbinom(1, 8, 0.5)` | 1 experiment of 8 coins | total number of heads |
+| `rbinom(10, 3, 0.5)` | 10 experiments of 3 coins each | vector of 10 totals |
+
+You can change the probability:
+```r
+rbinom(10, 3, 0.25)   # biased coin – only 25 % chance of heads
+```
+
+### Definition of the binomial distribution
+
+The **binomial distribution** describes the probability of obtaining a certain number of successes in a fixed number of **independent** trials.
+
+It is fully characterized by two parameters:
+- \(n\) = number of trials  
+- \(p\) = probability of success on each trial
+
+### Calculating probabilities
+
+```r
+# Probability of exactly 7 heads in 10 flips
+dbinom(7, size = 10, prob = 0.5)          # ≈ 0.117
+
+# Probability of 7 or fewer heads
+pbinom(7, size = 10, prob = 0.5)          # ≈ 0.945
+
+# Probability of more than 7 heads
+pbinom(7, size = 10, prob = 0.5, lower.tail = FALSE)  # ≈ 0.055
+# equivalent to:
+1 - pbinom(7, size = 10, prob = 0.5)
+```
+
+### Expected value of a binomial random variable
+
+$$
+\[
+E(X) = n \times p
+\]
+$$
+
+Example: expected number of heads when flipping 10 fair coins  
+
+$$
+\[
+E(X) = 10 \times 0.5 = 5
+\]
+$$
+
+### Critical assumption: Independence
+
+The binomial distribution **only applies when the trials are independent**.
+
+- Sampling **with replacement** (or independent coin flips) → OK  
+- Sampling **without replacement** → probabilities change after each draw → binomial formulas are **invalid**
+
+---
+
+## Quick Reference – Key R Functions
+
+| Task | Function | Example |
+|------|----------|---------|
+| Random sample of rows | `sample_n()` | `df %>% sample_n(5, replace = TRUE)` |
+| Set random seed | `set.seed()` | `set.seed(42)` |
+| Uniform cumulative probability | `punif()` | `punif(7, min=0, max=12)` |
+| Binomial random numbers | `rbinom()` | `rbinom(10, size=5, prob=0.3)` |
+| Binomial probability (exact) | `dbinom()` | `dbinom(3, size=10, prob=0.5)` |
+| Binomial cumulative probability | `pbinom()` | `pbinom(3, size=10, prob=0.5)` |
+
+---
+
+## Key Takeaways
+
+1. **Probability** = ways an event can happen ÷ total possible outcomes.  
+2. **With replacement** → independent events; **without replacement** → dependent events.  
+3. A **probability distribution** lists the probability of every possible outcome.  
+4. **Expected value** is the long-run average of a distribution.  
+5. **Law of large numbers**: larger samples → sample mean gets closer to the true expected value.  
+6. Continuous distributions use **area under the curve** instead of summing discrete probabilities.  
+7. The **binomial distribution** models the number of successes in \(n\) independent trials with success probability \(p\).  
+8. Always check the **independence** assumption before applying the binomial distribution.
+
+---
 
 
 # 
