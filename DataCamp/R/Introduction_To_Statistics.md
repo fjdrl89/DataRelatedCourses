@@ -417,36 +417,106 @@ The dplyr and ggplot2 libraries are loaded, and food_consumption is available.
 1) Calculate the variance of co2_emission in the food_consumption dataset.
 
 ```r
-
+var(food_consumption$co2_emission)
 ```
+
+2) Calculate the standard deviation of co2_emission in the food_consumption dataset.
 
 ```r
-
+sd(food_consumption$co2_emission)
 ```
+
+Quartiles, quantiles, and quintiles
+Quantiles are a great way of summarizing numerical data since they can be used to measure center and spread, as well as to get a sense of where a data point stands in relation to the rest of the dataset. For example, you might want to give a discount to the 10% most active users on a website.
+
+In this exercise, you'll calculate quartiles, quintiles, and deciles, which split up a dataset into 4, 5, and 10 pieces, respectively.
+
+The dplyr package is loaded and food_consumption is available.
+
+1. Calculate the quartiles of the co2_emission column of food_consumption.
 
 ```r
-
+# Calculate the quartiles of co2_emission
+quantile(food_consumption$co2_emission)
 ```
+
+2. Calculate the quintiles of the co2_emission column of food_consumption that split up the data into 5 pieces.
 
 ```r
-
+# Calculate the quintiles of co2_emission
+quantile(food_consumption$co2_emission, probs = seq(0, 1, 0.2))
 ```
+
+3. Calculate the quantiles of co2_emission that split up the data into ten pieces.
 
 ```r
-
+# Calculate the deciles of co2_emission
+quantile(food_consumption$co2_emission, probs = seq(0, 1, 0.1))
 ```
+
+Finding outliers using IQR
+Interquartile range, or IQR, is another way of measuring spread that's less influenced by outliers. IQR is also often used to find outliers. If a value is less than $Q1 - 1.5 x IQR$ or greater than $Q3 + 1.5 x IQR$, it's considered an outlier. In fact, this is how the lengths of the whiskers in a ggplot2 box plot are calculated.
+
+<img width="1394" height="458" alt="image" src="https://github.com/user-attachments/assets/4a6fe7ca-74ac-4514-8a44-20735ddcb252" />
+
+In this exercise, you'll calculate IQR and use it to find some outliers. Both dplyr and ggplot2 libraries are loaded and food_consumption is available.
+
+- Compute the first and third quartiles of co2_emission in food_consumption and store these as q1 and q3.
+- Calculate the interquartile range (IQR) of co2_emission and store it as iqr.
 
 ```r
+# Compute the 25th percentile and 75th percentile of co2_emission
+q1 <- quantile(food_consumption$co2_emission, 0.25)
+q3 <- quantile(food_consumption$co2_emission, 0.75)
 
+# Compute the IQR of co2_emission
+iqr <- q3 - q1
+iqr
 ```
+
+- Calculate the lower and upper cutoffs for outliers of co2_emission, and store these as lower and upper.
 
 ```r
+# Compute the 25th percentile and 75th percentile of co2_emission
+q1 <- quantile(food_consumption$co2_emission, 0.25)
+q3 <- quantile(food_consumption$co2_emission, 0.75)
 
+# Compute the IQR of co2_emission
+iqr <- q3 - q1
+
+# Calculate the lower and upper cutoffs for outliers
+lower <- q1 - 1.5 * iqr
+upper <- q3 + 1.5 * iqr
+
+lower
+upper
 ```
+
+- Use filter() to get countries with a co2_emission greater than the upper cutoff or a co2_emission less than the lower cutoff.
 
 ```r
+# Compute the 25th percentile and 75th percentile of co2_emission
+q1 <- quantile(food_consumption$co2_emission, 0.25)
+q3 <- quantile(food_consumption$co2_emission, 0.75)
 
+# Compute the IQR of co2_emission
+iqr <- q3 - q1
+
+# Calculate the lower and upper cutoffs for outliers
+lower <- q1 - 1.5 * iqr
+upper <- q3 + 1.5 * iqr
+
+# Filter food_consumption to find outliers
+food_consumption %>%
+  filter(co2_emission < lower | co2_emission > upper)
 ```
+
+-----
+-----
+
+
+
+# 
 
 ```r
 
