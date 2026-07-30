@@ -1000,64 +1000,182 @@ At this point, you've learned about the two different variants of the uniform di
 
 <img width="1998" height="548" alt="image" src="https://github.com/user-attachments/assets/4b9ea0cc-712d-4aa6-a393-1b6b92851eee" />
 
+**Data back-ups**
 
+The sales software used at your company is set to automatically back itself up, but no one knows exactly what time the back-ups happen. It is known, however, that back-ups happen exactly every 30 minutes. Amir comes back from sales meetings at random times to update the data on the client he just met with. He wants to know how long he'll have to wait for his newly-entered data to get backed up. Use your new knowledge of continuous uniform distributions to model this situation and answer Amir's questions.
 
-
-```r
-
-```
-
-```r
-
-```
+1) To model how long Amir will wait for a back-up using a continuous uniform distribution, save his lowest possible wait time as min and his longest possible wait time as max. Remember that back-ups happen every 30 minutes.
 
 ```r
-
+# Min and max wait times for back-up that happens every 30 min
+min <- 0
+max <- 30
 ```
+
+2) Calculate the probability that Amir has to wait less than 5 minutes, and store in a variable called prob_less_than_5.
 
 ```r
+# Min and max wait times for back-up that happens every 30 min
+min <- 0
+max <- 30
 
+# Calculate probability of waiting less than 5 mins
+prob_less_than_5 <- punif(5, min = 0, max = 30)
+prob_less_than_5
 ```
+
+3) Calculate the probability that Amir has to wait more than 5 minutes, and store in a variable called prob_greater_than_5.
 
 ```r
+# Min and max wait times for back-up that happens every 30 min
+min <- 0
+max <- 30
 
+# Calculate probability of waiting more than 5 mins
+prob_greater_than_5 <- 1 - punif(5, min = 0, max = 30)
+prob_greater_than_5
 ```
+
+4) Calculate the probability that Amir has to wait between 10 and 20 minutes, and store in a variable called prob_between_10_and_20.
 
 ```r
+# Min and max wait times for back-up that happens every 30 min
+min <- 0
+max <- 30
 
+# Calculate probability of waiting 10-20 mins
+prob_between_10_and_20 <- punif(20, min = 0, max = 30) - punif(10, min = 0, max = 30)
+prob_between_10_and_20
 ```
+
+**Simulating wait times**
+
+To give Amir a better idea of how long he'll have to wait, you'll simulate Amir waiting 1000 times and create a histogram to show him what he should expect. Recall from the last exercise that his minimum wait time is 0 minutes and his maximum wait time is 30 minutes.
+
+A data frame called wait_times is available and the dplyr and ggplot2 libraries are loaded.
+
+- Set the random seed to 334.
 
 ```r
-
+# Set random seed to 334
+set.seed(334)
 ```
+
+- Generate 1000 wait times from the continuous uniform distribution that models Amir's wait time. Add this as a new column called time in the wait_times data frame.
 
 ```r
+# Set random seed to 334
+set.seed(334)
 
+# Generate 1000 wait times between 0 and 30 mins, save in time column
+wait_times %>%
+  mutate(time = runif(1000, min = 0, max = 30))
 ```
+
+- Create a histogram of the simulated wait times with 30 bins.
 
 ```r
+# Set random seed to 334
+set.seed(334)
 
+# Generate 1000 wait times between 0 and 30 mins, save in time column
+wait_times <- wait_times %>%
+  mutate(time = runif(1000, min = 0, max = 30))
+
+# Create a histogram of simulated times
+ggplot(wait_times, aes(time)) +
+  geom_histogram(bins = 30)
 ```
+
+<img width="562" height="428" alt="image" src="https://github.com/user-attachments/assets/422e6c29-7c36-495c-97b8-7c5a7feeb59d" />
+
+**Simulating sales deals**
+
+Assume that Amir usually works on 3 deals per week, and overall, he wins 30% of deals he works on. Each deal has a binary outcome: it's either lost, or won, so you can model his sales deals with a binomial distribution. In this exercise, you'll help Amir simulate a year's worth of his deals so he can better understand his performance.
+
+1) Set the random seed to 10 and simulate a single deal.
 
 ```r
+# Set random seed to 10
+set.seed(10)
 
+# Simulate a single deal
+rbinom(1, size = 1, prob = 0.3)
 ```
+
+2) Simulate a typical week of Amir's deals, or one week of 3 deals.
 
 ```r
+# Set random seed to 10
+set.seed(10)
 
+# Simulate 1 week of 3 deals
+rbinom(1, size = 3, prob = 0.3)
 ```
+
+3) Simulate a year's worth of Amir's deals, or 52 weeks of 3 deals each, and store in deals.
+Calculate the mean number of deals he won per week.
 
 ```r
+# Set random seed to 10
+set.seed(10)
 
+# Simulate 52 weeks of 3 deals
+deals <- rbinom(52, size = 3, prob = 0.3)
+
+# Calculate mean deals won per week
+mean(deals)
 ```
+
+**Calculating binomial probabilities**
+
+Just as in the last exercise, assume that Amir wins 30% of deals. He wants to get an idea of how likely he is to close a certain number of deals each week. In this exercise, you'll calculate what the chances are of him closing different numbers of deals using the binomial distribution.
+
+- What's the probability that Amir closes all 3 deals in a week?
 
 ```r
-
+# Probability of closing 3 out of 3 deals
+dbinom(3, size = 3, prob = 0.3)
 ```
+
+- What's the probability that Amir closes 1 or fewer deals in a week? 
 
 ```r
-
+# Probability of closing <= 1 deal out of 3 deals
+pbinom(1, size = 3, prob = 0.3)
 ```
+
+- What's the probability that Amir closes more than 1 deal?
+
+```r
+# Probability of closing > 1 deal out of 3 deals
+pbinom(1, size = 3, prob = 0.3, lower.tail = FALSE)
+```
+
+**How many sales will be won?**
+
+Now Amir wants to know how many deals he can expect to close each week if his win rate changes. Luckily, you can use your binomial distribution knowledge to help him calculate the expected value in different situations. Recall from the video that the expected value of a binomial distribution can be calculated by $n \times p$
+
+- Calculate the expected number of sales out of the 3 he works on that Amir will win each week if he maintains his 30% win rate.
+- Calculate the expected number of sales out of the 3 he works on that he'll win if his win rate drops to 25%.
+- Calculate the expected number of sales out of the 3 he works on that he'll win if his win rate rises to 35%.
+
+```r
+# Expected number won with 30% win rate
+won_30pct <- 3 * 0.3
+won_30pct
+
+# Expected number won with 25% win rate
+won_25pct <- 3 * 0.25
+won_25pct
+
+# Expected number won with 35% win rate
+won_35pct <- 3 * 0.35
+won_35pct
+```
+
+
+
 
 ```r
 
