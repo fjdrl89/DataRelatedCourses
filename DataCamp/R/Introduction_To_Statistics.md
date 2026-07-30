@@ -874,10 +874,599 @@ The binomial distribution **only applies when the trials are independent**.
 8. Always check the **independence** assumption before applying the binomial distribution.
 
 ---
+Calculating probabilities
 
+You're in charge of the sales team, and it's time for performance reviews, starting with Amir. As part of the review, you want to randomly select a few of the deals that he's worked on over the past year so that you can look at them more deeply. Before you start selecting deals, you'll first figure out what the chances are of selecting certain deals.
 
-# 
+Recall that the probability of an event can be calculated by
 
+ $$
+P(event) = \frac{\text{number ways event can happen}}{\text{total number of possible outcomes}}
+ $$
+
+- Count the number of deals Amir worked on for each product type.
+
+```r
+# Count the deals for each product
+amir_deals %>%
+  count(product)
+```
+
+- Create a new column called `prob` by dividing `n` by the total number of deals Amir worked on; `n` is the number of deals for each product category you obtained from the previous step.
+
+```r
+# Calculate probability of picking a deal with each product
+amir_deals %>%
+  count(product) %>%
+  mutate(prob = n / sum(n))
+```
+
+Sampling deals
+In the previous exercise, you counted the deals Amir worked on. Now it's time to randomly pick five deals so that you can reach out to each customer and ask if they were satisfied with the service they received. You'll try doing this both with and without replacement.
+
+Additionally, you want to make sure this is done randomly and that it can be reproduced in case you get asked how you chose the deals, so you'll need to set the random seed before sampling from the deals.
+
+- Set the random seed to 31.
+- Take a sample of 5 deals without replacement.
+
+```r
+# Set random seed to 31
+set.seed(31)
+
+# Sample 5 deals without replacement
+amir_deals %>%
+  sample_n(5)
+```
+
+- Take a sample of 5 deals with replacement.
+
+```r
+# Set random seed to 31
+set.seed(31)
+
+# Sample 5 deals with replacement
+amir_deals %>%
+  sample_n(5, replace=TRUE)
+```
+
+**Creating a probability distribution**
+
+A new restaurant opened a few months ago, and the restaurant's management wants to optimize its seating space based on the size of the groups that come most often. On one night, there are 10 groups of people waiting to be seated at the restaurant, but instead of being called in the order they arrived, they will be called randomly. In this exercise, you'll investigate the probability of groups of different sizes getting picked first. Data on each of the ten groups is contained in the `restaurant_groups` data frame.
+
+Remember that expected value can be calculated by multiplying each possible outcome with its corresponding probability and taking the sum. The `restaurant_groups` data is available and the `dplyr` and `ggplot2` libraries are loaded.
+
+1) Create a histogram of the group_size column of restaurant_groups, setting the number of bins to 5.
+
+```r
+# Create a histogram of group_size
+ggplot(restaurant_groups, aes(group_size)) +
+  geom_histogram(bins = 5)
+```
+
+2) Count the number of each group_size in restaurant_groups, then add a column called probability that contains the probability of randomly selecting a group of each size. Store this in a new data frame called size_distribution.
+
+```r
+# Create probability distribution
+size_distribution <- restaurant_groups %>%
+  # Count number of each group size
+  count(group_size) %>%
+  # Calculate probability
+  mutate(probability = n / sum(n))
+
+size_distribution
+```
+
+3) Calculate the expected value of the size_distribution, which represents the expected group size.
+
+```r
+# Create probability distribution
+size_distribution <- restaurant_groups %>%
+  count(group_size) %>%
+  mutate(probability = n / sum(n))
+
+# Calculate expected group size
+expected_val <- sum(size_distribution$group_size *
+                    size_distribution$probability)
+expected_val
+```
+
+<img width="565" height="429" alt="image" src="https://github.com/user-attachments/assets/1adbb153-aff9-4585-ab8e-683492ee1bb9" />
+
+4) Calculate the probability of randomly picking a group of 4 or more people by filtering and summarizing.
+
+```r
+# Create probability distribution
+size_distribution <- restaurant_groups %>%
+  count(group_size) %>%
+  mutate(probability = n / sum(n))
+
+# Calculate probability of picking group of 4 or more
+size_distribution %>%
+  # Filter for groups of 4 or larger
+  filter(group_size >= 4) %>%
+  # Calculate prob_4_or_more by taking sum of probabilities
+  summarise(prob_4_or_more = sum(probability))
+```
+
+**Expected value vs. sample mean**
+
+The app to the right will take a sample from a discrete uniform distribution, which includes the numbers 1 through 9, and calculate the sample's mean. You can adjust the size of the sample using the slider. Note that the expected value of this distribution is 5.
+
+A sample is taken, and you win twenty dollars if the sample's mean is less than 4. There's a catch: you get to pick the sample's size.
+
+**Which distribution?**
+
+At this point, you've learned about the two different variants of the uniform distribution: the discrete uniform distribution, and the continuous uniform distribution. In this exercise, you'll decide which situations follow which distribution.
+
+<img width="1998" height="548" alt="image" src="https://github.com/user-attachments/assets/4b9ea0cc-712d-4aa6-a393-1b6b92851eee" />
+
+
+
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
+```r
+
+```
+
 ```r
 
 ```
@@ -1162,13 +1751,21 @@ The binomial distribution **only applies when the trials are independent**.
 
 ```
 
+```r
 
+```
 
+```r
 
+```
 
+```r
 
+```
 
+```r
 
+```
 
 
 
