@@ -2050,10 +2050,31 @@ Se transformó la variable `gdp_per_cap` aplicando el logaritmo natural y se gua
 
 <img width="562" height="428" alt="image" src="https://github.com/user-attachments/assets/acf9f4e9-f96c-44a9-a2ad-0986fc8ca522" />
 
+**Does sugar improve happiness?**
+
+A new column has been added to `world_happiness` called `grams_sugar_per_day`, which contains the average amount of sugar eaten per person per day in each country. In this exercise, you'll examine the effect of a country's average sugar consumption on its happiness score.
+
+- Create a scatterplot showing the relationship between `grams_sugar_per_day` (on the x-axis) and `happiness_score` (on the y-axis).
+- Calculate the correlation between `grams_sugar_per_day` and `happiness_score`.
 
 ```r
+# Scatterplot of grams_sugar_per_day and happiness_score
+ggplot(world_happiness, aes(x = grams_sugar_per_day, y = happiness_score)) +
+  geom_point()
 
+# Correlation between grams_sugar_per_day and happiness_score
+cor(world_happiness$grams_sugar_per_day, world_happiness$happiness_score)
 ```
+
+Se creó un diagrama de dispersión de `grams_sugar_per_day` versus `happiness_score` y se calculó su correlación.
+
+- El eje **x** muestra el consumo promedio de azúcar por día (`grams_sugar_per_day`).
+- El eje **y** muestra el puntaje de felicidad (`happiness_score`).
+- La correlación de Pearson se obtiene con `cor()` para medir la relación lineal entre ambas variables.
+- Este ejercicio ilustra que correlación no implica causalidad (el azúcar no necesariamente “mejora” la felicidad).
+
+<img width="565" height="429" alt="image" src="https://github.com/user-attachments/assets/53a5213b-562e-4c33-b785-18eecd909550" />
+
 
 ```r
 
