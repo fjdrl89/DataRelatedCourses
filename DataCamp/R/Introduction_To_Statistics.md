@@ -1409,17 +1409,34 @@ A random variable follows a **log-normal distribution** if its **logarithm** is 
 
 ---
 
+**Distribution of Amir's sales**
+
+Since each deal Amir worked on (both won and lost) was different, each was worth a different amount of money. These values are stored in the amount column of amir_deals As part of Amir's performance review, you want to be able to estimate the probability of him selling different amounts, but before you can do this, you'll need to determine what kind of distribution the amount variable follows.
+
+- Create a histogram with 10 bins to visualize the distribution of the `amount`.
 
 ```r
-
+# Histogram of amount with 10 bins
+ggplot(amir_deals, aes(x = amount)) +
+  geom_histogram(bins = 10)
 ```
 
-```r
+**Probabilities from the normal distribution**
 
+Since each deal Amir worked on (both won and lost) was different, each was worth a different amount of money. These values are stored in the `amount` column of `amir_deals` and follow a normal distribution with a mean of 5000 dollars and a standard deviation of 2000 dollars. As part of his performance metrics, you want to calculate the probability of Amir closing a deal worth various amounts.
+
+1) What's the probability of Amir closing a deal worth less than $7500?
+
+```r
+# Probability of deal < 7500
+pnorm(7500, mean = 5000, sd = 2000)
 ```
 
-```r
+2) What's the probability of Amir closing a deal worth more than $1000?
 
+```r
+# Probability of deal > 1000
+___
 ```
 
 ```r
