@@ -1436,55 +1436,172 @@ pnorm(7500, mean = 5000, sd = 2000)
 
 ```r
 # Probability of deal > 1000
-___
+pnorm(1000, mean = 5000, sd = 2000, lower.tail = FALSE)
 ```
 
-```r
+3) What's the probability of Amir closing a deal worth between $3000 and $7000?
 
+```r
+# Probability of deal between 3000 and 7000
+pnorm(7000, mean = 5000, sd = 2000) - pnorm(3000, mean = 5000, sd = 2000)
 ```
 
-```r
+4) What amount will 75% of Amir's sales be more than?
 
+```r
+# Calculate amount that 75% of deals will be more than
+qnorm(0.75, mean = 5000, sd = 2000, lower.tail = FALSE)
 ```
 
-```r
+**Simulating sales under new market conditions**
 
+The company's financial analyst is predicting that next quarter, the worth of each sale will increase by 20% and the volatility, or standard deviation, of each sale's worth will increase by 30%. To see what Amir's sales might look like next quarter under these new market conditions, you'll simulate new sales amounts using the normal distribution and store these in the new_sales data frame, which has already been created for you.
+
+- Currently, Amir's average sale amount is $5000. Calculate what his new average amount will be if it increases by 20% and store this in new_mean.
+- Amir's current standard deviation is $2000. Calculate what his new standard deviation will be if it increases by 30% and store this in new_sd.
+- Add a new column called amount to the data frame new_sales, which contains 36 simulated amounts from a normal distribution with a mean of new_mean and a standard deviation of new_sd.
+- Plot the distribution of the new_sales amounts using a histogram with 10 bins.
+
+```r
+# Calculate new average amount
+new_mean <- 5000 * 1.2
+
+# Calculate new standard deviation
+new_sd <- 2000 * 1.3
+
+# Simulate 36 sales
+new_sales <- new_sales %>%
+  mutate(amount = rnorm(36, mean = new_mean, sd = new_sd))
+
+# Create histogram with 10 bins
+ggplot(new_sales, aes(amount)) +
+  geom_histogram(bins = 10)
 ```
 
-```r
+- `new_mean` is the original mean scaled up by 20% ($  5000 \times 1.2 = 6000  $).
+- `new_sd` is the original standard deviation scaled up by 30% ($  2000 \times 1.3 = 2600  $).
+- `rnorm(36, mean = new_mean, sd = new_sd)` draws 36 random values from the updated normal distribution and stores them in the new amount column.
+- The final `ggplot` call visualizes the simulated amounts with 10 bins.
 
+<img width="562" height="428" alt="image" src="https://github.com/user-attachments/assets/283c8768-9747-4cc4-b8a1-54f0edf31499" />
+
+**The CLT in action**
+
+The central limit theorem states that a sampling distribution of a sample statistic approaches the normal distribution as you take more samples, no matter the original distribution being sampled from.
+
+In this exercise, you'll focus on the sample mean and see the central limit theorem in action while examining the `num_users` column of `amir_deals` more closely, which contains the number of people who intend to use the product Amir is selling.
+
+1) Create a histogram of the num_users column of amir_deals. Use 10 bins.
+
+```r
+# Create a histogram of num_users
+ggplot(amir_deals, aes(x = num_users)) +
+  geom_histogram(bins = 10)
 ```
 
-```r
+<img width="562" height="428" alt="image" src="https://github.com/user-attachments/assets/68f4a5f3-ceed-4a85-8cbd-5605b2b91b6c" />
 
+2) Set the seed to 104. Take a sample of size 20 with replacement from the num_users column of amir_deals, and take the mean.
+
+```r
+# Set seed to 104
+set.seed(104)
+
+# Sample 20 num_users with replacement from amir_deals
+sample(amir_deals$num_users, 20, replace = TRUE) %>%
+  # Take mean
+  mean()
 ```
 
-```r
+3) Repeat this 100 times and store as sample_means. This will take 100 different samples and calculate the mean of each.
 
+```r
+# Set seed to 104
+set.seed(104)
+
+# Sample 20 num_users from amir_deals and take mean
+sample(amir_deals$num_users, size = 20, replace = TRUE) %>%
+  mean()
+
+# Repeat the above 100 times
+sample_means <- replicate(100, sample(amir_deals$num_users, size = 20, replace = TRUE) %>% mean())
 ```
 
-```r
+4) A data frame called samples has been created for you with a column mean, which contains the values from sample_means. Create a histogram of the mean column with 10 bins.
 
+```r
+# Set seed to 104
+set.seed(104)
+
+# Sample 20 num_users from amir_deals and take mean
+sample(amir_deals$num_users, size = 20, replace = TRUE) %>%
+  mean()
+
+# Repeat the above 100 times
+sample_means <- replicate(100, sample(amir_deals$num_users, size = 20, replace = TRUE) %>% mean())
+
+# Create data frame for plotting
+samples <- data.frame(mean = sample_means)
+
+# Histogram of sample means
+ggplot(samples, aes(x = mean)) +
+  geom_histogram(bins = 10)
+```
+<img width="562" height="428" alt="image" src="https://github.com/user-attachments/assets/93588e3e-579e-4a68-9d70-d796883cdd81" />
+
+**The mean of means**
+
+You want to know what the average number of users (num_users) is per deal, but you want to know this number for the entire company so that you can see if Amir's deals have more or fewer users than the company's average deal. The problem is that over the past year, the company has worked on more than ten thousand deals, so it's not realistic to compile all the data. Instead, you'll estimate the mean by taking several random samples of deals, since this is much easier than collecting data from everyone in the company.
+
+- Set the random seed to 321.
+- Take 30 samples of size 20 from `all_deals$num_users` and take the mean of each sample. Store the sample means in `sample_means`.
+- Take the mean of `sample_means`.
+- Take the mean of the `num_users` column of `amir_deals`.
+
+```r
+# Set seed to 321
+set.seed(321)
+
+# Take 30 samples of 20 values of num_users, take mean of each sample
+sample_means <- replicate(30, sample(all_deals$num_users, 20) %>% mean())
+
+# Calculate mean of sample_means
+mean(sample_means)
+
+# Calculate mean of num_users in amir_deals
+mean(amir_deals$num_users)
 ```
 
-```r
+**Tracking lead responses**
 
+Your company uses sales software to keep track of new sales leads. It organizes them into a queue so that anyone can follow up on one when they have a bit of free time. Since the number of lead responses is a countable outcome over a period of time, this scenario corresponds to a Poisson distribution. On average, Amir responds to 4 leads each day. In this exercise, you'll calculate probabilities of Amir responding to different numbers of leads.
+
+1) What's the probability that Amir responds to 5 leads in a day, given that he responds to an average of 4?
+
+```r
+# Probability of 5 responses
+dpois(5, lambda = 4)
 ```
 
-```r
+2) Amir's coworker responds to an average of 5.5 leads per day. What is the probability that she answers 5 leads in a day?
 
+```r
+# Probability of 5 responses from coworker
+dpois(5, lambda = 5.5)
 ```
 
-```r
+3) What's the probability that Amir responds to 2 or fewer leads in a day?
 
+```r
+# Probability of 2 or fewer responses
+ppois(2, lambda = 4)
 ```
 
-```r
-
-```
+4)  What's the probability that Amir responds to more than 10 leads in a day?
 
 ```r
-
+# Probability of > 10 responses
+ppois(10, lambda = 4, lower.tail = FALSE)
 ```
 
 ```r
