@@ -1984,18 +1984,72 @@ Se creó un diagrama de dispersión con `ggplot2` para visualizar la relación e
 
 <img width="565" height="429" alt="image" src="https://github.com/user-attachments/assets/a8f71fa3-761f-4946-a4a2-5918475a2b14" />
 
+- Calculate the correlation between gdp_per_cap and life_exp.
 
 ```r
+# Scatterplot of gdp_per_cap and life_exp
+ggplot(world_happiness, aes(gdp_per_cap, life_exp)) +
+  geom_point()
 
+# Correlation between gdp_per_cap and life_exp
+cor(world_happiness$gdp_per_cap, world_happiness$life_exp)
 ```
+
+Se calculó la correlación de Pearson entre `gdp_per_cap` y `life_exp` usando la función `cor()`.
+
+- El valor obtenido mide la fuerza de la relación lineal entre el PIB per cápita y la esperanza de vida.
+- Este cálculo se usa junto con el scatterplot para mostrar que la correlación puede no capturar bien relaciones no lineales.
+
+**Transforming variables**
+
+When variables have skewed distributions, they often require a transformation in order to form a linear relationship with another variable so that correlation can be computed. In this exercise, you'll perform a transformation yourself.
+
+1) Create a scatterplot of `happiness_score` versus `gdp_per_cap`. Calculate the correlation between `happiness_score` and `gdp_per_cap`.
 
 ```r
+# Scatterplot of happiness_score vs. gdp_per_cap
+ggplot(world_happiness, aes(x = gdp_per_cap, y = happiness_score)) +
+  geom_point()
 
+# Calculate correlation
+cor(world_happiness$happiness_score, world_happiness$gdp_per_cap)
 ```
+
+Se creó un diagrama de dispersión de `happiness_score` versus `gdp_per_cap` y se calculó su correlación de Pearson.
+
+- El scatterplot usa `gdp_per_cap` en el eje x y `happiness_score` en el eje y.
+- La correlación se calcula con `cor()` para cuantificar la relación lineal entre ambas variables.
+- Este paso sirve como base antes de aplicar una transformación (log) a `gdp_per_cap`.
+
+<img width="562" height="428" alt="image" src="https://github.com/user-attachments/assets/c823614e-8fc8-428b-a233-d64b6de2d72f" />
+
+
+2) Add a new column to world_happiness called `log_gdp_per_cap` that contains the log of `gdp_per_cap`.
+Create a scatterplot of happiness_score versus `log_gdp_per_cap`.
+Calculate the correlation between `happiness_score` and `log_gdp_per_cap`.
 
 ```r
+# Create log_gdp_per_cap column
+world_happiness <- world_happiness %>%
+  mutate(log_gdp_per_cap = log(gdp_per_cap))
 
+# Scatterplot of happiness_score vs. log_gdp_per_cap
+ggplot(world_happiness, aes(log_gdp_per_cap, happiness_score)) +
+  geom_point()
+
+# Calculate correlation
+cor(world_happiness$log_gdp_per_cap, world_happiness$happiness_score)
 ```
+
+Se transformó la variable `gdp_per_cap` aplicando el logaritmo natural y se guardó en una nueva columna llamada `log_gdp_per_cap`.
+
+- Se usó `mutate()` de dplyr para crear la columna.
+- Luego se generó un scatterplot de `happiness_score` versus `log_gdp_per_cap`.
+- Finalmente se calculó la correlación entre `log_gdp_per_cap` y `happiness_score`.
+- La transformación logarítmica ayuda a linealizar la relación cuando la variable original está sesgada.
+
+<img width="562" height="428" alt="image" src="https://github.com/user-attachments/assets/acf9f4e9-f96c-44a9-a2ad-0986fc8ca522" />
+
 
 ```r
 
