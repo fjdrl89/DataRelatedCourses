@@ -273,19 +273,58 @@ When the only explanatory variable is a single categorical variable, a linear re
 
 In the next chapter we will use fitted models to make predictions and dig deeper into the meaning of the coefficients.
 
+**Visualizing two variables**
 
+Before you can run any statistical models, it's usually a good idea to visualize your dataset. Here, we'll look at the relationship between house price per area and the number of nearby convenience stores, using the Taiwan real estate dataset.
 
-```r
+One challenge in this dataset is that the number of convenience stores contains integer data, causing points to overlap. To solve this, you will make the points transparent.
 
-```
-
-```r
-
-```
+1) Using `taiwan_real_estate`, draw a scatter plot of `price_twd_msq` (y-axis) versus `n_convenience` (x-axis).
 
 ```r
-
+# Draw a scatter plot of n_convenience vs. price_twd_msq
+ggplot(taiwan_real_estate, aes(n_convenience, price_twd_msq)) +
+  geom_point(alpha = 0.5)
 ```
+
+<img width="562" height="428" alt="image" src="https://github.com/user-attachments/assets/95f82493-4116-4c6c-987a-8c62717e65e6" />
+
+**Explanation**
+
+- `aes(n_convenience, price_twd_msq)` places the number of convenience stores on the x-axis and the house price per area on the y-axis.
+- Because `n_convenience` only takes integer values, many points overlap. Setting `alpha = 0.5` makes the points semi-transparent so that the density of overlapping observations becomes visible.
+
+2) Update the plot to make the points 50% transparent by setting alpha to 0.5.
+
+```r
+# Make points 50% transparent
+ggplot(taiwan_real_estate, aes(n_convenience, price_twd_msq)) +
+  geom_point(alpha = 0.5)
+```
+
+<img width="562" height="428" alt="image" src="https://github.com/user-attachments/assets/01822bc0-a18b-4460-abe3-8aa19f90a8b1" />
+
+**Explanation**
+
+- Adding `alpha = 0.5` inside `geom_point()` makes every point 50% transparent.
+- This is useful when many points share the same x-value (as happens with integer data like `n_convenience`), allowing the density of overlapping points to become visible.
+
+3) Update the plot by adding a trend line, calculated using a linear regression. You can omit the confidence ribbon.
+
+```r
+# Add a linear trend line without a confidence ribbon
+ggplot(taiwan_real_estate, aes(n_convenience, price_twd_msq)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", se = FALSE)
+```
+
+<img width="562" height="428" alt="image" src="https://github.com/user-attachments/assets/ce7fa4df-2b43-43a0-b14f-f012cd04ce23" />
+
+**Explanation**
+
+- `geom_smooth(method = "lm")` adds a straight trend line calculated by linear regression.
+- Setting `se = FALSE` removes the confidence interval ribbon that appears by default around the line.
+
 
 ```r
 
