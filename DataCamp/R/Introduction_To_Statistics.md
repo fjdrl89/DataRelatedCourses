@@ -1634,28 +1634,356 @@ pexp(4, rate = rate) - pexp(3, rate = rate)
 
 *Exercises compiled and cleaned from DataCamp course materials for educational use.*
 
+# Chapter 4: Correlation and Experimental Design
 
+**Course:** Introduction to Statistics in R (DataCamp)  
+**Instructor:** Maggie Matsui
 
+This chapter covers **relationships between two numeric variables**, the **correlation coefficient**, important **caveats** when interpreting correlation, and the fundamentals of **experimental design** (controlled experiments vs. observational studies).
+
+---
+
+## 1. Relationships Between Two Variables
+
+### Explanatory and Response Variables
+
+When examining the relationship between two numeric variables:
+
+- **$x$** = explanatory / independent variable (plotted on the horizontal axis)
+- **$y$** = response / dependent variable (plotted on the vertical axis)
+
+**Example – Mammal sleep habits** (`msleep` dataset)
+
+A scatterplot of total sleep per day vs. REM sleep per day shows a clear positive relationship: mammals that sleep more overall tend to get more REM sleep.
+
+### Visualizing Relationships
+
+The primary tool for visualizing two numeric variables is a **scatterplot**:
 
 ```r
-
+ggplot(df, aes(x, y)) +
+  geom_point()
 ```
+
+### Adding a Linear Trendline
+
+A trendline helps the eye see the overall pattern:
 
 ```r
-
+ggplot(df, aes(x, y)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE)
 ```
+
+- `method = "lm"` → linear model (straight line)
+- `se = FALSE` → hides the standard-error ribbon around the line
+
+---
+
+## 2. The Correlation Coefficient
+
+### Definition
+
+The **correlation coefficient** quantifies the **linear** relationship between two numeric variables.
+
+- It is a single number that lies between **−1** and **+1**.
+- **Magnitude** (absolute value) indicates the **strength** of the relationship.
+- **Sign** indicates the **direction** of the relationship.
+
+| Approximate value | Strength of relationship |
+|-------------------|--------------------------|
+| ≈ 0.99            | Very strong              |
+| ≈ 0.75            | Strong                   |
+| ≈ 0.55            | Moderate                 |
+| ≈ 0.20            | Weak                     |
+| ≈ 0.00            | No linear relationship   |
+
+### Direction (Sign)
+
+- **Positive correlation** ($r > 0$): as $x$ increases, $y$ tends to increase.
+- **Negative correlation** ($r < 0$): as $x$ increases, $y$ tends to decrease.
+
+### Computing Correlation in R
 
 ```r
+cor(df$x, df$y)
+# e.g. -0.7472765
 
+# Order does not matter
+cor(df$y, df$x)   # same result
 ```
+
+### Handling Missing Values
+
+If either vector contains `NA`, `cor()` returns `NA` by default. To ignore incomplete pairs:
 
 ```r
-
+cor(df$x, df$y, use = "pairwise.complete.obs")
 ```
+
+### Pearson Product-Moment Correlation
+
+The measure used throughout this course is the **Pearson product-moment correlation**, commonly written $r$.
+
+$$
+r = \frac{\sum_{i=1}^{n}(x_i - \bar{x})(y_i - \bar{y})}
+         {\sqrt{\sum_{i=1}^{n}(x_i - \bar{x})^2}\;\sqrt{\sum_{i=1}^{n}(y_i - \bar{y})^2}}
+$$
+
+- $\bar{x}$ and $\bar{y}$ are the sample means of $x$ and $y$.
+- Other correlation measures exist (Kendall’s $\tau$, Spearman’s $\rho$) but are beyond the scope of this course.
+
+---
+
+## 3. Correlation Caveats
+
+### Correlation Only Captures Linear Relationships
+
+A non-linear (e.g., quadratic) relationship can produce a near-zero correlation even when a strong pattern is visible.
 
 ```r
-
+cor(df$x, df$y)
+# 0.1786163   ← low, yet the scatterplot shows a clear U-shape
 ```
+
+**Always visualize your data.** Never rely on the correlation coefficient alone.
+
+### Transformations to Linearize Relationships
+
+Highly skewed variables often produce weak linear correlations. A transformation can reveal a stronger linear relationship.
+
+**Example – Body weight vs. awake time (`msleep`)**
+
+```r
+cor(msleep$bodywt, msleep$awake)
+# ≈ 0.31   (weak)
+
+# Log-transform body weight
+msleep <- msleep %>%
+  mutate(log_bodywt = log(bodywt))
+
+cor(msleep$log_bodywt, msleep$awake)
+# ≈ 0.57   (moderate)
+
+# Visualize
+msleep %>%
+  ggplot(aes(log_bodywt, awake)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE)
+```
+
+**Common transformations**
+
+| Transformation          | R code          |
+|-------------------------|-----------------|
+| Log                     | `log(x)`        |
+| Square root             | `sqrt(x)`       |
+| Reciprocal              | `1 / x`         |
+
+Combinations are allowed (e.g., `log(x)` and `log(y)`, or `sqrt(x)` and `1/y`).
+
+**Why transform?**
+
+Many statistical methods (including correlation itself and linear regression) assume a linear relationship between variables.
+
+### Correlation Does Not Imply Causation
+
+Even a very strong correlation ($r \approx 0.99$) does **not** mean that $x$ causes $y$.
+
+Classic spurious example: per-capita margarine consumption in the US is almost perfectly correlated with the divorce rate in Maine. Eating more margarine does not cause divorces.
+
+### Confounding (Lurking) Variables
+
+A **confounder** is a third variable that is associated with both the explanatory and response variables and can create a spurious correlation.
+
+**Coffee → Lung cancer?**
+
+- Coffee drinking appears correlated with lung cancer.
+- The confounder is **smoking**: smokers tend to drink more coffee *and* smoking causes lung cancer.
+- Once smoking is accounted for, the apparent causal link disappears.
+
+Another example: holiday retail sales. Special promotions that run during holidays confound the pure “holiday effect.”
+
+---
+
+## 4. Design of Experiments
+
+### Core Vocabulary
+
+Experiments generally answer the question:
+
+> “What is the **effect of the treatment** on the **response**?”
+
+- **Treatment** = explanatory / independent variable
+- **Response** = response / dependent variable
+
+**Example**
+
+- Treatment: seeing an advertisement
+- Response: number of products purchased
+
+### Controlled Experiments
+
+In a **controlled experiment** researchers assign participants to groups:
+
+- **Treatment group** – receives the treatment
+- **Control group** – does not receive the treatment
+
+The groups should be comparable in every respect except the treatment. If they are not, **confounding** (bias) can occur.
+
+### The Gold Standard
+
+To minimize bias, well-designed experiments use:
+
+1. **Randomized controlled trial (RCT)**  
+   Participants are assigned to treatment or control purely by chance. Random assignment helps make the groups comparable on both observed and unobserved characteristics.
+
+2. **Placebo**  
+   A treatment that looks identical but has no active effect (e.g., a sugar pill). Participants do not know whether they received the real treatment, so any observed effect can be attributed to the treatment itself rather than the idea of being treated.
+
+3. **Double-blind design**  
+   Neither the participants nor the people administering the treatment / analyzing the results know who is in which group. This protects against bias in both the response and the analysis.
+
+Fewer opportunities for bias → more reliable conclusions about **causation**.
+
+### Observational Studies
+
+In an **observational study** participants are **not** randomly assigned. They self-select (or are selected) into groups based on pre-existing characteristics.
+
+- Useful when a controlled experiment is impossible or unethical (you cannot force people to smoke or to have a particular medical history).
+- Can establish **association**, but **not causation**.
+- Confounders are almost always present; statistical techniques can partially control for them, strengthening conclusions about association.
+
+### Longitudinal vs. Cross-Sectional Studies
+
+| Feature                    | Longitudinal study                          | Cross-sectional study                       |
+|----------------------------|---------------------------------------------|---------------------------------------------|
+| Data collection            | Same participants followed over time        | Single snapshot in time                     |
+| Confounding by generation  | Eliminated (same people measured repeatedly)| Present (different birth cohorts)           |
+| Cost & time                | More expensive, results take longer         | Cheaper, faster, more convenient            |
+
+**Example – Age and height**
+
+- Cross-sectional: measure heights of people of different ages today → confounded by the fact that each generation tends to be taller.
+- Longitudinal: measure the same people at different ages → generation effect is removed.
+
+---
+
+## Quick Reference
+
+### Correlation
+
+| Task                              | R code                                              |
+|-----------------------------------|-----------------------------------------------------|
+| Compute Pearson correlation       | `cor(x, y)`                                         |
+| Ignore missing values             | `cor(x, y, use = "pairwise.complete.obs")`          |
+| Scatterplot                       | `ggplot(df, aes(x, y)) + geom_point()`              |
+| Add linear trendline              | `+ geom_smooth(method = "lm", se = FALSE)`          |
+| Log-transform a variable          | `mutate(log_x = log(x))`                            |
+
+### Experimental Design Cheat-Sheet
+
+| Study type              | Random assignment? | Can claim causation? | Notes                                      |
+|-------------------------|--------------------|----------------------|--------------------------------------------|
+| Controlled experiment   | Yes (ideally)      | Yes (if well designed) | RCT + placebo + double-blind is gold standard |
+| Observational study     | No                 | No (association only)| Confounders always a concern               |
+| Longitudinal            | Varies             | Depends on design    | Follows same subjects over time            |
+| Cross-sectional         | Varies             | Depends on design    | Single point in time                       |
+
+---
+
+## Chapter Summary – Key Ideas
+
+1. **Correlation** quantifies the strength and direction of a **linear** relationship between two numeric variables; values range from −1 to +1.
+2. Always **visualize** the data; correlation alone misses non-linear patterns.
+3. **Transformations** (log, square-root, reciprocal) can linearize skewed relationships and improve the usefulness of correlation.
+4. **Correlation ≠ causation**. Spurious correlations arise from confounding variables.
+5. **Controlled experiments** (especially randomized, placebo-controlled, double-blind trials) are the gold standard for establishing causation.
+6. **Observational studies** can only claim association; they are useful when experiments are impractical or unethical.
+7. **Longitudinal studies** follow the same subjects over time and reduce certain confounding; **cross-sectional studies** are cheaper but more vulnerable to generational effects.
+
+---
+
+*Notes compiled from DataCamp course materials and video transcripts for educational use.*
+
+**Relationships between variables**
+
+In this chapter, you'll be working with a dataset world_happiness containing results from the 2019 World Happiness Report. The report scores various countries based on how happy people in that country are. It also ranks each country on various societal aspects such as social support, freedom, corruption, and others. The dataset also includes the GDP per capita and life expectancy for each country.
+
+In this exercise, you'll examine the relationship between a country's life expectancy (life_exp) and happiness score (happiness_score) both visually and quantitatively. Both dplyr and ggplot2 libraries are loaded and world_happiness is available.
+
+1) Create a scatterplot of happiness_score vs. life_exp using ggplot2.
+
+```r
+# Create a scatterplot of happiness_score vs. life_exp
+ggplot(world_happiness, aes(x = life_exp, y = happiness_score)) +
+  geom_point()
+```
+
+Se generó un diagrama de dispersión (scatterplot) con `ggplot2` para visualizar la relación entre la esperanza de vida (`life_exp`) y el puntaje de felicidad (`happiness_score`) del dataset `world_happiness`.
+
+- El eje **x** representa `life_exp`.
+- El eje **y** representa `happiness_score`.
+- Cada punto del gráfico corresponde a un país del World Happiness Report 2019.
+- Se utilizó `geom_point()` para dibujar los puntos individuales.
+
+<img width="565" height="429" alt="image" src="https://github.com/user-attachments/assets/9acfeae2-fbdf-4d59-bf38-cb0d50ea06e9" />
+
+2) Add a linear trendline to the scatterplot, setting se to FALSE.
+
+```r
+# Add a linear trendline to scatterplot
+ggplot(world_happiness, aes(life_exp, happiness_score)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE)
+```
+
+Se añadió una línea de tendencia lineal al diagrama de dispersión usando `geom_smooth()`.
+
+- Se especificó `method = "lm"` para ajustar un modelo lineal.
+- Se estableció `se = FALSE` para ocultar el intervalo de confianza alrededor de la línea.
+- La línea muestra la relación lineal estimada entre `life_exp` y `happiness_score`.
+
+<img width="562" height="428" alt="image" src="https://github.com/user-attachments/assets/084e1a2b-df80-4c2b-a885-1268aae72c14" />
+
+4) Calculate the correlation between life_exp and happiness_score.
+
+```r
+# Add a linear trendline to scatterplot
+ggplot(world_happiness, aes(life_exp, happiness_score)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE)
+
+# Correlation between life_exp and happiness_score
+cor(world_happiness$life_exp, world_happiness$happiness_score)
+```
+
+Se calculó la correlación de Pearson entre `life_exp` y `happiness_score` usando la función `cor()`.
+
+- El resultado es un valor numérico entre -1 y 1 que mide la fuerza y dirección de la relación lineal.
+- Un valor cercano a 1 indica una fuerte correlación positiva (a mayor esperanza de vida, mayor puntaje de felicidad).
+
+**What can't correlation measure?**
+
+While the correlation coefficient is a convenient way to quantify the strength of a relationship between two variables, it's far from perfect. In this exercise, you'll explore one of the caveats of the correlation coefficient by examining the relationship between a country's GDP per capita (`gdp_per_cap`) and happiness score.
+
+- Create a scatterplot showing the relationship between `gdp_per_cap` (on the x-axis) and `life_exp` (on the y-axis).
+
+```r
+# Scatterplot of gdp_per_cap and life_exp
+ggplot(world_happiness, aes(x = gdp_per_cap, y = life_exp)) +
+  geom_point()
+```
+
+Se creó un diagrama de dispersión con `ggplot2` para visualizar la relación entre el PIB per cápita (`gdp_per_cap`) y la esperanza de vida (`life_exp`).
+
+- El eje **x** representa `gdp_per_cap`.
+- El eje **y** representa `life_exp`.
+- Cada punto corresponde a un país del dataset `world_happiness`.
+- Este gráfico se usa para ilustrar una de las limitaciones de la correlación (relación no lineal).
+
+<img width="565" height="429" alt="image" src="https://github.com/user-attachments/assets/a8f71fa3-761f-4946-a4a2-5918475a2b14" />
+
 
 ```r
 
